@@ -94,6 +94,8 @@ fig.update_layout(margin=go.layout.Margin(
         t=40  #top margin
     ))
 
-fig.write_image("fig1.jpeg")
+fig.write_image("fig1.jpg")
+#fig.to_image(format="png", engine="kaleido")
 
 fig.show()
+#fig.write_image("fig1.jpg")
