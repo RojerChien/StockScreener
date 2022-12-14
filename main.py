@@ -368,7 +368,7 @@ def gogogo(start, tickers, catgory):
     # US = "1"
 
 
-TEST = 1
+TEST = 0
 ETF = 1
 TW = 1
 US = 1
