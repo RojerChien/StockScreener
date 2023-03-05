@@ -1,27 +1,79 @@
-#https://medium.com/geekculture/top-4-python-libraries-for-technical-analysis-db4f1ea87e09
+from pickle import TRUE
+# https://medium.com/geekculture/top-4-python-libraries-for-technical-analysis-db4f1ea87e09
 
 import pandas as pd
+import webbrowser
+
+pd.options.mode.chained_assignment = None  # 將警告訊息關閉
 import requests
 import yfinance as yf
 import matplotlib.pyplot as plt
 import matplotlib.dates as mpl_dates
 import datetime
 import kaleido
+import numpy as np
 
 # from datetime import datetime
 from csv import reader
+
 import bs4 as bs
 import requests
 import csv
 import plotly.graph_objects as go
 from ta.trend import MACD
 from ta.momentum import StochasticOscillator
-
+##from yahooquery import Ticker
 from plotly.subplots import make_subplots
+import webbrowser
+
+########################## 從Firstrade以及老處取得ptp stock tickers #####################
+import requests
+from bs4 import BeautifulSoup
 
 
-# plt.style.use('seaborn')
-test_tickers = ['2379.TW', 'A', '1103.TW', 'HDB', 'TFII']
+def get_ptp_tickers(url1, url2):
+    # 第一個網站
+    response1 = requests.get(url1)
+    soup1 = BeautifulSoup(response1.content, "html.parser")
+
+    table1 = soup1.find("table", {"width": "100%"})
+    tbody1 = table1.find("tbody")
+    rows1 = tbody1.find_all("tr")
+    ptp_lists = []
+
+    for row in rows1:
+        cols = row.find_all("td")
+        if len(cols) == 3:
+            symbol = cols[2].get_text().strip()
+            ptp_lists.append(symbol)
+
+    # 第二個網站
+    response2 = requests.get(url2)
+    soup2 = BeautifulSoup(response2.text, 'html.parser')
+    table2 = soup2.find('table', {'class': 'table'})
+    rows2 = table2.find_all('tr')
+    ptp_tickers = []
+
+    for row in rows2:
+        code = row.find('td')
+        if code:
+            ptp_tickers.append(code.text.strip())
+
+    # 合併兩個列表，並取得不重覆的值
+    ptp_lists.extend(ptp_tickers)
+    ptp_lists = list(set(ptp_lists))
+
+    return ptp_lists
+    print(ptp_lists)
+
+
+url1 = "https://help.zh-tw.firstrade.com/article/841-new-1446-f-regulations"
+url2 = 'https://www.itigerup.com/bulletin/ptp'
+ptp_lists = get_ptp_tickers(url1, url2)
+
+vcp_test_tickers = ['AAPL', 'ICPT']
+test_tickers = ['UFPT', 'IPVF', 'SCU', 'ICD']
+
 tw_tickers = ['1101.TW', '1102.TW', '1103.TW', '1104.TW', '1108.TW', '1109.TW', '1110.TW', '1201.TW', '1203.TW',
               '1210.TW', '1213.TW', '1215.TW', '1216.TW', '1217.TW', '1218.TW', '1219.TW', '1220.TW', '1225.TW',
               '1227.TW', '1229.TW', '1231.TW', '1232.TW', '1233.TW', '1234.TW', '1235.TW', '1236.TW', '1240.TWO',
@@ -209,242 +261,607 @@ tw_tickers = ['1101.TW', '1102.TW', '1103.TW', '1104.TW', '1108.TW', '1109.TW', 
               '8917.TWO', '8921.TWO', '8923.TWO', '8924.TWO', '8927.TWO', '8928.TWO', '8929.TWO', '8930.TWO',
               '8931.TWO', '8932.TWO', '8933.TWO', '8935.TWO', '8936.TWO', '8937.TWO', '8938.TWO', '8941.TWO',
               '8942.TWO']
-us_tickers = ['AAPL', 'MSFT', 'GOOG', 'GOOGL', 'AMZN', 'TSLA', 'BRK-B', 'UNH', 'XOM', 'JNJ', 'V', 'WMT', 'JPM', 'CVX',
-              'NVDA', 'LLY', 'TSM', 'PG', 'MA', 'HD', 'BAC', 'META', 'PFE', 'KO', 'ABBV', 'MRK', 'PEP', 'NVO', 'COST',
-              'ORCL', 'MCD', 'SHEL', 'TMO', 'ASML', 'DIS', 'AVGO', 'TM', 'TMUS', 'CSCO', 'DHR', 'AZN', 'ACN', 'WFC',
-              'ABT', 'NVS', 'BABA', 'BMY', 'CRM', 'COP', 'NEE', 'SCHW', 'ADBE', 'LIN', 'NKE', 'AMGN', 'TXN', 'UPS',
-              'PM', 'CMCSA', 'TTE', 'RTX', 'MS', 'HON', 'QCOM', 'T', 'NFLX', 'ELV', 'RY', 'LMT', 'IBM', 'CVS', 'LOW',
-              'UNP', 'INTU', 'BHP', 'DE', 'INTC', 'TD', 'GS', 'UL', 'CAT', 'EQNR', 'MDT', 'SAP', 'HDB', 'AXP', 'SPGI',
-              'SNY', 'PLD', 'HSBC', 'BP', 'BUD', 'AMD', 'ADP', 'BLK', 'SBUX', 'PYPL', 'GILD', 'CI', 'DEO', 'AMT', 'C',
-              'BTI', 'CB', 'PBR', 'SYK', 'ISRG', 'RIO', 'GE', 'BA', 'NOW', 'NOC', 'MDLZ', 'TJX', 'SONY', 'MO', 'REGN',
-              'MMC', 'CNI', 'VRTX', 'ENB', 'INFY', 'EOG', 'IBN', 'AMAT', 'TGT', 'PGR', 'CHTR', 'ADI', 'BKNG', 'EL',
-              'DUK', 'SO', 'ZTS', 'SLB', 'HUM', 'MMM', 'BX', 'CNQ', 'GD', 'CP', 'ABNB', 'GSK', 'BDX', 'PDD', 'OXY',
-              'ITW', 'BAM', 'PNC', 'FISV', 'WM', 'HCA', 'USB', 'BMO', 'CME', 'CL', 'BSX', 'CSX', 'PXD', 'AON', 'ETN',
-              'TFC', 'JD', 'MRNA', 'AMX', 'MU', 'DG', 'SHW', 'MET', 'BNS', 'MUFG', 'D', 'VALE', 'CCI', 'ATVI', 'MCK',
-              'MPC', 'APD', 'KDP', 'LRCX', 'GM', 'PSA', 'UBER', 'ITUB', 'EPD', 'ICE', 'NSC', 'F', 'ORLY', 'ABB', 'RELX',
-              'ADM', 'MAR', 'EQIX', 'TRI', 'EMR', 'FIS', 'UBS', 'TEAM', 'PANW', 'SNOW', 'PSX', 'DVN', 'VLO', 'MCO',
-              'MNST', 'HSY', 'AIG', 'CNC', 'GIS', 'AZO', 'SRE', 'VMW', 'KHC', 'LHX', 'CTVA', 'DXCM', 'ADSK', 'E',
-              'ABEV', 'FCX', 'SU', 'AEP', 'KLAC', 'STZ', 'APH', 'SNPS', 'FTNT', 'SAN', 'ECL', 'NTR', 'MELI', 'WDS',
-              'TRP', 'EW', 'ROP', 'STLA', 'LNG', 'SYY', 'HES', 'CTAS', 'SHOP', 'PAYX', 'TRV', 'KKR', 'RSG', 'KMB',
-              'LULU', 'CMG', 'MSI', 'FDX', 'CDNS', 'ENPH', 'BCE', 'COF', 'A', 'CM', 'AFL', 'BIIB', 'TAK', 'NGG', 'JCI',
-              'WDAY', 'KMI', 'BSBR', 'NXPI', 'WMB', 'AJG', 'TEL', 'PRU', 'HMC', 'IQV', 'ET', 'CVE', 'EXC', 'O', 'SMFG',
-              'BBD', 'CRWD', 'MSCI', 'PCG', 'PH', 'ING', 'TT', 'ANET', 'HLT', 'ILMN', 'SCCO', 'NTES', 'RACE', 'SQ',
-              'XEL', 'SPG', 'EA', 'DLTR', 'MRVL', 'MCHP', 'GPN', 'CMI', 'NUE', 'IMO', 'BK', 'ALL', 'WCN', 'NEM', 'MPLX',
-              'CSGP', 'CARR', 'YUM', 'PCAR', 'KR', 'DOW', 'BNTX', 'AMP', 'ROST', 'ABC', 'ALB', 'HAL', 'CTSH', 'VOD',
-              'BBDO', 'LYG', 'RMD', 'APO', 'KEYS', 'WBA', 'RIVN', 'TDG', 'BBVA', 'MFC', 'WBD', 'ED', 'VICI', 'GFS',
-              'NDAQ', 'CEG', 'IDXX', 'ODFL', 'OTIS', 'ALC', 'TU', 'CPNG', 'AME', 'ROK', 'GWW', 'ON', 'DLR', 'SBAC',
-              'MTB', 'STM', 'WEC', 'HLN', 'DFS', 'DD', 'CQP', 'DELL', 'PEG', 'WELL', 'MTD', 'VRSK', 'LVS', 'HPQ',
-              'FAST', 'TLK', 'SE', 'CPRT', 'BAX', 'MFG', 'STT', 'CRH', 'BCS', 'FANG', 'RBLX', 'BKR', 'SQM', 'BIDU',
-              'DHI', 'GOLD', 'PPG', 'GLW', 'OKE', 'VEEV', 'ES', 'AWK', 'CLR', 'CHT', 'TTD', 'K', 'WIT', 'PUK', 'RJF',
-              'GMAB', 'DDOG', 'HRL', 'LYB', 'ORAN', 'NWG', 'FMX', 'GPC', 'ZM', 'SLF', 'NOK', 'TSCO', 'FITB', 'TSN',
-              'IFF', 'AVB', 'ALNY', 'APTV', 'TROW', 'WTW', 'SIRI', 'CTRA', 'EXR', 'SGEN', 'ARE', 'FNV', 'LEN', 'IT',
-              'LCID', 'ZBH', 'EQR', 'CDW', 'HIG', 'FERG', 'WY', 'BR', 'EIX', 'CBRE', 'FTV', 'HEI', 'DAL', 'EBAY', 'ZS',
-              'VMC', 'DTE', 'FRC', 'PFG', 'ETR', 'VRSN', 'HBAN', 'FE', 'URI', 'CAJ', 'CCEP', 'ARGX', 'MBLY', 'LUV',
-              'NU', 'ULTA', 'AEE', 'MKC', 'UI', 'RCI', 'MLM', 'CF', 'EFX', 'ACGL', 'EBR', 'LPLA', 'TTWO', 'ROL', 'MOH',
-              'AEM', 'PAYC', 'MRO', 'RF', 'IR', 'CFG', 'EC', 'LH', 'CAH', 'PWR', 'EPAM', 'DB', 'TEF', 'GIB', 'INVH',
-              'PPL', 'WRB', 'TTM', 'ANSS', 'MT', 'COIN', 'ERIC', 'RPRX', 'FTS', 'ELP', 'CHD', 'TDY', 'HPE', 'DOV',
-              'XYL', 'LYV', 'MOS', 'CLX', 'ZI', 'DASH', 'QSR', 'CNP', 'NET', 'WAT', 'PBA', 'MAA', 'TS', 'TPL', 'PLTR',
-              'PODD', 'AES', 'NTRS', 'IEP', 'CAG', 'JBHT', 'CNHI', 'AMCR', 'DRI', 'YUMC', 'IX', 'STE', 'STLD', 'BGNE',
-              'PKI', 'WAB', 'GRMN', 'KEY', 'IEX', 'CMS', 'PINS', 'BIP', 'HOLX', 'WST', 'CHWY', 'INCY', 'BRO', 'SUI',
-              'TECK', 'DGX', 'CINF', 'SYF', 'SNAP', 'MKL', 'ICLR', 'MPWR', 'MGA', 'NIO', 'BMRN', 'SJM', 'SPOT', 'CHKP',
-              'EXPD', 'VTR', 'AGR', 'CPB', 'FOXA', 'WPC', 'RTO', 'BALL', 'AZPN', 'RYAAY', 'BBY', 'EXPE', 'TRGP', 'LKQ',
-              'NTAP', 'WPM', 'UMC', 'HWM', 'NLOK', 'ATO', 'J', 'TRMB', 'ZBRA', 'FOX', 'FMC', 'CRBG', 'APA', 'OMC',
-              'ALGN', 'HZNP', 'JKHY', 'BG', 'TCOM', 'IRM', 'TXT', 'ESS', 'BAH', 'UAL', 'EQT', 'PARAA', 'EVRG', 'FLT',
-              'AKAM', 'BILL', 'FSLR', 'MGM', 'SWKS', 'ZTO', 'LSXMA', 'AVY', 'LSXMK', 'HUBS', 'LI', 'LDOS', 'TWLO', 'L',
-              'SIVB', 'TYL', 'PTC', 'NVR', 'SPLK', 'COO', 'FWONK', 'SUZ', 'ARES', 'WMG', 'RCL', 'HST', 'SHG', 'LBRDA',
-              'LNT', 'KB', 'KOF', 'SSNC', 'FHN', 'TER', 'KIM', 'AER', 'ERIE', 'PKX', 'LBRDK', 'AVTR', 'NDSN', 'FCNCA',
-              'BEKE', 'DINO', 'SEDG', 'VIV', 'UDR', 'PEAK', 'MDB', 'GLPI', 'OVV', 'HUBB', 'PCTY', 'GDDY', 'RE', 'POOL',
-              'WLK', 'DAR', 'SJR', 'ETSY', 'CSL', 'MTCH', 'PARA', 'LW', 'RPM', 'FICO', 'CPT', 'IP', 'AFG', 'FWONA',
-              'NICE', 'VTRS', 'CHRW', 'ENTG', 'RS', 'CTLT', 'DPZ', 'CHK', 'IPG', 'BEN', 'GGG', 'ELS', 'ABMD', 'CAR',
-              'SNA', 'EQH', 'CCL', 'SWK', 'TECH', 'WTRG', 'ICL', 'TRU', 'AAP', 'UHAL', 'TOST', 'BAP', 'CNA', 'BXP',
-              'TW', 'ASX', 'NFE', 'PKG', 'WDC', 'PHG', 'AMH', 'TTC', 'GL', 'TAP', 'NBIX', 'MMP', 'FNF', 'VFC', 'WES',
-              'SSL', 'CRL', 'ACI', 'AR', 'WOLF', 'STX', 'MAS', 'WSO', 'UTHR', 'ACM', 'DOX', 'BIO', 'SNN', 'NI', 'BJ',
-              'NRG', 'CCJ', 'CE', 'CG', 'CUK', 'HII', 'CS', 'REG', 'SWAV', 'BSY', 'DT', 'REXR', 'HOOD', 'H', 'RGEN',
-              'AXON', 'EWBC', 'SRPT', 'CDAY', 'KMX', 'TFX', 'QGEN', 'SBNY', 'ARCC', 'RGA', 'CFR', 'MORN', 'JNPR', 'WMS',
-              'NWS', 'TEVA', 'JHX', 'IHG', 'NMR', 'DOCU', 'GRAB', 'XP', 'NWSA', 'BLDR', 'SCI', 'WPP', 'VST', 'HSIC',
-              'LAMR', 'WBS', 'ARMK', 'CZR', 'ZEN', 'LSI', 'BKI', 'CUBE', 'EMN', 'ALLE', 'PLUG', 'CMA', 'AGCO', 'UNM',
-              'MKTX', 'DKS', 'LNC', 'PHM', 'RDY', 'DECK', 'BCH', 'WSC', 'BURL', 'GFL', 'QRVO', 'PSTG', 'OKTA', 'AAL',
-              'AEG', 'ADT', 'BRKR', 'HAS', 'FLEX', 'JAZZ', 'ESLT', 'HTHT', 'STOR', 'BWA', 'G', 'RRX', 'SNX', 'JBL',
-              'LOGI', 'U', 'PSNY', 'MTN', 'WRK', 'FFIV', 'NLY', 'LBTYK', 'CASY', 'GME', 'UHS', 'RHI', 'ALLY', 'NOV',
-              'CBSH', 'LII', 'AOS', 'LEGN', 'PAA', 'FIVE', 'AGL', 'IBKR', 'DCP', 'LEA', 'LBTYA', 'PAG', 'WSM', 'PFGC',
-              'CCK', 'CGNX', 'DISH', 'LECO', 'DBX', 'GGB', 'PSO', 'BEP', 'FRT', 'OTEX', 'FBHS', 'FND', 'OC', 'GLOB',
-              'OLN', 'JEF', 'KEP', 'TFII', 'HR', 'MTDR', 'GTLS', 'JLL', 'FMS', 'SKM', 'TPR', 'PNW', 'ZION', 'MUSA',
-              'BBWI', 'CHDN', 'BSMX', 'KNX', 'PAC', 'KRTX', 'WHR', 'SBS', 'LUMN', 'CFLT', 'MIDD', 'OHI', 'ACHC', 'ROKU',
-              'TTEK', 'MANH', 'ZG', 'AQN', 'PCOR', 'GNRC', 'Z', 'NNN', 'MUR', 'OGE', 'BOKF', 'UGI', 'RBC', 'NVCR',
-              'SWN', 'WAL', 'RBA', 'RCM', 'GTLB', 'GFI', 'SEIC', 'ORI', 'CHH', 'WEX', 'KNSL', 'AIZ', 'CIEN', 'AA',
-              'CACI', 'GPK', 'PATH', 'MASI', 'PNR', 'DCI', 'LSCC', 'NXST', 'CLVT', 'IVZ', 'WCC', 'ALV', 'NCLH', 'CLF',
-              'MPW', 'CELH', 'SEE', 'MEDP', 'EME', 'XM', 'SGFY', 'CHE', 'WH', 'DXC', 'PDCE', 'SBSW', 'SSB', 'EGP',
-              'RNR', 'ASR', 'USFD', 'DKNG', 'VMI', 'KBR', 'HTZ', 'BSAC', 'AMC', 'TIXT', 'HALO', 'VOYA', 'WFG', 'GMED',
-              'OGN', 'APLS', 'XRAY', 'CLH', 'WYNN', 'KT', 'HRB', 'ATR', 'TXRH', 'MAT', 'S', 'ARW', 'RRC', 'PB', 'DLB',
-              'COLD', 'SF', 'DLO', 'CW', 'HQY', 'APP', 'REYN', 'DVA', 'EDR', 'STWD', 'PEN', 'ELAN', 'CYBR', 'IOT',
-              'CPRI', 'ITT', 'IRDM', 'RGLD', 'BRX', 'IONS', 'SON', 'RL', 'HOG', 'CNXC', 'FR', 'PNFP', 'NEP', 'GBCI',
-              'CHRD', 'ST', 'NWL', 'TME', 'GNTX', 'HLI', 'NTNX', 'BYD', 'MHK', 'NFG', 'ASND', 'WF', 'EXAS', 'CIB',
-              'NVT', 'ESTC', 'CACC', 'CAE', 'RH', 'VLY', 'FLO', 'BERY', 'AYI', 'MTZ', 'LEVI', 'PHI', 'TIMB', 'CIVI',
-              'QDEL', 'HCP', 'AN', 'SAIC', 'PII', 'XPEV', 'AFRM', 'AIRC', 'GIL', 'WWE', 'SIGI', 'RLI', 'XPO', 'MDU',
-              'SNV', 'EXLS', 'INGR', 'DSGX', 'VAC', 'OSK', 'CHX', 'FYBR', 'ASH', 'CSAN', 'COTY', 'DTM', 'M', 'ONB',
-              'STAG', 'OPCH', 'UBSI', 'WTFC', 'PPC', 'TRQ', 'AU', 'VRT', 'ALK', 'CR', 'CCCS', 'MKSI', 'DNB', 'PBF',
-              'LTHM', 'LAD', 'ENLC', 'TX', 'WWD', 'FSV', 'DDS', 'ONON', 'STN', 'LFUS', 'SM', 'SITE', 'PRGO', 'AMN',
-              'LSTR', 'QLYS', 'BLD', 'ADC', 'CX', 'EHC', 'HUN', 'TREX', 'NVST', 'FFIN', 'POST', 'MGY', 'DOOO', 'FSK',
-              'INFA', 'MP', 'WU', 'YMM', 'PYCR', 'PRI', 'BC', 'EXEL', 'PLNT', 'SWCH', 'INSP', 'BEPC', 'FCN', 'DNA',
-              'BPOP', 'DRVN', 'IDA', 'GOL', 'FAF', 'SLGN', 'AXTA', 'BWXT', 'SRC', 'CMC', 'LNW', 'SYNH', 'HOMB', 'SKX',
-              'HP', 'PENN', 'VVV', 'LNTH', 'TKR', 'THG', 'IAA', 'MSA', 'LHCG', 'CABO', 'NATI', 'LYFT', 'ORA', 'LITE',
-              'AMKR', 'DOCS', 'BLCO', 'OZK', 'NOVT', 'SAIA', 'FNB', 'CADE', 'TOL', 'AM', 'KRC', 'RYN', 'LANC', 'GWRE',
-              'RYAN', 'FUTU', 'ENSG', 'OSH', 'SWX', 'RHP', 'KNTK', 'AIT', 'WIX', 'GH', 'VAL', 'X', 'AMG', 'BAK', 'ALGM',
-              'BIPC', 'MNDY', 'THC', 'DV', 'NYT', 'EXPO', 'WING', 'PSN', 'CALX', 'COLM', 'TDOC', 'ASAI', 'COHR', 'AQUA',
-              'KGC', 'WTS', 'HWC', 'OMF', 'SAM', 'CIG', 'FIBK', 'HXL', 'TPX', 'TSEM', 'BZ', 'OLED', 'EXP', 'RUN',
-              'SPSC', 'DEN', 'NE', 'NTRA', 'MSM', 'COKE', 'ORCC', 'FTI', 'TGNA', 'CHPT', 'VNO', 'TENB', 'SMAR', 'HGV',
-              'AGNC', 'PDI', 'BCPC', 'AXS', 'STVN', 'CERE', 'OWL', 'WEN', 'FCFS', 'UFPI', 'ROG', 'VIPS', 'THO', 'LEG',
-              'CROX', 'SOFI', 'CC', 'IPGP', 'LPX', 'ITCI', 'FIZZ', 'ESI', 'PAGS', 'NJR', 'GXO', 'BXMT', 'FIX', 'KNBE',
-              'IAC', 'NVEI', 'ASAN', 'UMPQ', 'TRNO', 'ASGN', 'NYCB', 'AUY', 'APPF', 'BKH', 'HAE', 'DAVA', 'UNVR',
-              'EEFT', 'MQ', 'SJI', 'GRFS', 'FLR', 'KRG', 'CPG', 'FIVN', 'CRSP', 'ESNT', 'SLM', 'EDU', 'IART', 'ACT',
-              'R', 'OGS', 'PINC', 'CIGI', 'CRK', 'ATCO', 'HE', 'CWST', 'FN', 'VIRT', 'MTSI', 'WNS', 'NTLA', 'BHF',
-              'IGT', 'CBT', 'UCBI', 'BOX', 'NARI', 'GPS', 'CWEN', 'MTG', 'EVR', 'WK', 'NSP', 'ZWS', 'SFBS', 'SRCL',
-              'CYTK', 'MAN', 'GLBE', 'TNET', 'KEX', 'POR', 'CNM', 'PGNY', 'GEF', 'NEWR', 'ALSN', 'CVI', 'TFSL', 'CVBF',
-              'SLAB', 'PNM', 'DNLI', 'COUP', 'INDB', 'RITM', 'EVA', 'SEAS', 'BXSL', 'FRSH', 'ERF', 'NSA', 'ALTR',
-              'ATKR', 'AIMC', 'AJRD', 'UMBF', 'APLE', 'AL', 'APG', 'ATI', 'WHD', 'ALIT', 'IRTC', 'SNDR', 'W', 'POWI',
-              'CRUS', 'MMSI', 'HKD', 'ALKS', 'CWAN', 'JHG', 'ARWR', 'MRTX', 'MMS', 'FELE', 'DNP', 'TRTN', 'PTEN', 'FLS',
-              'BSM', 'AEL', 'MSGS', 'PVH', 'AVT', 'FOXF', 'BFAM', 'SYNA', 'IRT', 'FUL', 'ZD', 'ROIV', 'VET', 'SSD',
-              'SGML', 'SMPL', 'BECN', 'SR', 'GSAT', 'ABCM', 'ASB', 'NTCO', 'PCH', 'PRVA', 'OLLI', 'AGO', 'SUN', 'CUZ',
-              'AB', 'GATX', 'BE', 'TNDM', 'APPN', 'SMCI', 'WTM', 'ABCB', 'TWNK', 'LAZ', 'ICUI', 'EURN', 'MLI', 'KSS',
-              'ASO', 'ETRN', 'DY', 'PLTK', 'QS', 'VC', 'GT', 'DOCN', 'AXNX', 'ESGR', 'BILI', 'PECO', 'NCNO', 'DQ',
-              'ABG', 'REZI', 'AAON', 'PPBI', 'VIAV', 'OMCL', 'EBC', 'MODG', 'BTU', 'AWI', 'DOC', 'BEAM', 'INST', 'UNF',
-              'PAAS', 'STAA', 'GO', 'AZTA', 'BL', 'SKY', 'EVO', 'ATHM', 'LAC', 'AYX', 'LU', 'ADNT', 'NNI', 'RDN', 'HRI',
-              'ABCL', 'ONTO', 'UAA', 'ONEM', 'CBU', 'FRHC', 'RMBS', 'NSIT', 'BTG', 'AWR', 'CWT', 'SANM', 'RNG', 'SPT',
-              'BMBL', 'GOLF', 'CATY', 'DUOL', 'DIOD', 'CRC', 'BRBR', 'TRIP', 'ESMT', 'BMI', 'JWN', 'IS', 'SID', 'ALE',
-              'FHB', 'TDC', 'SEM', 'BNL', 'JXN', 'RUM', 'LOPE', 'CEQP', 'AY', 'GTES', 'FTCH', 'SUM', 'AGI', 'SFM',
-              'LPL', 'STNE', 'SBRA', 'BPMC', 'AMED', 'MSTR', 'FHI', 'AVNT', 'TNL', 'BANF', 'VSCO', 'ACA', 'TXG', 'EVH',
-              'SPWR', 'SIG', 'SQSP', 'PWSC', 'HRMY', 'VSAT', 'CNX', 'NEA', 'NWE', 'ARLP', 'AHCO', 'OMAB', 'VNT', 'DEI',
-              'AMRC', 'PACW', 'IBOC', 'EPRT', 'SPXC', 'HI', 'BDC', 'OUT', 'CORT', 'TMHC', 'FULT', 'GHC', 'BOH', 'ALRM',
-              'PEGA', 'ATUS', 'FOLD', 'SFNC', 'HHC', 'KFY', 'VSH', 'PDO', 'YPF', 'VIR', 'TCBI', 'KMPR', 'AVA', 'GLPG',
-              'NEU', 'CPA', 'KWR', 'TWKS', 'PI', 'SXT', 'HIW', 'VRNS', 'ABM', 'OFC', 'TV', 'AEIS', 'UA', 'JBT', 'MMYT',
-              'CNS', 'EYE', 'GLNG', 'WD', 'FL', 'INMD', 'PK', 'IIPR', 'PRTA', 'FBP', 'EPR', 'LBRT', 'SSRM', 'ENVX',
-              'EQC', 'WFRD', 'LFST', 'NCR', 'PFSI', 'AMR', 'CHGG', 'TKC', 'JAMF', 'JJSF', 'LSPD', 'WSFS', 'AAWW',
-              'BLKB', 'FSS', 'OTTR', 'PSEC', 'JOBY', 'RARE', 'FRPT', 'MRCY', 'NEOG', 'XMTR', 'TAL', 'THS', 'COOP',
-              'MATX', 'KOS', 'SRAD', 'CRVL', 'BRZE', 'WOOF', 'ACIW', 'AIN', 'YETI', 'QRTEA', 'EVEX', 'CVT', 'FWRD',
-              'MTH', 'LAZR', 'TR', 'BKU', 'COMM', 'OLPX', 'PR', 'ARCH', 'CALM', 'HL', 'MAIN', 'FRO', 'ZIM', 'ISEE',
-              'STNG', 'BCO', 'CVLT', 'PBH', 'PTCT', 'LCII', 'GKOS', 'AZEK', 'GPI', 'PLXS', 'ENV', 'LXP', 'RUSHA',
-              'YELP', 'IFS', 'PTON', 'CRI', 'CPE', 'ULCC', 'UGP', 'MC', 'RIG', 'ENOV', 'ARVN', 'RLAY', 'MCW', 'BCC',
-              'BB', 'HUBG', 'USM', 'PAYO', 'VERX', 'SMG', 'NOG', 'ENS', 'AVAL', 'ZGN', 'VRRM', 'COLB', 'LESL', 'RPD',
-              'FRME', 'CWK', 'SITC', 'ARRY', 'IBTX', 'BCRX', 'ACAD', 'TEX', 'OI', 'DORM', 'IPAR', 'MYOV', 'AUB', 'PDCO',
-              'WIRE', 'WB', 'PCVX', 'CBZ', 'FROG', 'CCOI', 'PZZA', 'NTCT', 'CBRL', 'NHI', 'LIVN', 'WMK', 'NOMD', 'HPK',
-              'SLG', 'BANR', 'AMBP', 'NGVT', 'WAFD', 'CNO', 'KBH', 'JBLU', 'HBI', 'SHLS', 'IBP', 'BRFS', 'FLNC', 'MXL',
-              'NAD', 'VNOM', 'UNFI', 'IMCR', 'MGEE', 'MGPI', 'SGRY', 'WERN', 'IBA', 'FFBC', 'FOUR', 'IOSP', 'KLIC',
-              'CNMD', 'VERV', 'PROK', 'CXM', 'SPR', 'ALHC', 'MLCO', 'TPG', 'EQRX', 'PAGP', 'AUR', 'DNUT', 'RKLB', 'RRR',
-              'BOWL', 'HEP', 'WSBC', 'PCRX', 'TAC', 'HASI', 'MEOH', 'AGTI', 'BHC', 'EXG', 'FLYW', 'NVG', 'SHO', 'EVTC',
-              'GNW', 'PRK', 'DKL', 'MAC', 'SHOO', 'PRMW', 'TCN', 'TOWN', 'NEX', 'ABR', 'MGRC', 'AX', 'SAVE', 'EXTR',
-              'FUN', 'ENIC', 'WLY', 'WOR', 'XENE', 'FSR', 'FOCS', 'IBRX', 'SCL', 'YOU', 'PRFT', 'VRNT', 'NUVA', 'BRC',
-              'JKS', 'ELF', 'NVEE', 'KW', 'SYBT', 'RXDX', 'MNTK', 'TRN', 'ESAB', 'HELE', 'HLNE', 'URBN', 'JBGS', 'SAGE',
-              'PD', 'UTF', 'ICFI', 'CENT', 'AVAV', 'CMTG', 'XRX', 'CPK', 'GBDC', 'DAN', 'NPO', 'VZIO', 'ITRI', 'TRMK',
-              'ESE', 'WDFC', 'KD', 'MDC', 'AG', 'FA', 'DBRG', 'RNST', 'MRVI', 'VICR', 'SHAK', 'AMBA', 'PRGS', 'OLK',
-              'NVMI', 'RNW', 'CSQ', 'TRMD', 'LGIH', 'CEIX', 'PLMR', 'KMT', 'CENTA', 'RES', 'ATSG', 'CLBK', 'PEB',
-              'TTEC', 'LTH', 'JOE', 'MANU', 'AMLX', 'ARNC', 'GDRX', 'SJW', 'FATE', 'AEO', 'LFG', 'HLF', 'LAUR', 'INSM',
-              'SLVM', 'LKFN', 'CTKB', 'BLMN', 'RLX', 'HTLF', 'DK', 'SG', 'CSGS', 'ENR', 'KAI', 'CVCO', 'UDMY', 'EPC',
-              'ITGR', 'FCPT', 'STEM', 'TASK', 'PAX', 'NAVI', 'CSIQ', 'KEN', 'XPRO', 'FBC', 'TRUP', 'KTB', 'NXE', 'SONO',
-              'MFGP', 'BKE', 'CD', 'NOVA', 'CRCT', 'NUS', 'PRCT', 'INSW', 'SES', 'GMS', 'CCU', 'HAYW', 'SITM', 'CSWI',
-              'RCUS', 'OR', 'VCTR', 'CRDO', 'KRYS', 'NBTB', 'EXPI', 'PSMT', 'EFSC', 'ZIP', 'ACLS', 'SGHC', 'RLJ', 'IHS',
-              'DRH', 'APAM', 'NABL', 'ASZ', 'PACB', 'CIXX', 'SHC', 'PTVE', 'TTGT', 'BROS', 'FBK', 'XHR', 'ATRC', 'SNEX',
-              'TDS', 'PLAY', 'STER', 'ODP', 'COUR', 'UPST', 'CERT', 'FORG', 'RXRX', 'RELY', 'HCC', 'BBUC', 'SBCF',
-              'TCBK', 'TDCX', 'THRM', 'ATGE', 'ARCB', 'NWBI', 'UTG', 'AKRO', 'CAKE', 'HTH', 'TWST', 'GFF', 'SKT', 'ETY',
-              'JACK', 'SI', 'XPEL', 'STEP', 'SUPN', 'NMIH', 'SPB', 'SAH', 'TIGO', 'ADX', 'AMPL', 'WE', 'HLIO', 'SSTK',
-              'RVNC', 'BFH', 'GDV', 'SIX', 'WGO', 'GDS', 'CNNE', 'BAMR', 'GOOS', 'RVMD', 'HTGC', 'SABR', 'UNIT', 'VTYX',
-              'CTRE', 'MWA', 'WRBY', 'QTWO', 'AXSM', 'SBLK', 'SAFE', 'TROX', 'ERJ', 'IMKTA', 'MTX', 'LNN', 'RVLV',
-              'NVAX', 'EMBC', 'ROIC', 'FTDR', 'SIMO', 'GOGO', 'EVT', 'AVDX', 'ZLAB', 'NZF', 'ALG', 'PRME', 'NS', 'SKIN',
-              'SMTC', 'TEO', 'BUR', 'IQ', 'BMEZ', 'HMY', 'MTRN', 'BRP', 'PJT', 'USAC', 'LILAK', 'FTAI', 'XNCR', 'LILA',
-              'UPWK', 'LZ', 'TPH', 'ADTN', 'CRS', 'DSEY', 'SEMR', 'YY', 'SDGR', 'BIGZ', 'ETWO', 'NUV', 'CTOS', 'KAHC',
-              'PIPR', 'GPOR', 'STRA', 'B', 'NAPA', 'CVII', 'BVN', 'EVCM', 'GOGL', 'NUVL', 'BATRA', 'EVRI', 'TALO',
-              'ZETA', 'BOOT', 'SILK', 'NTB', 'IRWD', 'VBTX', 'BBU', 'MPLN', 'SEAT', 'GPRE', 'WABC', 'ADUS', 'CLM',
-              'OPEN', 'CLFD', 'BATRK', 'PFS', 'HAIN', 'CARG', 'MYGN', 'IVT', 'KAR', 'VSTO', 'NWN', 'MIR', 'ROCC',
-              'MAXR', 'MNSO', 'BLDP', 'UE', 'STEL', 'ELME', 'AAT', 'CMP', 'CLDX', 'MSGE', 'MNRL', 'ROAD', 'HLIT', 'RQI',
-              'VRTV', 'VGR', 'ARI', 'KYMR', 'BDJ', 'MD', 'TEN', 'GETY', 'FLNG', 'MDRX', 'AMPS', 'GET', 'BBIO', 'ROCK',
-              'COHU', 'TLRY', 'LVWR', 'ESTE', 'MARA', 'DCT', 'MCY', 'LMND', 'GOF', 'FGEN', 'RFP', 'TBBK', 'DOOR',
-              'DICE', 'HMN', 'NBR', 'OXM', 'HOPE', 'BCAT', 'AIR', 'AMEH', 'LTC', 'FBNC', 'GSBD', 'USA', 'MSEX', 'GAB',
-              'VVNT', 'SWTX', 'DH', 'DEA', 'QFIN', 'AGYS', 'NBHC', 'ARCO', 'MLKN', 'AGIO', 'HPP', 'CIM', 'TTMI', 'DAWN',
-              'SASR', 'SATS', 'VCSA', 'CSTM', 'HURN', 'BTRS', 'TMDX', 'ALLO', 'ALVO', 'ETV', 'FORM', 'UEC', 'NG',
-              'IOVA', 'IRBT', 'CVNA', 'CINC', 'MRTN', 'FREY', 'GCMG', 'AMPH', 'LYEL', 'SWI', 'MNRO', 'CGC', 'CHCO',
-              'AMK', 'INT', 'CODI', 'MCRI', 'FNA', 'TDW', 'CLMT', 'MEI', 'RVT', 'TY', 'HCM', 'EAT', 'SAND', 'IDCC',
-              'LGND', 'BGCP', 'DVAX', 'NAC', 'HLMN', 'MMI', 'CRTO', 'SAVA', 'TSLX', 'GTY', 'PGRE', 'PTY', 'RYTM', 'PHR',
-              'TVTX', 'UCTT', 'APPS', 'CLNE', 'GVA', 'TELL', 'STBA', 'CPRX', 'CCS', 'NKLA', 'CCRN', 'OLO', 'EGBN',
-              'DHT', 'MYRG', 'SRCE', 'VRE', 'LOB', 'BTT', 'ZNTL', 'ECAT', 'OPK', 'RCKT', 'EPAC', 'NMRK', 'SOVO', 'LRN',
-              'ME', 'AI', 'ERII', 'CVAC', 'GEL', 'MLNK', 'BUSE', 'ALKT', 'TSP', 'ACVA', 'INTA', 'POSH', 'CYRX', 'PAM',
-              'DGII', 'ALEX', 'MODN', 'VIVO', 'JPS', 'KTOS', 'CHEF', 'RC', 'SFL', 'PSNYW', 'PARR', 'EVOP', 'LXU',
-              'OSIS', 'KDNY', 'PL', 'VCYT', 'TGH', 'JBI', 'CNXN', 'NVRO', 'ECVT', 'ESTA', 'GTN', 'DCOM', 'BSTZ', 'KRNT',
-              'DNOW', 'SBH', 'PBFX', 'MODV', 'CLS', 'PCT', 'LADR', 'WWW', 'OMI', 'KFRC', 'FCF', 'SNDX', 'IMGN', 'OII',
-              'OFG', 'TMCI', 'HEES', 'PTRA', 'ALGT', 'BXMX', 'AKR', 'OCFC', 'NXGN', 'MATV', 'BHLB', 'SVC', 'CRSR',
-              'PDM', 'PAY', 'KROS', 'PLUS', 'SCHL', 'AFYA', 'PGTI', 'EAF', 'CNK', 'MEG', 'JWSM', 'MED', 'PRM', 'MAG',
-              'UAN', 'OTLY', 'PRAA', 'EVBG', 'HYT', 'INBX', 'VRTS', 'SAFT', 'TGS', 'SPTN', 'CAAP', 'UTZ', 'GNL', 'PX',
-              'SBGI', 'PMT', 'KALU', 'HESM', 'FDP', 'MDGL', 'TBK', 'RAMP', 'AAC', 'ATEN', 'VCEL', 'UVV', 'FCEL', 'KN',
-              'OBNK', 'INFN', 'AGM', 'FINV', 'TWO', 'PIII', 'RYI', 'IAS', 'KREF', 'VVX', 'ETG', 'IHRT', 'CASH', 'RCII',
-              'AVID', 'SSP', 'OCSL', 'FLGT', 'CXW', 'PLRX', 'NMFC', 'FIGS', 'CTS', 'TARO', 'SBR', 'ECPG', 'WOW', 'GDEN',
-              'SPCE', 'TMP', 'KYN', 'FRG', 'STEW', 'ESRT', 'DFIN', 'PUMP', 'LBAI', 'MHO', 'HNI', 'GIC', 'AIV', 'ANDE',
-              'DAC', 'STKL', 'ENVA', 'NXRT', 'CWH', 'HTLD', 'BLU', 'RIOT', 'FBRT', 'PRA', 'TH', 'ARKO', 'ARHS', 'FVRR',
-              'BGS', 'CRON', 'AVO', 'SXI', 'DDD', 'EIG', 'EVTL', 'MNTV', 'SWIR', 'DCPH', 'USPH', 'HFWA', 'DIN', 'GABC',
-              'UUUU', 'SLN', 'OSTK', 'AROC', 'SANA', 'AUPH', 'PSFE', 'BDN', 'IONQ', 'AMSF', 'RILY', 'CMRE', 'PRO',
-              'HRT', 'SHEN', 'KRP', 'NIC', 'GGAL', 'MORF', 'INTR', 'CDRE', 'GBX', 'LC', 'CFFN', 'VIST', 'SPNS', 'AXL',
-              'TNC', 'WBX', 'PLL', 'CDMO', 'SBSI', 'PFBC', 'KRO', 'GSM', 'DSL', 'CUBI', 'MBUU', 'AMWL', 'RDNT', 'APE',
-              'CCSI', 'ADEA', 'LZB', 'RETA', 'EVV', 'ADPT', 'BIGC', 'STC', 'HERA', 'COMP', 'LPI', 'EGO', 'PATK', 'RXT',
-              'BALY', 'CPUH', 'ANGI', 'PRIM', 'CDE', 'ASLE', 'ATRI', 'ATEC', 'GRBK', 'PRLB', 'COWN', 'EBS', 'CINT',
-              'QQQX', 'USER', 'CSR', 'NFJ', 'GENI', 'KURA', 'SPH', 'ADV', 'USNA', 'ERO', 'CBD', 'CDNA', 'BCOR', 'NSSC',
-              'CAMT', 'GEO', 'ARQT', 'EXFY', 'WTI', 'PERI', 'KIND', 'BBN', 'RDWR', 'FSLY', 'BRKL', 'GDOT', 'WTTR',
-              'NMZ', 'PFC', 'PAYA', 'CGAU', 'TNK', 'MBIN', 'PLYA', 'HCSG', 'DNN', 'DMLP', 'LICY', 'AVNS', 'SLCA',
-              'BORR', 'ASIX', 'EQX', 'RGNX', 'NYMT', 'DFH', 'ACRS', 'HBM', 'APOG', 'MFA', 'NRC', 'ZUO', 'PNT', 'GLP',
-              'PLAB', 'MGI', 'HIMX', 'RNP', 'MTTR', 'BANC', 'AMTB', 'IMXI', 'CRNX', 'STGW', 'CAL', 'FWRG', 'BST',
-              'BRSP', 'CET', 'MCRB', 'WNC', 'KIDS', 'NEXT', 'SPNT', 'FPF', 'BLFS', 'RGR', 'AZZ', 'ASTE', 'GOSS', 'BYND',
-              'BHE', 'TGLS', 'BHVN', 'HLX', 'BFS', 'DBI', 'TRS', 'ENTA', 'BBDC', 'DO', 'AUS', 'MUC', 'VORB', 'VERU',
-              'MRUS', 'CNOB', 'PDS', 'ERAS', 'DCBO', 'MGNI', 'DCGO', 'AMCX', 'PTA', 'AZUL', 'SLDP', 'PTLO', 'KAMN',
-              'UMH', 'FNKO', 'ACLX', 'WALD', 'JBSS', 'BFLY', 'PBT', 'AMPX', 'AMRS', 'HWKN', 'SSYS', 'AVXL', 'ORLA',
-              'VECO', 'NHC', 'SNCY', 'TA', 'MYTE', 'NVGS', 'HOLI', 'VLRS', 'RA', 'INVA', 'NEO', 'CONX', 'OEC', 'BMA',
-              'JRVR', 'NTST', 'AGRO', 'HIMS', 'OFLX', 'INDI', 'TWI', 'LWLG', 'RBCAA', 'ANF', 'MOD', 'COGT', 'MOMO',
-              'GIII', 'GES', 'LMAT', 'CLBT', 'MERC', 'SCRM', 'AOSL', 'CARS', 'IE', 'BTZ', 'ENFN', 'RTL', 'CANO', 'FFWM',
-              'GERN', 'INN', 'IMVT', 'SNPO', 'HOUS', 'STAR', 'CUTR', 'THRD', 'ETW', 'DSGN', 'MNKD', 'BIOX', 'CLB',
-              'CBL', 'SKYW', 'SII', 'PDFS', 'SUMO', 'ALLG', 'REPL', 'QURE', 'ACEL', 'PFHC', 'CNDT', 'RADI', 'EXAI',
-              'IMTX', 'CCF', 'GAM', 'BY', 'GPRK', 'VREX', 'SA', 'MIRM', 'EDIT', 'MCG', 'GSHD', 'QCRH', 'HQH', 'JELD',
-              'IGMS', 'NAAS', 'ARGO', 'ULH', 'EOS', 'HTBK', 'SP', 'LGV', 'NYAX', 'WINA', 'CHCT', 'SLP', 'PNTM', 'GPRO',
-              'APGB', 'UTL', 'BKD', 'SCS', 'CTBI', 'PEBO', 'OXLC', 'LPRO', 'OSW', 'CHY', 'WASH', 'MATW', 'BV', 'TGTX',
-              'UVSP', 'INNV', 'NRK', 'NRDS', 'PUBM', 'THQ', 'DM', 'SMP', 'STRL', 'HAFC', 'MRC', 'AWF', 'VTOL', 'REVG',
-              'BCX', 'FSM', 'RWT', 'BCSF', 'ROVR', 'BOC', 'IDYA', 'PRG', 'ANAB', 'NVX', 'KNSA', 'PRS', 'FVIV', 'DADA',
-              'WLKP', 'DOLE', 'HIBB', 'CMCO', 'VTEX', 'NOAH', 'AVPT', 'ORGN', 'TMST', 'DRQ', 'AHH', 'EFC', 'VRDN',
-              'WEST', 'FORR', 'SHYF', 'VVI', 'ACCD', 'WETF', 'PRDO', 'HTD', 'RPT', 'CHI', 'RENN', 'AOD', 'ALEC', 'PAR',
-              'BRMK', 'VRNA', 'BRLT', 'VRAY', 'FBMS', 'DLX', 'OSCR', 'PLOW', 'MQY', 'LPSN', 'SCSC', 'JPC', 'CII', 'CRF',
-              'KRUS', 'RKT', 'BFC', 'RICK', 'TITN', 'FPI', 'PWP', 'BSIG', 'LOMA', 'NFBK', 'AMWD', 'MUI', 'HSKA', 'BJRI',
-              'NMM', 'GSBC', 'IMAX', 'PGRU', 'RNA', 'HFRO', 'HGTY', 'EOCW', 'SVFA', 'UBA', 'SBOW', 'ICHR', 'SLRC',
-              'AERI', 'SILV', 'PLYM', 'NBXG', 'SCHN', 'JANX', 'MCB', 'HSTM', 'MAXN', 'MOV', 'HONE', 'BCYC', 'CHS', 'OM',
-              'OPI', 'VHI', 'CCO', 'NX', 'TLS', 'CAPL', 'FMBH', 'BLNK', 'RSKD', 'HA', 'BTWN', 'ECOM', 'MVST', 'MFIC',
-              'VLD', 'CRAI', 'CLW', 'SRNE', 'KRNY', 'MYE', 'THRY', 'IMOS', 'ITOS', 'OBE', 'AVD', 'MLAB', 'AGEN',
-              'LMACA', 'SCOA', 'TNGX', 'GGR', 'GRC', 'LGAC', 'PGC', 'AMAL', 'BLTE', 'SLAM', 'CEPU', 'HLVX', 'MXCT',
-              'ASTL', 'FFC', 'TRST', 'WKME', 'TRDA', 'FC', 'ARR', 'LPG', 'NKTR', 'RUTH', 'AMRK', 'HZO', 'GDYN', 'IESC',
-              'OSBC', 'SYM', 'EE', 'NRGX', 'LAND', 'NNOX', 'BRY', 'UFPT', 'GOOD', 'MRSN', 'NESR', 'RAPT', 'ACHR',
-              'HCKT', 'FPAC', 'SGMO', 'CLOV', 'TCPC', 'IAG', 'PAXS', 'CCVI', 'NEXA', 'EIM', 'SCWX', 'SLI', 'GSEV',
-              'LEU', 'MYI', 'TIL', 'CFB', 'ANIP', 'JQC', 'BXC', 'IGR', 'ATNI', 'HBNC', 'CHRS', 'SIGA', 'TBI', 'SHCR',
-              'IDT', 'BHIL', 'PDT', 'SD', 'FUBO', 'UHT', 'ACRE', 'EGLE', 'SGH', 'TILE', 'TBPH', 'TRTX', 'CRNC', 'NOTE',
-              'BNGO', 'DENN', 'UFCS', 'SCVL', 'VNET', 'MOR', 'BTO', 'RPTX', 'CGBD', 'CENX', 'YEXT', 'ATEX', 'EXK',
-              'CERS', 'YSG', 'HCCI', 'NGD', 'AUDC', 'CRGY', 'BHG', 'PHK', 'EHAB', 'EB', 'NVTS', 'TSE', 'LAW', 'VTRU',
-              'CEVA', 'WDI', 'ZH', 'INVZ', 'NNDM', 'SIBN', 'SNBR', 'GSL', 'LBC', 'ETD', 'GHIX', 'VTNR', 'EFXT', 'DWAC',
-              'CFIV', 'IPSC', 'ARCE', 'CLDT', 'NKTX', 'CAC', 'EOI', 'EBIX', 'ALCC', 'MSBI', 'MTLS', 'DLY', 'NAT', 'RGP',
-              'ALT', 'GCO', 'PTSI', 'LQDT', 'GWH', 'DOMO', 'YORW', 'KVSC', 'COLL', 'CGEM', 'CSII', 'BFST', 'TRNS',
-              'MIT', 'LCA', 'STOK', 'ACQR', 'CATC', 'TTI', 'QNST', 'BBAR', 'CSTL', 'IPI', 'BBSI', 'NXP', 'AMBC', 'CVGW',
-              'VMEO', 'KELYA', 'ABST', 'CMAX', 'PGY', 'SLGC', 'NRIX', 'PAHC', 'COCO', 'FFIC', 'EGIO', 'FCBC', 'UIS',
-              'KC', 'AEHR', 'VNDA', 'DYN', 'TGI', 'HAYN', 'EWTX', 'CCBG', 'CRBU', 'THR', 'VMO', 'MVIS', 'CASS', 'PMVP',
-              'GMRE', 'BOE', 'MBI', 'ICPT']
+
+us_tickers = ['MSFT', 'GOOG', 'GOOGL', 'AMZN', 'PCAR', 'BRK-B', 'TSLA', 'NVDA', 'V', 'TSM', 'XOM', 'META', 'UNH', 'JPM',
+              'JNJ', 'WMT', 'MA', 'PG', 'NVO', 'CVX', 'LLY', 'HD', 'ABBV', 'MRK', 'BAC', 'KO', 'AVGO', 'ASML', 'PEP',
+              'BABA', 'ORCL', 'PFE', 'SHEL', 'COST', 'TMO', 'AZN', 'CSCO', 'MCD', 'CRM', 'TM', 'NKE', 'DHR', 'NVS',
+              'DIS', 'ABT', 'WFC', 'LIN', 'TMUS', 'ACN',
+              'BHP', 'VZ', 'MS', 'UPS', 'TXN', 'CMCSA', 'TTE', 'PM', 'ADBE', 'HSBC', 'BMY', 'RTX', 'NEE', 'SCHW',
+              'NFLX', 'RY',
+              'QCOM', 'SAP', 'T', 'COP', 'HON', 'AXP', 'CAT', 'UNP', 'UL', 'AMD', 'DE', 'AMGN', 'HDB', 'BA', 'LMT',
+              'BP', 'PDD',
+              'BUD', 'RIO', 'TD', 'SNY', 'LOW', 'SBUX', 'GS', 'IBM', 'PLD', 'INTU', 'ELV', 'SPGI', 'MDT', 'INTC', 'CVS',
+              'SONY',
+              'BLK', 'GILD', 'BKNG', 'DEO', 'C', 'SYK', 'AMAT', 'EQNR', 'GE', 'ADI', 'ADP', 'AMT', 'MDLZ', 'TJX', 'EL',
+              'NOW',
+              'CB', 'CI', 'BTI', 'MUFG', 'REGN', 'PGR', 'PYPL', 'MO', 'MMC', 'ISRG', 'VALE', 'CNI', 'ENB', 'ZTS', 'SLB',
+              'TGT',
+              'VRTX', 'INFY', 'CHTR', 'FISV', 'JD', 'ABNB', 'IBN', 'CP', 'DUK', 'ITW', 'NOC', 'USB', 'PBR', 'EOG',
+              'GSK', 'ETN',
+              'SO', 'HCA', 'BSX', 'AMOV', 'BN', 'UBS', 'BMO', 'AMX', 'CME', 'BX', 'BDX', 'CNQ', 'UBER', 'LRCX', 'SAN',
+              'APD',
+              'CSX', 'GD', 'EQIX', 'ABB', 'HUM', 'AON', 'WM', 'CL', 'PNC', 'FCX', 'MELI', 'MU', 'TFC', 'ATVI', 'MMM',
+              'BNS',
+              'MPC', 'SMFG', 'STLA', 'RELX', 'TRI', 'SCCO', 'SHW', 'PANW', 'ICE', 'NTES', 'CCI', 'SNPS', 'OXY', 'MET',
+              'GM', 'VLO', 'MNST', 'MRNA', 'MCO', 'CDNS', 'ORLY', 'MAR', 'AIG', 'PSA', 'KLAC', 'FDX', 'NSC', 'BIDU',
+              'SHOP',
+              'ING', 'F', 'PSX', 'PXD', 'KDP', 'HSY', 'EW', 'RACE', 'MCK', 'TAK', 'DG', 'EMR', 'KHC', 'KKR', 'WDS', 'E',
+              'WDAY', 'VMW', 'GIS', 'AZO', 'FTNT', 'SRE', 'APH', 'BBVA', 'ITUB', 'SU', 'NXPI', 'SQ', 'D', 'PH', 'NGG',
+              'ECL', 'DXCM', 'LVS', 'ROP', 'CTVA', 'AEP', 'ADM', 'MSI', 'CTAS', 'HMC', 'MCHP', 'NUE', 'ADSK', 'JCI',
+              'SNOW',
+              'HES', 'KMB', 'TRV', 'TT', 'STM', 'O', 'TEAM', 'ANET', 'PUK', 'AFL', 'A', 'TDG', 'CM', 'LYG', 'DOW',
+              'COF',
+              'CMG', 'MSCI', 'APO', 'STZ', 'RSG', 'NTR', 'TEL', 'BK', 'TRP', 'LHX', 'BCE', 'LNG', 'PAYX', 'ABEV', 'SPG',
+              'EXC', 'MFG', 'LULU', 'BSBR', 'AJG', 'IQV', 'IDXX', 'BIIB', 'KMI', 'HLT', 'MRVL', 'SYY', 'ODFL', 'ROST',
+              'CARR',
+              'CRH', 'CNC', 'FIS', 'MFC', 'WBD', 'WMB', 'WELL', 'CVE', 'DVN', 'PRU', 'AMP', 'YUM', 'OTIS', 'CMI', 'SE',
+              'GFS', 'XEL', 'HLN', 'VICI', 'NEM', 'WCN', 'NWG', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT',
+              'ALL',
+              'ALC', 'SGEN', 'BCS', 'AME', 'KR', 'VOD', 'URI', 'DLTR', 'ON', 'MTD', 'ILMN', 'BKR', 'CTSH', 'LYB', 'ABC',
+              'PPG',
+              'RMD', 'MBLY', 'ED', 'APTV', 'DHI', 'BNTX', 'EA', 'ORAN', 'STT', 'WBA', 'DFS', 'FERG', 'FAST', 'IMO',
+              'PEG', 'CHT',
+              'OKE', 'ALB', 'DLR', 'GPN', 'GLW', 'CSGP', 'SLF', 'TU', 'ENPH', 'GOLD', 'DELL', 'CRWD', 'HPQ', 'KEYS',
+              'VRSK', 'SBAC',
+              'WEC', 'NDAQ', 'LEN', 'VEEV', 'TTD', 'CDW', 'ANSS', 'BBD', 'ULTA', 'CBRE', 'ACGL', 'FANG', 'NOK', 'IT',
+              'WIT', 'FNV',
+              'ZBH', 'ES', 'MTB', 'YUMC', 'TLK', 'AWK', 'CCEP', 'HZNP', 'MT', 'TSCO', 'CPNG', 'WTW', 'BGNE', 'EBAY',
+              'ARE', 'TROW',
+              'DB', 'CEG', 'EIX', 'EFX', 'DAL', 'FITB', 'HIG', 'LI', 'GMAB', 'TCOM', 'BEKE', 'GPC', 'BBDO', 'SQM',
+              'VMC',
+              'RCI', 'ALNY', 'TEF', 'ALGN', 'FTV', 'WST', 'DDOG', 'HEI', 'AVB', 'EC', 'IR', 'IFF', 'EQR', 'WY', 'HRL',
+              'PWR', 'STLD',
+              'RJF', 'MPWR', 'SPOT', 'K', 'NU', 'RBLX', 'MLM', 'CNHI', 'FE', 'EXR', 'FRC', 'CAJ', 'ETR', 'HBAN', 'GIB',
+              'RF', 'RYAAY',
+              'AEM', 'AEE', 'TECK', 'DOV', 'DASH', 'LH', 'TSN', 'DTE', 'FSLR', 'ZM', 'CHD', 'IX', 'VRSN', 'UMC', 'PFG',
+              'LPLA', 'TS',
+              'TDY', 'HPE', 'CTRA', 'LUV', 'PPL', 'BAX', 'PODD', 'CFG', 'QSR', 'NET', 'HOLX', 'MKC', 'PKX', 'CLX',
+              'NTRS', 'CAH', 'VTR',
+              'ARGX', 'ZTO', 'WAB', 'MOS', 'FTS', 'JBHT', 'ZS', 'TTWO', 'HUBS', 'WPM', 'CINF', 'FOXA', 'GRMN', 'PBA',
+              'BMRN', 'WAT', 'STE',
+              'INVH', 'ICLR', 'OMC', 'BBY', 'ERIC', 'MAA', 'XYL', 'RCL', 'ELP', 'MKL', 'WRB', 'HWM', 'SEDG', 'EPAM',
+              'SWKS', 'DRI',
+              'CNP', 'SUI', 'TRGP', 'INCY', 'PAYC', 'FOX', 'ROL', 'FICO', 'CAG', 'BALL', 'WPC', 'PINS', 'EXPD', 'CMS',
+              'UAL', 'CHWY', 'MGM',
+              'IEX', 'CF', 'NVR', 'KEY', 'BR', 'SPLK', 'AMCR', 'AVTR', 'SIRI', 'AES', 'LYV', 'MRO', 'PARAA', 'SIVB',
+              'EXPE', 'FWONK', 'WMG',
+              'PLTR', 'HTHT', 'FMC', 'UI', 'MGA', 'MOH', 'COO', 'ATO', 'FDS', 'AER', 'SJM', 'SNAP', 'BRO', 'RPRX',
+              'PKI', 'ASX', 'FLT', 'TER',
+              'CPB', 'CHKP', 'ZBRA', 'COIN', 'RTO', 'WLK', 'SYF', 'DGX', 'LKQ', 'KOF', 'AXON', 'LCID', 'IRM', 'J', 'RE',
+              'TXT', 'ETSY',
+              'RS', 'KB', 'TW', 'EBR', 'AGR', 'SSNC', 'PTC', 'LW', 'RIVN', 'AVY', 'BG', 'NIO', 'FWONA', 'SHG', 'BEN',
+              'SJR', 'ESS', 'L',
+              'ARES', 'PHG', 'BURL', 'PARA', 'BIO', 'CBOE', 'AZPN', 'MDB', 'GLPI', 'TPL', 'BAM', 'NTAP', 'UDR', 'IPG',
+              'POOL', 'TME', 'CCL',
+              'VTRS', 'EVRG', 'HUBB', 'LDOS', 'TYL', 'CE', 'STX', 'CSL', 'MKTX', 'WPP', 'CRBG', 'SNA', 'NICE', 'IP',
+              'SRPT', 'PEAK', 'PKG',
+              'APA', 'TRMB', 'WYNN', 'LNT', 'BAH', 'OKTA', 'BLDR', 'KIM', 'CTLT', 'H', 'TWLO', 'NDSN', 'SNN', 'TRU',
+              'LBRDA', 'UHAL', 'CG',
+              'LBRDK', 'ELS', 'ENTG', 'SWK', 'GEN', 'VIV', 'CUK', 'ACM', 'CPT', 'ERIE', 'DT', 'DOCU', 'PHM', 'NMR',
+              'HST', 'WDC', 'JKHY',
+              'CCJ', 'FHN', 'EQT', 'IHG', 'TECH', 'GRAB', 'SUZ', 'CNA', 'BSY', 'REXR', 'BWA', 'GL', 'WSO', 'U', 'GGG',
+              'LSCC', 'TTC', 'MTCH',
+              'MAS', 'AFG', 'CHRW', 'GDDY', 'RPM', 'AKAM', 'EQH', 'TAP', 'OVV', 'CRL', 'PSNY', 'CDAY', 'WTRG', 'LSXMB',
+              'FIVE', 'JBL', 'EXAS',
+              'FMS', 'UTHR', 'CLF', 'DOX', 'TEVA', 'NI', 'CS', 'DECK', 'WSC', 'TFX', 'TFII', 'CHK', 'CZR', 'DKS', 'KMX',
+              'REG', 'AMH',
+              'DPZ', 'BCH', 'ACI', 'AGCO', 'GFL', 'LAMR', 'PCTY', 'CUBE', 'RRX', 'LSI', 'EWBC', 'FNF', 'BAP', 'QGEN',
+              'TPR', 'ARCC', 'DINO',
+              'AAL', 'SCI', 'LSXMA', 'EMN', 'CCK', 'AEG', 'FCNCA', 'BRKR', 'LSXMK', 'DAR', 'PAG', 'FLEX', 'XM', 'HSIC',
+              'BXP', 'VFC',
+              'AOS', 'QRVO', 'JNPR', 'LBTYB', 'ZI', 'BJ', 'ALLE', 'NWS', 'NLY', 'PEN', 'COTY', 'LECO', 'NBIX', 'GGB',
+              'NWSA', 'LBTYK', 'PAC',
+              'Z', 'RGEN', 'ARMK', 'RGA', 'SSL', 'TOST', 'BZ', 'ZG', 'AGL', 'RNR', 'MASI', 'MTN', 'FND', 'LBTYA', 'ICL',
+              'OTEX', 'BSMX',
+              'UHS', 'CHDN', 'VIPS', 'JAZZ', 'KNX', 'JHX', 'BBWI', 'WBS', 'SNX', 'PCOR', 'AA', 'CMA', 'MANH', 'IBKR',
+              'PNR', 'BKI', 'BILL',
+              'PFGC', 'LII', 'RDY', 'ALLY', 'OC', 'UNM', 'NOV', 'MORN', 'YMM', 'TX', 'KEP', 'ROKU', 'G', 'ASR', 'RHI',
+              'FRT', 'FFIV',
+              'HII', 'IOT', 'CAR', 'OSH', 'VST', 'USFD', 'LOGI', 'WCC', 'WEX', 'CFR', 'JEF', 'PNW', 'MIDD', 'WOLF',
+              'ALGM', 'LEA', 'HOOD',
+              'DKNG', 'GFI', 'WSM', 'NNN', 'CGNX', 'AAP', 'WRK', 'CBSH', 'JLL', 'BSAC', 'PATH', 'BILI', 'DCI', 'WAL',
+              'XRAY', 'SEIC', 'ALV',
+              'ORI', 'EME', 'MTZ', 'COLD', 'CASY', 'NVCR', 'IVZ', 'PSO', 'DLB', 'OLN', 'RGLD', 'CHE', 'RL', 'FBIN',
+              'CX', 'LEGN', 'XPEV',
+              'UGI', 'AR', 'ST', 'ATR', 'BERY', 'CROX', 'INSP', 'IRDM', 'NVT', 'ITT', 'CLVT', 'SKM', 'NRG', 'KBR',
+              'HAS', 'GPK', 'SAIA',
+              'TTEK', 'HR', 'DBX', 'ESLT', 'WHR', 'PLUG', 'PSTG', 'DVA', 'TPX', 'VOYA', 'KNSL', 'CLH', 'GNRC', 'ZION',
+              'EDU', 'AU',
+              'CIEN', 'CAE', 'EGP', 'ONON', 'CNXC', 'WMS', 'NFE', 'CELH', 'OGE', 'SF', 'SEE', 'FUTU', 'SKX', 'APLS',
+              'LEVI', 'GLOB', 'FR',
+              'CACI', 'LAD', 'VMI', 'X', 'IQ', 'TXRH', 'ARW', 'NXST', 'PRI', 'RBC', 'SBS', 'ADT', 'FTI', 'BOKF', 'HOG',
+              'CR', 'SWAV',
+              'BRX', 'SGFY', 'DOOO', 'CW', 'MNDY', 'SBNY', 'BYD', 'WH', 'RH', 'RBA', 'KRTX', 'AXTA', 'ACHC', 'AIZ',
+              'GNTX', 'WF', 'PLNT',
+              'FYBR', 'CFLT', 'INGR', 'XP', 'BLD', 'NATI', 'MTDR', 'SITE', 'LSTR', 'OLED', 'CHH', 'LFUS', 'NTNX', 'PII',
+              'RRC', 'TOL', 'PB',
+              'ASND', 'HLI', 'STN', 'EDR', 'MDU', 'NYT', 'DOCS', 'AN', 'GTLB', 'MHK', 'STVN', 'CHX', 'HALO', 'OHI',
+              'ADC', 'DSGX', 'MPW',
+              'AMKR', 'NVST', 'FCN', 'PDCE', 'DXC', 'MAT', 'NCLH', 'TKR', 'MUR', 'CPRI', 'RLI', 'WWE', 'BC', 'WFG',
+              'CIB', 'MKSI', 'AYI',
+              'HXL', 'NTRA', 'OGN', 'M', 'DDS', 'CIVI', 'BBLN', 'MEDP', 'CMC', 'BLCO', 'MLCO', 'ALK', 'VVV', 'SIGI',
+              'PBF', 'IPGP', 'AGNC',
+              'SSB', 'STAG', 'WWD', 'FSV', 'THC', 'GXO', 'NWL', 'VRT', 'CYBR', 'KT', 'SNV', 'SLGN', 'SAIC', 'MNSO',
+              'GIL', 'STWD', 'ROIV',
+              'ATKR', 'OSK', 'OPCH', 'HTZ', 'RCM', 'NYCB', 'GRFS', 'FLO', 'SON', 'REYN', 'NE', 'WTS', 'VAC', 'GMED',
+              'PVH', 'AQUA', 'SWN',
+              'HUN', 'SRC', 'LNW', 'COHR', 'TIXT', 'SBSW', 'DISH', 'GTLS', 'VLY', 'GWRE', 'AMG', 'BWXT', 'CHRD', 'QDEL',
+              'SMAR', 'CACC',
+              'CRUS', 'TIMB', 'PPC', 'UNVR', 'FAF', 'SLAB', 'NEP', 'RXDX', 'EXEL', 'EHC', 'FSK', 'HRB', 'HQY', 'WTFC',
+              'APG', 'MUSA',
+              'AIRC', 'ASH', 'CCCS', 'GME', 'PNFP', 'HGV', 'COLM', 'AIT', 'MP', 'ESTC', 'TREX', 'CSAN', 'OWL', 'IAA',
+              'EXLS', 'SPSC',
+              'IOSP', 'TXG', 'EEFT', 'LU', 'ATI', 'UBSI', 'FLR', 'POST', 'HCP', 'IGT', 'ORCC', 'FIX', 'UFPI', 'MSA',
+              'NFG', 'ENLC',
+              'EXPO', 'SIM', 'CC', 'LANC', 'ALTR', 'VAL', 'WIX', 'OZK', 'DNB', 'RHP', 'PHI', 'OMF', 'SMCI', 'EXP',
+              'NOVT', 'ELAN',
+              'LNC', 'COKE', 'AQN', 'IDA', 'TRNO', 'ABG', 'GBCI', 'AXS', 'PRGO', 'SOFI', 'TAL', 'FFIN', 'NEWR', 'AM',
+              'EVR', 'IONS',
+              'FNB', 'WING', 'ONB', 'LNTH', 'SNDR', 'ENSG', 'APP', 'RIG', 'ESI', 'AUY', 'FOXF', 'BPOP', 'RUN', 'TENB',
+              'THG', 'MMS',
+              'TNET', 'RYN', 'DTM', 'THO', 'BEPC', 'HOMB', 'CIGI', 'NJR', 'INFA', 'SHC', 'ORA', 'WFRD', 'AAON', 'SID',
+              'BIPC', 'MTSI',
+              'WU', 'BFAM', 'AL', 'PENN', 'MDGL', 'MSM', 'WEN', 'KRG', 'WB', 'POWI', 'PSN', 'RMBS', 'CADE', 'DRVN',
+              'VC', 'WK', 'NSP',
+              'DUOL', 'ESNT', 'GPS', 'YPF', 'ASO', 'SMG', 'MSGS', 'APPF', 'RYAN', 'FIVN', 'SSD', 'R', 'SYNA', 'CBT',
+              'IART', 'NSIT',
+              'ASAI', 'KGC', 'IAC', 'AJRD', 'ITCI', 'DAVA', 'SEB', 'QLYS', 'LEG', 'DLO', 'FLS', 'HP', 'ALIT', 'ALKS',
+              'JHG', 'DV', 'AYX',
+              'TSEM', 'PDI', 'ALSN', 'FELE', 'KEX', 'ASGN', 'S', 'FN', 'NVEI', 'UAA', 'SRCL', 'HE', 'FIZZ', 'ATCO',
+              'PTON', 'MGY',
+              'PYCR', 'IPAR', 'CIG', 'MODG', 'MAN', 'GLBE', 'CERE', 'LPX', 'UMBF', 'WNS', 'OGS', 'RITM', 'BECN', 'DEN',
+              'FRHC', 'MLI',
+              'BCPC', 'FRSH', 'BRBR', 'KRC', 'BE', 'PNM', 'POR', 'DIOD', 'HRI', 'LPL', 'VNT', 'BXSL', 'HHC', 'SYNH',
+              'HWC', 'BL', 'LTHM',
+              'SEAS', 'TDOC', 'AVT', 'BOX', 'ACLS', 'ONTO', 'FCFS', 'W', 'FL', 'KNTK', 'SGRY', 'ADNT', 'AGI', 'TEX',
+              'FRO', 'CNM', 'BKH',
+              'XPO', 'ATHM', 'PWSC', 'TDC', 'AIMC', 'ICUI', 'DNP', 'TFSL', 'MTG', 'PECO', 'ACT', 'CWST', 'GTES', 'CPG',
+              'BTU', 'CABO',
+              'AVNT', 'NEOG', 'ELF', 'MMSI', 'SWX', 'ZWS', 'IRT', 'GEF', 'SAM', 'NSA', 'BHF', 'SKY', 'TRTN', 'KMPR',
+              'AMN', 'FOUR',
+              'SFBS', 'UA', 'MTH', 'NTLA', 'HAE', 'APLE', 'MAXR', 'GATX', 'TMHC', 'ESGR', 'CYTK', 'TGNA', 'BTG', 'PINC',
+              'PEGA',
+              'FUL', 'CRSP', 'EURN', 'QS', 'SM', 'NTCO', 'CUZ', 'CHPT', 'GOLF', 'OMAB', 'VNO', 'UCBI', 'EPRT', 'DNLI',
+              'SMPL', 'ENS',
+              'SFM', 'MEOH', 'PCH', 'WTM', 'UNF', 'CPA', 'SR', 'ZD', 'GDS', 'AFRM', 'DQ', 'ERF', 'FOLD', 'ESAB', 'LIFW',
+              'BDC', 'CWEN',
+              'AGO', 'LYFT', 'TKC', 'FIBK', 'SRAD', 'SGML', 'LITE', 'AZEK', 'EVH', 'INST', 'KD', 'LOPE', 'KWR', 'WIRE',
+              'INDB', 'BXMT',
+              'OLLI', 'IRTC', 'OI', 'STNG', 'SPR', 'BMI', 'JBT', 'QFIN', 'FHI', 'NCR', 'AEL', 'SANM', 'ARWR', 'SUM',
+              'ALE', 'AWI',
+              'CVT', 'ALVO', 'AEIS', 'PLTK', 'KOS', 'LTH', 'ASB', 'CNS', 'LAC', 'PI', 'JXN', 'MANU', 'FOCS', 'FSS',
+              'NWE', 'DOC', 'TNL',
+              'ENV', 'ATAT', 'RLX', 'PGNY', 'FHB', 'CRK', 'DRS', 'SPT', 'NEU', 'HI', 'NNI', 'CVI', 'ABCM', 'VIRT',
+              'SEM', 'IBP', 'RDN',
+              'SLM', 'BNL', 'PR', 'CVBF', 'TWNK', 'CERT', 'YETI', 'TIGO', 'ACAD', 'RUSHB', 'CALX', 'PACW', 'BHC',
+              'LUMN', 'PCVX',
+              'SIG', 'SPXC', 'ABCB', 'HL', 'ENIC', 'PRVA', 'MAIN', 'GOL', 'PTCT', 'AMBA', 'FLNC', 'GPI', 'LAZR', 'GT',
+              'COOP',
+              'ISEE', 'PAAS', 'NEA', 'ZGN', 'ABM', 'CBU', 'CRC', 'RNG', 'SXT', 'SQSP', 'AWR', 'PK', 'RARE', 'GH',
+              'CRVL', 'BMBL',
+              'ASAN', 'RUSHA', 'RETA', 'NWTN', 'TCBI', 'CCOI', 'HPK', 'MRCY', 'DOCN', 'EVO', 'JWN', 'AIN', 'GNW',
+              'ESMT', 'AMC', 'AY',
+              'KSS', 'CWAN', 'CWT', 'NGVT', 'OLPX', 'BAK', 'BCO', 'ENOV', 'CATY', 'PTEN', 'NOMD', 'HUBG', 'APPN',
+              'PFSI', 'TR', 'WOR',
+              'PPBI', 'EPR', 'LXP', 'HCM', 'KLIC', 'AXNX', 'AVA', 'VSCO', 'VSH', 'AZTA', 'WHD', 'PBH', 'PZZA', 'VIR',
+              'IBOC', 'GHC',
+              'FRPT', 'ACA', 'KFY', 'WSFS', 'BLKB', 'NARI', 'TRIP', 'TRMD', 'BOH', 'OTTR', 'WERN', 'BRZE', 'CCU',
+              'HLNE', 'BANF', 'CNMD',
+              'PSEC', 'KTB', 'CNO', 'TV', 'ROG', 'NCNO', 'VRNS', 'KBH', 'MSTR', 'ACIW', 'LCII', 'DORM', 'CRI', 'FLYW',
+              'OFC', 'AMED',
+              'DY', 'OLK', 'WD', 'AAWW', 'FULT', 'SHOO', 'INMD', 'CXM', 'ARRY', 'SSRM', 'SITM', 'AXSM', 'ARCH', 'CWK',
+              'HIW', 'MCW',
+              'RPD', 'SITC', 'ZIM', 'CALM', 'LBRT', 'SHLS', 'FWRD', 'HASI', 'AX', 'THS', 'SFNC', 'ARNC', 'OUT', 'AUB',
+              'TFPM', 'JKS',
+              'BRC', 'DNA', 'PRTA', 'AMBP', 'AEO', 'IFS', 'UGP', 'JJSF', 'PAGS', 'SBRA', 'BCC', 'AVAL', 'MMYT', 'NOG',
+              'EBC', 'WOOF',
+              'BEAM', 'MC', 'PROK', 'IBA', 'JOBY', 'INSM', 'PAGP', 'REZI', 'MXL', 'STAA', 'HELE', 'AMR', 'ZLAB', 'ABR',
+              'SSTK', 'JBLU',
+              'ETRN', 'MDC', 'SPB', 'GO', 'CSIQ', 'PLXS', 'CNX', 'PD', 'VRRM', 'MYOV', 'BKU', 'ENR', 'NAD', 'DADA',
+              'RVNC', 'CVLT', 'TPG', 'SPWR', 'PDCO', 'STNE', 'CD', 'TMDX', 'FBP', 'XRX', 'NVMI', 'MAC', 'BPMC', 'FTDR',
+              'JAMF', 'VVNT',
+              'RRR', 'INTA', 'MRTX', 'MATX', 'URBN', 'MGEE', 'BOWL', 'HRMY', 'INSW', 'OMCL', 'ITRI', 'ITGR', 'DCT',
+              'VTYX', 'IHS',
+              'ALRM', 'PRFT', 'XPRO', 'CBZ', 'PRGS', 'KAI', 'RELY', 'IMCR', 'SONO', 'AGTI', 'UNFI', 'SBCF', 'SAGE',
+              'WLY', 'CVCO',
+              'CBRL', 'VRNT', 'MQ', 'NVG', 'OR', 'WLYB', 'TROX', 'DEI', 'LIVN', 'HAYW', 'TDW', 'CPE', 'GLNG', 'JOE',
+              'CRS', 'MGRC', 'GLPG',
+              'ULCC', 'ESE', 'PRMW', 'SBLK', 'YOU', 'ARCB', 'ERJ', 'GETY', 'EVTC', 'GMS', 'IIPR', 'TWKS', 'TPH', 'VSAT',
+              'TNDM',
+              'LGIH', 'FRME', 'TRUP', 'PSNYW', 'XENE', 'VIAV', 'BLMN', 'CSTM', 'RXO', 'WDFC', 'PAYO', 'MTRN', 'EXG',
+              'SIX', 'GKOS', 'GBDC',
+              'AMRC', 'UTF', 'EQC', 'VERX', 'FCPT', 'NHI', 'FFBC', 'SCL', 'AMK', 'EXTR', 'YY', 'NAVI', 'PAX', 'AI',
+              'IBTX', 'FORM', 'ABCL',
+              'ODP', 'FROG', 'KW', 'KMT', 'HSAI', 'BOOT', 'TEO', 'NPO', 'TGTX', 'COLB', 'LESL', 'CLBK', 'WAFD', 'LSPD',
+              'SJW', 'DAN',
+              'HLIO', 'APAM', 'RUM', 'TRN', 'CPK', 'TOWN', 'BB', 'VET', 'AMLX', 'SHO', 'FSR', 'SHAK', 'NUVA', 'ALG',
+              'DNUT', 'NABL', 'EPC',
+              'PACB', 'VNOM', 'SIMO', 'TAC', 'CENT', 'NEX', 'CSQ', 'HIMS', 'MGPI', 'CSWI', 'VCTR', 'AKRO', 'CLDX',
+              'PSMT', 'IDCC',
+              'BTE', 'OII', 'SLG', 'MWA', 'AVAV', 'WMK', 'GDRX', 'BANR', 'CORT', 'NEO', 'TCN', 'SDRL', 'CRCT', 'B',
+              'SNEX', 'THRM', 'BVN',
+              'KRYS', 'ZETA', 'CARG', 'WSBC', 'ITCB', 'MSGE', 'SUPN', 'GSAT', 'HCC', 'HTH', 'SAH', 'RVMD', 'FA', 'VICR',
+              'NXE',
+              'GFF', 'CENTA', 'YELP', 'QRTEB', 'HTLF', 'HTGC', 'SLVM', 'FGEN', 'VGR', 'GPRE', 'STRA', 'PRK', 'GOGL',
+              'AHCO', 'GOGO', 'ICFI',
+              'EFSC', 'AGYS', 'TALO', 'HBI', 'MYRG', 'LTRPB', 'PTVE', 'BFH', 'UTG', 'NUS', 'RKLB', 'MTX', 'NOVA',
+              'CEIX', 'MRVI', 'HEES',
+              'RVLV', 'RES', 'LGND', 'DOOR', 'PIPR', 'NTCT', 'SMTC', 'USM', 'CAKE', 'PCRX', 'HLF', 'CHGG', 'GOOS',
+              'SKT', 'NMIH', 'RNST',
+              'BKE', 'VRTV', 'CTRE', 'SAVE', 'WGO', 'RLAY', 'DBRG', 'PHR', 'DSEY', 'JBGS', 'PLAY', 'GDV', 'TTEC', 'GVA',
+              'SGHC', 'NZF',
+              'TBBK', 'ARHS', 'LILA', 'MIR', 'NG', 'LILAK', 'AIR', 'GGAL', 'HMY', 'TGLS', 'GOF', 'PEB', 'EVCM', 'PJT',
+              'XNCR', 'DHT',
+              'BGCP', 'CRTO', 'BROS', 'SWTX', 'ETWO', 'ACVA', 'VZIO', 'FTCH', 'ATUS', 'ZIP', 'CCS', 'FLNG', 'ENLT',
+              'OXM', 'ALGT', 'RLJ',
+              'ADX', 'STR', 'TDCX', 'ETY', 'QTWO', 'NUV', 'EMBC', 'LRN', 'MCY', 'JACK', 'BATRA', 'PAM', 'LAUR', 'DRH',
+              'DK', 'SILK', 'PLRX',
+              'CMTG', 'SVC', 'STEP', 'BORR', 'ATRC', 'MYGN', 'MRTN', 'UE', 'LFST', 'LKFN', 'MLKN', 'BATRK', 'MEI',
+              'BUR', 'EYE', 'SAFE',
+              'CSGS', 'BMEZ', 'NTB', 'ADUS', 'ROIC', 'BIGZ', 'TRMK', 'MOMO', 'COHU', 'SDGR', 'AVDX', 'EXPI', 'CVAC',
+              'PARR', 'TASK',
+              'ESTA', 'XPEL', 'ATGE', 'AMPH', 'GET', 'FORG', 'CTOS', 'EGO', 'IRWD', 'SSU', 'CVII', 'NWBI', 'KYMR',
+              'IMKTA',
+              'PFS', 'CRSR', 'EAT', 'EVT', 'ARCO', 'NAPA', 'GAB', 'CNNE', 'FBK', 'AROC', 'NBTB', 'AG', 'AMEH', 'BRP',
+              'SBH', 'LNN',
+              'VCYT', 'INT', 'TGS', 'BDJ', 'TCBK', 'HLMN', 'FSLY', 'SYBT', 'RQI', 'FBNC', 'XHR', 'VIST', 'NWN', 'SATS',
+              'BCRX',
+              'BCAT', 'SKIN', 'NVEE', 'EVRI', 'EVEX', 'ROCK', 'GSBD', 'PRAA', 'AUR', 'PATK', 'CLM', 'MORF', 'SNDX',
+              'NUVL', 'BBIO',
+              'PTY', 'PRCT', 'FCF', 'ATEC', 'USA', 'MHO', 'IVT', 'HURN', 'IAS', 'CNK', 'VSTO', 'CPRX', 'KTOS', 'HAIN',
+              'ELME',
+              'SABR', 'VRNA', 'COUR', 'CMP', 'BLDP', 'GTY', 'RNW', 'TNK', 'MDRX', 'MSC', 'SCHL', 'RCKT', 'OEC', 'ARI',
+              'COMM',
+              'CLS', 'MNRO', 'EPAC', 'NRDS', 'OSIS', 'ARVN', 'INFN', 'NAC', 'RAMP', 'ATSG', 'AGM', 'LZ', 'PRME', 'OCSL',
+              'UPWK', 'TWO',
+              'CAAP', 'TSLX', 'ANDE', 'RVT', 'KN', 'ENVA', 'SAND', 'JBI', 'FDP', 'STEL', 'CRDO', 'BNRE', 'ECAT', 'KROS',
+              'ERO', 'GCMG', 'NBHC', 'PLYA', 'AAT',
+              'PERI', 'KAR', 'PLMR', 'RXRX', 'HOPE', 'PDO', 'AMPL', 'VVX', 'RNA', 'BTT', 'ESTE', 'GPOR', 'HKD', 'HMN',
+              'PRIM', 'SEAT', 'WABC', 'UTZ', 'DICE',
+              'JPS', 'LOB', 'GNL', 'VRTS', 'TH', 'TY', 'PLUS', 'KEN', 'SUMO', 'NXT', 'LVWR', 'ROAD', 'TGH', 'LTC',
+              'FINV', 'FVRR', 'BRFS', 'RYTM', 'KDNY',
+              'SWI', 'RYI', 'CODI', 'NBR', 'UCTT', 'CIM', 'CHCO', 'EAF', 'SFL', 'GRBK', 'STBA', 'FNA', 'DNOW', 'VCEL',
+              'SASR', 'ETV', 'VRE', 'BBUC',
+              'MATV', 'OFG', 'HLIT', 'CGAU', 'WRBY', 'VBTX', 'ANF', 'MGNI', 'SXI', 'TVTX', 'ALHC', 'EVOP', 'CTS',
+              'MNTK', 'IE', 'MCRI', 'BSTZ', 'LADR',
+              'RADI', 'NMRK', 'PDFS', 'BXMX', 'ALKT', 'DDD', 'UPST', 'AVTA', 'LZB', 'AKR', 'OCFC', 'MODV', 'TFIN',
+              'DEA', 'ENVX', 'MSEX', 'TTMI', 'IMVT',
+              'ALEX', 'TDS', 'VLRS', 'PRM', 'CASH', 'DAWN', 'EGBN', 'AGIO', 'SPCE', 'EVBG', 'HBM', 'UEC', 'MMI', 'TNC',
+              'RDNT', 'WWW', 'ECVT', 'SOVO',
+              'ACLX', 'ORLA', 'BUSE', 'WNC', 'USPH', 'UDMY', 'HIMX', 'AVNS', 'MOD', 'KRO', 'GB', 'MBIN', 'JWSM', 'KFRC',
+              'HNI', 'CMRE', 'OTLY',
+              'KALU', 'HTLD', 'VRDN', 'NMFC', 'ADTN', 'MD', 'PGTI', 'INDI', 'FCEL', 'AAC', 'CHEF', 'DVAX', 'MBC',
+              'BHLB', 'MLNK', 'BMA', 'SLN', 'HPP',
+              'TMCI', 'STER', 'COMP', 'HYT', 'DO', 'HLX', 'GERN', 'OLO', 'TRS', 'UVV', 'MODN', 'RCUS', 'AVID', 'CARS',
+              'PX', 'CTKB', 'AUPH', 'REPL', 'MNKD',
+              'MAG', 'STEM', 'STRL', 'ERII', 'LBAI', 'TA', 'CAMT', 'PRG', 'KYN', 'DSL', 'TLRY', 'ANGI', 'MBUU', 'ECPG',
+              'SRCE', 'UNIT', 'PL',
+              'RC', 'ETG', 'STEW', 'NOAH', 'DGII', 'DH', 'OMI', 'DAC', 'PRO', 'MED', 'SCLX', 'OFLX', 'EIG', 'ZUO',
+              'DFIN', 'WDH', 'FREY', 'NXRT',
+              'USNA', 'CLB', 'ESRT', 'SAFT', 'NXGN', 'SBSI', 'MATW', 'VERV', 'ADPT', 'GES', 'NSSC', 'DCOM', 'SPNS',
+              'EVV', 'PBT', 'MEG', 'IRBT', 'FIGS', 'SPNT', 'DCBO', 'DRQ', 'CNXN', 'SNCY', 'DFH', 'NVRO', 'OBNK', 'PMT',
+              'DIN', 'DOLE', 'BGS', 'GABC', 'AIV', 'DAO', 'TARO', 'EQX', 'SEMR', 'GDEN', 'MCG', 'LMAT', 'LXU', 'IOVA',
+              'SBR', 'PDM', 'PLL', 'FRG', 'STC', 'PSFE', 'BRKL', 'NFJ', 'CFFN', 'TTGT', 'GSHD', 'NRC', 'NMZ', 'ASIX',
+              'CLBT', 'DCPH', 'ALTI', 'BYND', 'PGRE', 'RILY', 'IAG', 'ASTE', 'HERA', 'CXW', 'NTST', 'ATEN', 'PAY',
+              'GEO', 'JELD', 'CGC', 'HOLI', 'GRND', 'CENX', 'VECO', 'PTLO', 'NIC', 'FBRT', 'HUYA', 'QQQX', 'ALX',
+              'SBGI', 'TMP', 'NKLA', 'FPF', 'CRNC', 'OM', 'GOTU', 'PLAB', 'CYRX', 'ALLG', 'ME', 'TBLA', 'ZNTL', 'PTA',
+              'CMCO', 'NAAS', 'JBSS', 'NAMS', 'PRA', 'ACDC', 'PUMP', 'OSCR', 'EQRX', 'GIC', 'MFA', 'NVGS', 'AXL', 'MGI',
+              'APPS', 'FORTY', 'MUC', 'NEXT', 'CLNE', 'AMPS', 'MLTX', 'GTN', 'CRNX', 'DNN', 'BBN', 'IMAX', 'INNV',
+              'ASLE', 'GBX', 'OSW', 'AFYA', 'SAVA', 'MNTV', 'TWST', 'AMSF', 'TITN', 'ADEA', 'SHIP', 'BSIG', 'WINA',
+              'KC', 'RGNX', 'APOG', 'UUUU', 'ARKO', 'BBAR', 'KIDS', 'RGR', 'ARGO', 'AZZ', 'LMND', 'CHCT', 'ENTA', 'BST',
+              'BANC', 'INBX', 'SES', 'ATRI', 'RNP', 'RIOT', 'RAPT', 'KRNT', 'GDOT', 'ARR', 'BDN', 'PFBC', 'SSP', 'BTZ',
+              'SKYW', 'DDL', 'FLGT', 'YEXT', 'CET', 'STGW', 'LICY', 'LC', 'PWP', 'QURE', 'GENI', 'NWLI', 'CDMO', 'CUBI',
+              'BHVN', 'HCSG', 'CCRN', 'SLCA', 'BLFS', 'AMCX', 'BFS', 'GSM', 'KREF', 'IMXI', 'SHEN', 'ZH', 'FSM', 'SPTN',
+              'OXLC', 'HFWA', 'ARQT', 'PCT', 'RA', 'BLU', 'DCGO', 'BALY', 'CVNA', 'RKT', 'CNOB', 'CONX', 'FBMS', 'KRP',
+              'SCRM', 'RDWR', 'GGR', 'CLFD', 'AMTB', 'PAR', 'CCF', 'MRC', 'MLAB', 'NAT', 'WBX', 'COCO', 'CEPU', 'PLYM',
+              'SCHN', 'NYMT', 'ICHR', 'JRVR', 'APE', 'USLM', 'AMYT', 'RTL', 'PERF', 'MOND', 'CWH', 'RSKD', 'UMH', 'WOW',
+              'PTRA', 'BY', 'CSR', 'BBDC', 'RPT', 'IMGN', 'CHY', 'AVPT', 'CAL', 'CDE', 'IBRX', 'FWRG', 'ALBO', 'IONQ',
+              'PRDO', 'STKL', 'SHYF', 'GAM', 'CMPR', 'HSKA', 'NVTS', 'QNST', 'SA', 'THR', 'EGLE', 'OPK', 'SYM', 'SII',
+              'SG', 'BCX', 'SSYS', 'EB', 'COLL', 'PRLB', 'AMWD', 'LPG', 'HIBB', 'SCS', 'VKTX', 'NRK', 'UFPT', 'AGRO',
+              'ALLO', 'ACCD', 'QCRH', 'SNPO', 'MRUS', 'PNTM', 'COGT', 'IGMS', 'RBCAA', 'WT', 'IESC', 'EFXT', 'APGB',
+              'KNSA', 'PEBO', 'HWKN', 'PFC', 'VTLE', 'ETW', 'YSG', 'CHI', 'NX', 'AHH', 'HRT', 'CDNA', 'MIRM', 'BTAI',
+              'WALD', 'DSGR', 'WTTR', 'AWF', 'OSTK', 'IMOS', 'ASTL', 'SPRY', 'SNBR', 'UTL', 'HQH', 'PLOW', 'CNDT',
+              'NHC', 'WEST', 'XMTR', 'AOD', 'SMP', 'BCSF', 'MQY', 'RWT', 'PRS', 'EFC', 'TMST', 'OPEN', 'HCCI', 'BHE',
+              'TSE', 'EWCZ', 'ADV', 'CBL', 'TUYA', 'FFWM', 'ARCE', 'MUI', 'AMRN', 'WTI', 'BFC', 'CSII', 'MFIC', 'SLRC',
+              'ACEL', 'INN', 'SXC', 'IDYA', 'NUTX', 'UVSP', 'AVO', 'GNK', 'BRSP', 'NEXA', 'TELL', 'EOS', 'TWI', 'ICPT',
+              'ACRS', 'GPRO', 'WKME', 'MTTR', 'VALN', 'CDRE', 'NMM', 'THRY', 'SGH', 'OPI', 'HTD', 'ROCC', 'PNT', 'OPRA',
+              'SCSC', 'CRAI', 'SILV', 'LPRO', 'PHAR', 'TGI', 'INTR', 'BLTE', 'CGBD', 'LOMA', 'CII', 'CRON', 'INVA',
+              'CYH', 'MAXN', 'CCSI', 'SHCR', 'NBXG', 'VRAY', 'RICK', 'ULH', 'KARO', 'KURA', 'HSTM', 'GIII', 'LANV',
+              'PDS', 'KOP', 'AC', 'DLX', 'PBI', 'ROVR', 'ADMA', 'VTRU', 'THQ', 'JPC', 'RDFN', 'IDT', 'EOCW', 'SLP',
+              'NNDM', 'GRNT', 'GPRK', 'VTOL', 'SKWD', 'FFC', 'ANIP', 'MOV', 'VTNR', 'HCAT', 'BXC', 'CHS', 'AMBC',
+              'EXAI', 'CBAY', 'PGRU', 'ASC', 'BJRI', 'RTC', 'PRTC', 'CTBI', 'IHRT', 'PTGX', 'AEHR', 'MYE', 'WE', 'THCH',
+              'HY', 'AMWL', 'ETD', 'CBD', 'IGR', 'HGTY', 'GSL', 'CRF', 'AVXL', 'MEGI', 'MYI', 'SLAM', 'TXO', 'VSEC',
+              'MARA', 'PRVB', 'CCO', 'MSDA', 'HZO', 'EHAB', 'XPOF', 'HTBK', 'CEVA', 'GMBL', 'OSBC', 'JQC', 'WDI',
+              'VTEX', 'OFIX', 'BIOX', 'AOSL', 'BRY', 'MERC', 'GRC', 'DYN', 'EIM', 'EXFY', 'GHLD', 'UFCS', 'SLI', 'WASH',
+              'KAMN', 'HAYN', 'HBT', 'CINT', 'UHT', 'RPAY', 'FPAC', 'AMAL', 'SCVL', 'MYTE', 'RBBN', 'HAFC', 'VREX',
+              'BASE', 'FOR', 'LPSN', 'REVG', 'ENFN', 'GSBC', 'BOC', 'MBI', 'KIND', 'BMR', 'WPCB', 'VHI', 'ACHR', 'SP',
+              'ASPN', 'ALEC', 'ANAB', 'MHUA', 'TRST', 'CTIC', 'CCVI', 'BLBD', 'PHK', 'NFBK', 'MLYS', 'AMRK', 'NRGX',
+              'SANA', 'BIGC', 'MGIC', 'DX', 'AMOT', 'SIBN', 'MTW', 'MPLN', 'TWOU', 'UBA', 'TBPH', 'DENN', 'NXP', 'ETNB',
+              'TNP', 'BLX', 'GNUS', 'INDT', 'DCO', 'TCPC', 'HSII', 'BCYC', 'PAXS', 'TRNS', 'DLY', 'BTO', 'QSG', 'SRG',
+              'FAX', 'BRMK', 'ORGN', 'CFB', 'KRNY', 'CHUY', 'PGC', 'JANX', 'HSC', 'IMTX', 'OSPN', 'GHIX', 'HONE',
+              'LGST', 'VITL', 'NFGC', 'CASS', 'HBNC', 'FC', 'CFIV', 'FLWS', 'PAHC', 'SCWX', 'ALCC', 'JOUT', 'VMEO',
+              'CUTR', 'CLW', 'CSWC', 'EH', 'ATNI', 'NDMO', 'PTSI', 'MCRB', 'PUBM', 'GMRE', 'BBSI', 'BVH', 'BOE', 'HFRO',
+              'FMBH', 'FSNB', 'KVSC', 'FORR', 'ACQR', 'DRD', 'TRTX', 'MAX', 'REPX', 'VMO', 'STAR          ', 'LWLG',
+              'RUTH', 'BKD', 'PDT', 'EOI', 'ZEUS', 'PCN', 'DBI', 'LEU', 'AVD', 'KELYB', 'KRUS', 'OIS', 'KELYA', 'KE',
+              'TK', 'MCB', 'CSTL', 'UBP', 'SBOW', 'MHD', 'SRI', 'VVR', 'MCFT', 'YORW', 'EGHT', 'ALTG', 'VCSA', 'BROG',
+              'ACRE', 'VECT', 'TBI', 'HIFS', 'CCBG', 'YALA', 'LAND', 'CLDT', 'NMCO', 'RMGC', 'RGP', 'MUJ', 'EWTX',
+              'NYAX', 'CATC', 'ACMR', 'EDIT', 'HVT', 'VPG', 'ITOS', 'GDYN', 'CPF', 'PFN', 'CAC', 'NESR', 'BAER', 'OBE',
+              'CCB', 'QRTEA', 'CION', 'HOUS', 'AMLI', 'AIO', 'BV', 'NID', 'IIIN', 'ALT', 'EBS', 'HCKT', 'LBC', 'FDMT',
+              'AGEN', 'NVAX', 'LYEL', 'CCD', 'MSBI', 'LDP', 'REX', 'CIR', 'FATE', 'ARDX', 'FPI', 'MOR', 'PML', 'AVDL',
+              'UVE', 'VNET', 'CVGW', 'DM', 'TRVG', 'IIIV', 'BW', 'BHK', 'MRSN', 'GCO', 'FMNB', 'VAQC', 'LANDM', 'CALT',
+              'ZING', 'TIPT', 'TIGR', 'WRLD', 'ATEX', 'CRGY', 'FFIC', 'BIT', 'IIM', 'BME', 'PRPC', 'SVM', 'GGN', 'EBF',
+              'GRRR', 'EE', 'AVTE', 'RERE', 'IAUX', 'BH', 'BGY', 'DXPE', 'HA', 'WIW', 'EVC', 'NKX', 'TYRA', 'CMBM',
+              'CRMT', 'DIAX', 'EXK', 'RYAM', 'HROW', 'MBWM', 'SKYT', 'PEO', 'EMD', 'NIE', 'IRS', 'SLDP', 'SD', 'SOUN',
+              'TRMR', 'TRAQ', 'YTPG', 'TILE', 'AORT', 'ECC', 'VINP', 'KALA', 'DWAC', 'HLVX', 'DGNU', 'EBIX', 'PFLT',
+              'RWAY', 'LX', 'ANZU', 'GOOD', 'HHLA', 'INVZ', 'CECO', 'CARA', 'DHIL', 'AGX', 'AGAC', 'VTS', 'SGHT',
+              'ARTNA', 'VLD', 'ACCO', 'THFF', 'EGY', 'VGM', 'THW', 'POWL', 'SFIX', 'PLCE', 'ETJ', 'TCVA', 'AMPX',
+              'GHRS', 'PDOT', 'BOOM', 'VKQ', 'BLUE', 'SMR', 'DPG', 'DOMO', 'NSTD', 'SNRH', 'NTGR', 'FTHY', 'SMBC',
+              'AUDC', 'CHRS', 'TRC', 'TGB', 'TLGA', 'MBAC', 'FRPH', 'LND', 'SJT', 'GTX', 'NSTC', 'ATRO', 'ERAS', 'FCBC',
+              'MTLS', 'EOLS', 'FDUS', 'LASR', 'VVI', 'BLNK', 'MCBS', 'IONR', 'BLE', 'GUT', 'COOL', 'DGICA', 'CLOV',
+              'BFST', 'CCNE', 'NVX', 'PACK', 'ALLK', 'SMRT', 'NPK', 'FARO', 'TERN', 'SOHU', 'NSTB', 'IQI', 'BGB',
+              'HTBI', 'XPER', 'BUI', 'PLPC', 'CSV', 'IBEX', 'SMWB', 'AROW', 'SWBI', 'VALU', 'EZPW', 'MCS', 'DGICB',
+              'MYD', 'LEGH', 'GBTG', 'SIGA', 'BMRC', 'HYLN', 'ANGO', 'TETC', 'LHC', 'TBLD', 'ZYME', 'MYPS', 'SGMO',
+              'MMD', 'PGY', 'GUG', 'IRMD', 'CCAP', 'JFR', 'BELFA', 'MPB', 'LEV', 'BLW', 'TPIC', 'OPY', 'OABI', 'OLP',
+              'SLGC', 'CERS', 'DDI', 'APEN', 'CVLG', 'HPS', 'RXT', 'RMR', 'NBB', 'FSBC', 'LQDA', 'GHY', 'HMST', 'CMPX',
+              'NXJ', 'COOK', 'TRIN', 'MESO', 'MDXG', 'MOFG', 'GCBC', 'ATLC', 'IRON', 'BZH', 'CEM', 'WSR', 'AMSWA',
+              'BRLT', 'ATCX', 'EQBK', 'ESPR', 'MXCT', 'SNDL', 'FSRX', 'IBCP', 'BHIL', 'HDSN', 'ITRN', 'PROC', 'ANIK',
+              'AZUL', 'HCVI', 'SMBK', 'ONL', 'BELFB', 'OCUL', 'OSUR', 'CMTL', 'HCI', 'GAIN', 'DSU', 'ZUMZ', 'SGU',
+              'PNTG', 'BHB', 'ICNC', 'VCV', 'NOA', 'METC', 'VLN', 'TWLV', 'NXDT', 'IVCB', 'CPAA', 'FNKO', 'BFAC', 'SB',
+              'TTI', 'JPI', 'CAN', 'TNGX', 'BFLY', 'LOCO', 'PSPC', 'PSTX', 'GHG', 'BFK', 'NSTG', 'SRRK', 'MTVC', 'CGEM',
+              'FACT', 'EDAP', 'SPFI', 'RMNI', 'FRXB', 'CPSI', 'HPI', 'RXST', 'ROSS', 'RONI', 'LEGA', 'NFYS', 'GIM',
+              'TRTL', 'SSTI', 'TIOA', 'CRESY', 'MVF', 'FMIV', 'PTOC', 'VORB', 'ZTR', 'TPC', 'MMU', 'EBTC', 'BBCP',
+              'UWMC', 'ACRO', 'LITT', 'LXFR', 'PRPL', 'MPX', 'ACAH', 'GFX', 'RPTX', 'EVER', 'CPAC', 'ZT', 'TPVG', 'RMT',
+              'NPFD', 'TWNI', 'IPI', 'NRGV', 'ABST', 'AMRS', 'TSVT', 'IVR', 'BRDG', 'ACRV', 'ABUS', 'SLAC', 'NRIX',
+              'GEVO', 'MX', 'STK', 'RDIB', 'ALDX', 'AKYA', 'BIRD', 'SENEA', 'DTOC', 'LOVE', 'LUNG', 'BCSA', 'FRA',
+              'ORC', 'BYTS', 'ARL', 'IGD', 'IFN', 'DOYU', 'LYTS', 'NVTA', 'VCXB', 'SLQT', 'BIG', 'CLAA', 'GCI', 'NR',
+              'RSVR', 'CTLP', 'EVLV', 'VIGL', 'TPB', 'INSE', 'SCWO', 'AVK', 'CARE', 'NQP', 'SENEB', 'ISD', 'LGO',
+              'ARCT', 'NEWP', 'MITK', 'OUST', 'CYXT', 'LQDT', 'BAND', 'LXRX', 'DESP', 'TARS', 'TREE', 'NETI', 'KVSA',
+              'DFP', 'PLMI', 'FANH', 'SKE', 'CMAX', 'GSRM', 'NUVB', 'AVNW', 'HCMA', 'CTO', 'DJCO', 'NMAI', 'EVTL',
+              'ASTS', 'BRT', 'NGMS', 'BWB', 'CNCE', 'PMTS', 'EAD', 'HCNE', 'DHCA', 'EVGO', 'DSX', 'MUA', 'ENTF', 'HOV',
+              'TG', 'MVIS', 'EDN', 'CSTA', 'BMEA', 'ALRS', 'PETS', 'EVN', 'AGGR', 'ONEW', 'NML', 'BRKH', 'ESM', 'RRAC',
+              'SCPL', 'IGIC', 'GPAC', 'SST', 'BBAI', 'PMO', 'KRNL', 'AHRN', 'MYN', 'GRVY', 'CHW', 'QTRX', 'AEVA',
+              'DMRC', 'ACAB', 'NWPX', 'EMO', 'JUN', 'ETB', 'MBSC', 'BWMN', 'NEWT', 'TSP', 'SWIM', 'DXLG', 'BNGO',
+              'BZUN', 'CIFR', 'LEO', 'FG', 'FSD', 'BWMX', 'DISA', 'GNLX', 'HIO', 'ONTF', 'KZR', 'AAN', 'PUYI', 'HIPO',
+              'GXII', 'LAW', 'FF', 'SDHY', 'TRDA', 'RBB', 'MVST', 'FULC', 'FLIC', 'REI', 'FISI', 'GOGN', 'AMPY', 'VKI',
+              'AURA', 'PWUP', 'ESQ', 'TCI', 'ALVR', 'GBAB', 'MCBC', 'HORI', 'PEPG', 'CXAC', 'ATXS', 'IPVI', 'CSTR',
+              'GLDD', 'APTM', 'GLAD', 'XPDB', 'NVEC', 'GNTY', 'SPKB', 'PHAT', 'PNNT', 'ESAC', 'CVEO', 'LCAA', 'MGTX',
+              'TYG', 'FLME', 'NGM', 'TDF', 'DSGN', 'ARRW', 'PPT', 'ARIS', 'BGR', 'ALPN', 'LGVC', 'GGAA', 'RRBI', 'MGNX',
+              'HPF', 'WPCA', 'DSKE', 'EGRX', 'WLFC', 'HQL', 'CRBU', 'RGC', 'NETC', 'API', 'NNOX', 'ATEK', 'EVE', 'VOR',
+              'STRE', 'WVE', 'AURC', 'NFNT', 'FWAC', 'ADER', 'JMSB', 'ETO', 'KCGI', 'FEI           ', 'BMAC', 'PACI',
+              'ADEX', 'FMAO', 'WSBF', 'AWP', 'INGN', 'MSB', 'ATRA', 'CNDA', 'THRX', 'KPTI', 'CASA', 'VNDA', 'VGAS',
+              'JUGG', 'NL', 'SMTI', 'PFIS', 'EM', 'PRTS', 'BLEU', 'BLUA', 'AMNB', 'IMAB', 'BACA', 'MRNS', 'EFT', 'EMLD',
+              'EFR', 'WTBA', 'FTEV', 'KMF', 'BLND', 'PMGM', 'STOK', 'CLAR', 'GAMB', 'FTPA', 'CNSL', 'VMD', 'BRW',
+              'CZNC', 'LVRA', 'IRAA', 'CMPS', 'HIX', 'WEAV', 'SPWH', 'BFZ', 'AXGN', 'ACAQ', 'STIX', 'CIVB', 'RKTA',
+              'IVCA', 'SPCM', 'CIO', 'MVBF', 'RFI', 'SHBI', 'PKE', 'JRO', 'PEGR', 'SLND', 'BRCC', 'FLL', 'MTAL', 'PUCK',
+              'NIU', 'KTF', 'NINE', 'DOUG', 'LLAP', 'RFMZ', 'BLFY', 'IPVF', 'NCV', 'HT', 'MHLD', 'CZFS', 'NBN', 'STRO',
+              'FFA', 'MUX', 'RCEL', 'DHC', 'RAIN', 'UTMD', 'PFTA', 'GFGD', 'RANI', 'JRI', 'BNR', 'UIS', 'RMAX', 'VLGEA',
+              'INO', 'FCUV', 'MIY', 'VPCB', 'ARBE', 'CYD', 'GILT', 'RKDA', 'SAR', 'NRDY', 'FUBO', 'HBCP', 'PMM', 'FINS',
+              'CNTA', 'LUNA', 'UONE', 'ORGO', 'BYN', 'DNAD', 'GLRE', 'KOD', 'BLDE', 'ODV', 'DNAB', 'NAN', 'VSTA',
+              'NPAB', 'SMMF', 'OOMA', 'ARLO', 'DZSI', 'MIN', 'CLIN', 'VERA', 'FNLC', 'OIA', 'RBOT', 'LDI', 'QUOT',
+              'LUNR', 'LOKM', 'AUTL', 'JGGC', 'CAF', 'RCLF', 'SFST', 'CPZ', 'AFCG', 'MLR', 'SVII', 'AFTR', 'LPTV',
+              'SLVR', 'OBIO', 'SOR', 'SCAQ', 'MHN', 'OSG', 'HWEL', 'SBT', 'CPUH', 'JMIA', 'NATH', 'KRT', 'ACNB', 'PETQ',
+              'NPCT', 'STET', 'ZFOX', 'TIG', 'HUMA', 'ICVX', 'GROY', 'FOF', 'SRDX', 'AIRS', 'CNGL', 'OPRX', 'HUT',
+              'VMGA', 'WHF', 'NRAC', 'HRZN', 'DMYS', 'CDXS', 'PFL', 'INAQ', 'VEL', 'BSRR', 'SOI', 'BHR', 'HZON', 'THCP',
+              'BIOS', 'OBT', 'GATO', 'VRCA', 'GNE', 'NMG', 'HLTH', 'USCT', 'MEKA', 'TOAC', 'FEAM', 'CITE', 'SMHI',
+              'HQI', 'RMM', 'CORS', 'PLAO', 'RENE', 'PANL', 'VERU', 'TGR', 'FET', 'RLYB', 'AMTD', 'BTWN', 'GPMT',
+              'WNNR', 'SVFB', 'FIP', 'BGRY', 'IRRX', 'MPRA', 'SOL', 'BBW', 'AFRI', 'DSAQ', 'RCFA', 'TLGY', 'AFB',
+              'FRON', 'KNSW', 'CVCY', 'GWRS', 'CMCA', 'DPCS', 'SVNA', 'NRIM', 'ITIC', 'CBRG', 'SCUA', 'CANO', 'EDD',
+              'UTAA', 'RELL', 'OMGA', 'XFIN', 'FIAC', 'PORT', 'AEAE', 'BRD', 'VII', 'WWAC', 'TRIS', 'IXAQ', 'SCM',
+              'LCW', 'FBIZ', 'BYM', 'HYZN', 'VLAT', 'WKHS', 'RM', 'TROO', 'WRAC', 'ASG', 'GLUE', 'LDHA', 'FTCI', 'PGSS',
+              'NODK', 'PBFS', 'AMRX', 'VMCA', 'MASS', 'BCBP', 'IVCP', 'QD', 'FRGE', 'VAXX', 'NN', 'TCMD', 'MLEC', 'SY',
+              'MCR', 'MEC', 'PRTH', 'ARDC', 'CBNK', 'FRST', 'EGGF', 'SVRA', 'NCA', 'RJAC', 'RDVT', 'CURV', 'EP', 'PSTL',
+              'LMDX', 'ASA', 'AVIR', 'FZT', 'ASRT', 'FRSG', 'PHVS', 'KODK', 'PGEN', 'NKTR', 'SKYA', 'MGU', 'PRLD',
+              'MCI', 'TWOA', 'HAIA', 'XPAX', 'UNTY', 'NC', 'JILL', 'LMNR', 'GRIN', 'TGAA', 'CREC', 'DSM', 'ROC', 'VYGR',
+              'LSAK', 'FDBC', 'NWFL', 'EU', 'CDZI', 'LSEA', 'HRTX', 'EOT', 'UP', 'SIFY', 'VCXA', 'STKS', 'HYI', 'FSBW',
+              'SPXX', 'ERC', 'JGH', 'WAVC', 'CPS', 'TSBK', 'CVGI', 'CNTY', 'RLGT', 'RIGL', 'IFIN', 'DBVT', 'RNGR',
+              'ARAY', 'VOXX', 'CCRD', 'NDLS', 'NAUT', 'TRCA', 'MMT', 'SKGR', 'BKCC', 'AVAC', 'CDAQ', 'ASUR', 'BGH',
+              'BSVN', 'SHAP', 'EGIO', 'WINT', 'ODC', 'KALV', 'PCB', 'NREF', 'SATL', 'AEF', 'OTLK', 'PIII', 'PMVP',
+              'OCFT', 'ENER', 'FEN', 'IQMD', 'ADAP', 'TMC', 'IQMDU', 'QUAD', 'PMX', 'AADI', 'LRMR', 'BITE', 'ADCT',
+              'HNST', 'PHYT', 'DBD', 'ASCB', 'BKT', 'PMF', 'NOTE', 'ILPT', 'APAC', 'TLS', 'WW', 'GTAC', 'GVCI', 'IPSC',
+              'ALXO', 'LE', 'GEEX', 'FRBA', 'BCML', 'ATAK', 'GTACU', 'SMIH', 'MLAI', 'EEX', 'BGT', 'SCPH', 'CRZN',
+              'PRLH', 'ARTE', 'ATAI', 'GRWG', 'DCFC', 'ATNM', 'MKFG', 'DALS', 'TUSK', 'FTF', 'FCT', 'PROF', 'PLM',
+              'SILC', 'TLYS', 'FUND', 'SEDA', 'SAMG', 'SEER', 'EVI', 'MPAA', 'OPA', 'ANNX', 'ORIA', 'SKYX', 'TBSA',
+              'FICV', 'HNRG', 'QSI', 'HPLT', 'DTC', 'REFI', 'III', 'MXF', 'BWC', 'BGSX', 'BNY', 'RSI', 'LOCC', 'NECB',
+              'HLLY', 'RCS', 'USCB', 'APLD', 'PINE', 'CGNT', 'VUZI', 'REAX', 'SUPV', 'CELC', 'KLTR', 'KBAL', 'EGAN',
+              'WEYS', 'NUW', 'THRN', 'TEI', 'UTI', 'SSBK', 'WRN', 'PSF', 'NHIC', 'NVAC', 'FLJ', 'BYNO', 'NGVC', 'BOCN',
+              'XOMA', 'GWH', 'NKSH', 'AGS', 'UONEK', 'CSLM', 'IMMR', 'PLBC', 'PKBK', 'FSP', 'TCBX', 'HOFT', 'SELB',
+              'INBK', 'XFLT', 'URG', 'ORRF', 'URGN', 'CMCL', 'FENC', 'AMAM', 'CCCC', 'AKTS', 'SWKH', 'DNMR', 'CWCO',
+              'IPHA', 'CVLY', 'CFFS', 'MYFW', 'RGCO', 'PANA', 'RIDE', 'OB', 'VZLA', 'VATE', 'WLDN', 'FHTX', 'CABA',
+              'UROY', 'VPV', 'TSI', 'RDW', 'BARK', 'JRS', 'NCZ', 'VERI', 'OPAL', 'GBIO', 'FVCB', 'PFMT', 'TCX', 'DBL',
+              'CHMG', 'EHTH', 'OCN', 'FOSL', 'ALOR', 'KFS', 'BWFG', 'SI', 'SKIL', 'BRBS', 'CPSS', 'SWSS', 'OMER',
+              'DRTS', 'OCEA', 'CIX', 'MQT', 'KIO', 'OXUS', 'BKSY', 'OPT', 'BPT', 'SEPA', 'MVT', 'YRD', 'BIVI', 'FIF',
+              'HIVE', 'SCU', 'AXAC', 'APCA', 'POWW', 'FNVT', 'TCS', 'PPTA', 'PDLB', 'CTRN', 'APXI', 'NUO', 'TWCB',
+              'GBBK', 'TTSH', 'JYNT', 'QIPT', 'MNTN', 'OVLY', 'CVRX', 'BRIV', 'BOAC', 'YI', 'CAAS', 'KNOP', 'TCFC',
+              'ITAQ', 'EPM', 'AGIL', 'TOUR', 'KNTE', 'KSI', 'WNEB', 'MUE', 'PTMN', 'RENT', 'GNFT', 'TCOA', 'CRGO',
+              'AVAH', 'IVA', 'ALTO', 'OCGN', 'NGC', 'BPRN', 'HGLB', 'VFL', 'MNSB', 'ANTX', 'AZRE', 'CLBR', 'ATLO',
+              'MOLN', 'CBAN', 'GFOR', 'FGBI', 'NKTX', 'ABOS', 'RIV', 'LVOX', 'EMX', 'PEPL', 'HMPT', 'SLNA', 'BSAQ',
+              'EVM', 'SCD', 'COFS', 'FUSN', 'IIF', 'RCAC', 'DC', 'HFFG', 'TNYA', 'GLO', 'PBPB', 'AENZ', 'CALB', 'ACV',
+              'SAMA', 'CTR', 'EVBN', 'LMST', 'VABK', 'BCOV', 'RAD', 'BKN', 'AACI', 'JSPR', 'GENC', 'MTA', 'TBNK',
+              'LCTX', 'NPV', 'AFT', 'FRGI', 'CTV', 'PRQR', 'MFM', 'PCYO', 'GER', 'GRPN', 'CONN', 'JAQC', 'TGAN', 'SPOK',
+              'CCAI', 'JCE', 'PHT', 'FDEU', 'CFFI', 'DHX', 'FXLV', 'EOD', 'VBNK', 'TRUE', 'TELA', 'ESSA', 'ROSE', 'GCT',
+              'WIA', 'DLTH', 'DMB', 'ITI', 'OPTN', 'LCNB', 'BNNR', 'GHL', 'CLOE', 'LGI', 'ATAQ', 'CLPT', 'TWN', 'APEI',
+              'PRCH', 'NTG', 'HURC', 'ACIU', 'ARYD', 'NATR', 'CATO', 'DHY', 'HIE', 'ELA', 'IHIT', 'MFIN', 'LIAN',
+              'KMDA', 'OPRT', 'INFU', 'VTN', 'CLSK', 'RCKY', 'ARYE', 'ALPA', 'ISTR', 'GRTS', 'PAYS', 'MHI', 'NBH',
+              'IVH', 'PCK', 'ETX           ', 'PDSB', 'GLSI', 'ALCO', 'MIXT', 'CLMB', 'JOF', 'PCQ', 'XERS', 'BGFV',
+              'MITA', 'STXS', 'INOD', 'MCAA', 'PEBK', 'KVHI', 'ACTG', 'MAV', 'APMI', 'SGC', 'IVVD', 'JWAC', 'PWOD',
+              'ABSI', 'NSL', 'CANG', 'AOMR', 'AJX', 'ERES', 'UFI', 'BZFD', 'BLZE', 'GDO', 'KRMD', 'JAKK', 'GLTA',
+              'LTRX', 'NOTV', 'POET', 'AIF', 'GSQB', 'HBB', 'ACP', 'WPRT', 'DAKT', 'EMF', 'AXTI', 'MRBK', 'VBF', 'BYRN',
+              'BBBY', 'IVAC', 'STTK', 'GTHX', 'DIBS', 'ETAO', 'MLP', 'MIO', 'JATT', 'BGXX', 'FT', 'MBCN', 'HPX', 'PBYI',
+              'IGI', 'MTRX', 'UPLD', 'OXSQ', 'CRMD', 'RRGB', 'EBAC', 'MRCC', 'STRS', 'AKA', 'BSL', 'BVS', 'XAIR',
+              'ORIC', 'YMAB', 'PNRG', 'DFLI', 'TEAF', 'OVID', 'GRX', 'KITT', 'AIP', 'FLC', 'PKOH', 'ESCA', 'ZIMV',
+              'ALYA', 'OPBK', 'SAL', 'WILC', 'KNDI', 'SMMT', 'GLDG', 'DLHC', 'THRD', 'LATG', 'LION', 'HWBK', 'CTGO',
+              'VRA', 'PZC', 'NBST', 'NVCT', 'LFCR', 'OPP', 'EHI', 'MCN', 'WMPN', 'INSI', 'BSET', 'INMB', 'KLXE', 'CSTE',
+              'CRGE', 'FRBN', 'SOPH', 'IH', 'ZVIA', 'CCTS', 'GLT', 'AHT', 'GOSS', 'GF', 'PTRS', 'INTT', 'ENX', 'LCUT',
+              'GOCO', 'TRHC', 'NUBI', 'STBX', 'HYW', 'DHF', 'BEEM', 'MG', 'NHS', 'PIM', 'SEVN', 'GGT', 'UCL', 'CTXR',
+              'TUP', 'NIQ', 'ELLO', 'OLMA', 'OHAA', 'RWOD', 'CBH', 'PVBC', 'CAMP', 'ARQQ', 'FNCB', 'AGFS', 'HYB', 'SUP',
+              'INVE', 'ENCP', 'IDE', 'TETE', 'NNY', 'FTII', 'PTWO', 'MACK', 'RMBI', 'SAGA', 'TOP', 'GRPH', 'SMAP',
+              'PIAI', 'NRO', 'EVGR', 'LIBY', 'PRAX', 'XYF', 'BMAQ', 'LINC', 'JFIN', 'KYCH', 'FORA', 'ASGI', 'OXAC',
+              'FNWD', 'GLLI', 'BGI', 'RMBL', 'SRT', 'GMFI', 'UEIC', 'RNLX', 'ALSA', 'ZTEK', 'BDSX', 'SACH', 'CNF',
+              'MSSA', 'MRDB', 'GHM', 'AMSC', 'BURU', 'TWIN', 'ROCL', 'CMT', 'EFHT', 'CMRX', 'WINV', 'MACA', 'AFAR',
+              'FEXD', 'YOTA', 'TDUP', 'FATP', 'FCCO', 'PFD', 'CHEA', 'MPA', 'ANIX', 'WEL', 'ADRT', 'BSBK', 'LVAC',
+              'TGVC', 'RFAC', 'ACET', 'SMLR', 'BGSF', 'RVSB', 'RDCM', 'AGBA', 'CIA', 'CRNT', 'FCRD', 'FPH', 'PLBY',
+              'SNFCA', 'IMMP', 'IXHL', 'INTE', 'FPL', 'CHEK', 'TRVI', 'PFSW', 'ATOM', 'SPIR', 'CIK', 'KULR', 'RCMT',
+              'PLG', 'STIM', 'BGX', 'SGA', 'CDLX', 'LAB', 'STG', 'ECBK', 'MVO', 'FRAF', 'OMIC', 'HEQ', 'OIIM', 'SJ',
+              'SHUA', 'MHH', 'TKNO', 'HNVR', 'IGA', 'LMB', 'AE', 'YTRA', 'REVE', 'IKNA', 'AREN', 'EOSE', 'JMAC', 'MRAM',
+              'OPOF', 'ADSE', 'EVG', 'CTMX', 'BCAB', 'EBMT', 'ESEA', 'GSD', 'REAL', 'MHF', 'ARC', 'IREN', 'MPV', 'CHMI',
+              'ISSC', 'CTSO', 'NYXH', 'ADTH', 'JOAN', 'AOGO', 'VOC', 'GRCL', 'FNWB', 'BRAC', 'VSAC', 'ANVS', 'FFNW',
+              'FSTR', 'FSFG', 'MOBV', 'QRHC', 'MLVF', 'FRLA', 'BANX', 'MNMD', 'LITB', 'OFED', 'GNSS', 'CFBK', 'BWG',
+              'CHN', 'NGS', 'ASYS', 'IMRX', 'EPSN', 'AVHI', 'BATL', 'CWBC', 'OFS', 'IGTA', 'MSD', 'FLFV', 'LL', 'DHHC',
+              'BFIN', 'SPE', 'MYNA', 'AKLI', 'MITT', 'FUNC', 'LIVB', 'EML', 'PRPH', 'UBFO', 'FREE', 'HEAR', 'NAZ',
+              'LAZY', 'RMMZ', 'SGHL', 'GLST', 'KORE', 'CZWI', 'IOAC', 'GLG', 'XTNT', 'CDTX', 'LOOP', 'PXS', 'DMF',
+              'BTA', 'DMO', 'CPHC', 'MVLA', 'PRE', 'JHS', 'MESA', 'GALT', 'AOUT', 'UXIN', 'ALTU', 'GMDA', 'TRON',
+              'PSNL', 'DTIL', 'AREC', 'GNTA', 'AMTX', 'CUE', 'YELL', 'TBCP', 'OVBC', 'JSD', 'CBFV', 'TSQ', 'EAR', 'WEA',
+              'GGE', 'FSTX', 'FRBK', 'CLLS', 'NBTX', 'KOPN', 'XNET', 'CAPR', 'LVLU', 'CTRM', 'FAT', 'LARK', 'NTIC',
+              'VHC', 'FINW', 'HNRA', 'FMN', 'CDXC', 'BLI', 'PFO', 'RVLP', 'LNKB', 'MCAC', 'ASPS', 'PCYG', 'SQNS', 'AGD',
+              'IAF', 'QMCO', 'AIB', 'CTG', 'BRID', 'DMTK', 'VACC', 'PCF', 'GENQ', 'WHG', 'ATHA', 'SBFG', 'SRL', 'PBHC',
+              'UNB', 'ECF', 'INZY', 'VERY', 'LBPH', 'CDRO', 'ARAV', 'ACAX', 'PHD', 'NPCE', 'NIM', 'FATBB', 'FXNC',
+              'MNP', 'VNRX', 'PAI', 'CRT', 'DRRX', 'TSAT', 'GLQ', 'MNK', 'CMCT', 'FLNT', 'MIST', 'GASS', 'DECA', 'DCF',
+              'JHI', 'INCR', 'ONYX', 'CLGN', 'ELMD', 'ACAC', 'CURO', 'AKU', 'NRT', 'BCTX', 'MDWD', 'SLGL', 'IDBA',
+              'HBIO', 'DBTX', 'SCOR', 'LEE', 'FONR', 'SZZL', 'VBOC', 'CPTK', 'EYEN', 'SONX', 'LFT', 'RGF', 'PCM', 'GIA',
+              'STRM', 'GGZ', 'SBI', 'DRIO', 'KF', 'PRST', 'OPNT', 'APPH', 'TAST', 'LAKE', 'MNOV', 'GMGI', 'CXE', 'FLXS',
+              'SSBI', 'GDL', 'SLDB', 'HOLO', 'LIFE', 'QFTA', 'BKKT', 'RMI', 'PHX', 'SERA', 'MGF', 'APYX', 'PIRS', 'BCV',
+              'FGMC', 'VOXR', 'SCTL', 'ALLT', 'RBKB', 'CFFE', 'VCIF', 'SSSS', 'FLUX', 'CLPR', 'BNED', 'AFBI', 'WTMA',
+              'DIT', 'CVM', 'ALPS', 'SUNL', 'SANG', 'PRSR', 'SRTS', 'HOWL', 'ACNT', 'SFBC', 'NEON', 'CLRC', 'ZEPP',
+              'SKYH', 'HYPR', 'CMPO', 'SWZ', 'SMID', 'SATX', 'FLAG', 'XBIT', 'NKG', 'NXG', 'HITI', 'MNTX', 'TOI',
+              'EMCG', 'PROV', 'WIMI', 'BTBT', 'MYNZ', 'RLMD', 'EVF', 'IHD', 'EARN', 'CHAA', 'BYFC', 'BNIX', 'NMT',
+              'PWFL', 'PLSE', 'EYPT', 'HMNF', 'PLX', 'PRTK', 'ARMP', 'WRAP', 'ISDR', 'MDXH', 'ERH', 'NCAC', 'ANPC',
+              'RFM', 'PRDS', 'INTG', 'EMBK', 'AAMC', 'LVO', 'CGO', 'KRON', 'IPA', 'DAVE', 'FOA', 'EXD', 'RZLT', 'MIMO',
+              'LBBB', 'GNT', 'LIVE', 'CMLS', 'ETON', 'PESI', 'SNCR', 'ATY', 'HSPO', 'EPIX', 'ALOT', 'NEOV', 'NMI',
+              'SND', 'ONCY', 'HMAC', 'GCV', 'HGBL', 'ELYM', 'CODX', 'KSM', 'DLA', 'DARE', 'MAYS', 'VWE', 'JLS', 'MAQC',
+              'MDV', 'BKSC', 'BCAN', 'MAPS', 'ATER', 'OSI', 'VIA', 'VGI', 'BWEN', 'MLGO', 'GWII', 'FRD', 'IMAQ', 'XLO',
+              'ATMC', 'LWAY', 'IMUX', 'FCAP', 'UBCP', 'CEN', 'FARM', 'CMU', 'ATLX', 'ORN', 'FTK', 'VBFC', 'PNAC', 'NXC',
+              'HNW', 'PXLW', 'EAC', 'CIZN', 'SOTK', 'PYXS', 'CULL', 'UPXI', 'EMAN', 'FIXX', 'PED', 'CURI', 'PCCT',
+              'CLNN', 'IFRX', 'GLU', 'AAIC', 'ACHV', 'BRAG', 'AQMS', 'EDF', 'MGYR', 'PCTI', 'ACU', 'TENK', 'STRT',
+              'RPHM', 'ACR', 'ORMP', 'PET', 'MCHX', 'AUBN', 'PNI', 'AMST', 'VNCE', 'ONDS', 'PVL', 'USAP', 'TALS',
+              'MTAC', 'BHM', 'GEOS', 'IPX', 'PGP', 'BWAC', 'PRT', 'USX', 'DEX', 'OSA', 'KINZ', 'FTHM', 'JPT', 'TPZ',
+              'CJJD', 'SCX', 'NNBR', 'BSGA', 'NVCN', 'GLYC', 'TCRX', 'TZOO', 'AEYE', 'AIRG', 'ANEB', 'LTRPA', 'BCLI',
+              'RDI', 'UIHC', 'REKR', 'RCAT', 'ARBK', 'BEDU', 'GDST', 'PPIH', 'HHS', 'ADAG', 'GAN', 'HOUR', 'MCAF',
+              'SANW', 'WFCF', 'FATH', 'SNDA', 'AAOI', 'SPRO', 'ADES', 'EIGR', 'STCN', 'CODA', 'PLTN', 'SRV', 'SURG',
+              'DTF', 'GLV', 'BAFN', 'CVV', 'CRDF', 'PFX', 'HYFM', 'CZOO', 'SMSI', 'VIRC', 'LNZA', 'IAE', 'LGVN', 'DPRO',
+              'QUIK', 'MYMD', 'VIOT', 'VHAQ', 'LYRA', 'SYRS', 'PGZ', 'GECC', 'TCBC', 'OCUP', 'EPOW', 'HVBC', 'JHAA',
+              'KTCC', 'VIAO', 'PBAX', 'CMCM', 'MKUL', 'JEQ', 'CLSD', 'AQU', 'HUIZ', 'TANH', 'NCNA', 'TACT', 'QUBT',
+              'LUXH', 'ICAD', 'VLT', 'JZ', 'IHTA', 'AXR', 'CEV', 'MKTW', 'IPWR', 'CDIO', 'HSON', 'HEXO', 'CLST', 'HRTG',
+              'ELBM', 'MFD', 'INKT', 'PNF', 'ASRV', 'BDTX', 'GEG', 'PASG', 'ASMB', 'NMS', 'PETZ', 'ATNF', 'LSBK',
+              'CNTB', 'LPTH', 'CULP', 'DKDCA', 'ROOT', 'MMMB', 'BCOW', 'ALGS', 'GIFI', 'ACBA', 'VIRX', 'HNNA', 'CXH',
+              'BSGM', 'SIEB', 'RGS', 'MURF', 'OESX', 'HCWB', 'AZYO', 'TSHA', 'NM', 'ARKR', 'LOAN', 'ULBI', 'GAIA',
+              'IDR', 'LRFC', 'OMEX', 'HUGE', 'PRTG', 'RVP', 'RAIL', 'AVRO', 'SELF', 'FCO', 'UPTD', 'AIRT', 'CSBR',
+              'AUGX', 'SNTI', 'RAM', 'REFR', 'AWIN', 'SLNG', 'SFR', 'NTZ', 'NHTC', 'BOLT', 'UBX', 'DMA', 'SSIC', 'MGLD',
+              'AACG', 'RSSS', 'ICD', 'HUDI', 'DRCT', 'BOTJ', 'FEIM', 'ROCG', 'ISPO', 'LVTX', 'TAYD', 'MDWT', 'EEA',
+              'NCSM', 'FAM', 'IROQ', 'WMC', 'NBW', 'ASPI', 'RGT', 'CFSB', 'RBT', 'DPSI', 'QLI', 'CCM', 'ICMB', 'KA',
+              'JNCE', 'OSS', 'TTP', 'LTRN', 'LINK', 'GNS', 'JRSH', 'FKWL', 'BKTI', 'DDF', 'SNAL', 'HTY', 'SCYX', 'CGA',
+              'MBTC', 'MIRO', 'HOFV', 'CEE', 'NSTS', 'CRWS', 'GRFX', 'FUSB', 'ENZ', 'FNGR', 'KFFB', 'ENOB', 'JMM',
+              'EMKR', 'GLTO', 'EDI', 'IMNM', 'LFMD', 'PMCB', 'BYSI', 'NVNO', 'CYT', 'INDO', 'VRAR', 'TURN', 'PGRW',
+              'CCLD', 'CADL', 'EVTV', 'VANI', 'CACO', 'PDEX', 'SPRB', 'DUNE', 'HFBL', 'AP', 'DSP', 'GNPX', 'ESP',
+              'NAII', 'HHGC', 'LUCD', 'BDL', 'NLS', 'PFIE', 'YQ', 'CSPI', 'RSF', 'ENLV', 'TEDU', 'NDP', 'APT', 'SBEV',
+              'MTRY', 'NTIP', 'ADOC', 'AAME', 'GRTX', 'BTMD', 'AZ', 'FSEA', 'BCEL', 'ICCM', 'GP', 'INKA', 'TATT',
+              'TCBS', 'LTBR', 'BREZ', 'CKPT', 'RFL', 'AGAE', 'OKYO', 'TBIO', 'RFIL', 'CSSE', 'USEG', 'NLSP', 'IOBT',
+              'SFE', 'ANGH', 'UG', 'MAIA', 'CXDO', 'TCRR', 'ZENV', 'MPU', 'MOVE', 'LFVN', 'AGMH', 'INTZ', 'IOR', 'STRW',
+              'FMY', 'SNSE', 'DCTH', 'ICCH', 'CGTX', 'FGB', 'CVU', 'DSWL', 'SRAX', 'DMAC', 'LYLT', 'NBO', 'IDN', 'VTSI',
+              'KACL', 'KRKR', 'GANX', 'TXMD', 'NICK', 'GROW', 'NXN', 'HTOO', 'PIXY', 'MNDO', 'DMS', 'PPBT', 'KSCP',
+              'MEOA', 'KOSS', 'RPID', 'DHAC', 'RNXT', 'SOHO', 'CHCI', 'SYPR', 'ATXG', 'ACHL', 'USIO', 'ICCC', 'SGTX',
+              'MXE', 'SEED', 'FGH', 'EBON', 'ALR', 'MMV', 'TESS', 'RENN', 'NXTC', 'CPSH', 'PNBK', 'MLAC', 'TKLF',
+              'FTEK', 'TARA', 'EDRY', 'DYAI', 'KEQU', 'BCDA', 'EUCR', 'AIH', 'LICN', 'ZDGE', 'ACER', 'WAVS', 'OMQS',
+              'COYA', 'EVOJ', 'LASE', 'KIRK', 'UTSI', 'ADXN', 'AINC', 'BMTX', 'PMN', 'JT', 'AFIB', 'ISO', 'XGN', 'EGF',
+              'WTT', 'POCI', 'NSYS', 'ACXP', 'VLCN', 'GSIT', 'WKEY', 'ABEO', 'PBBK', 'INAB', 'ESOA', 'SSKN', 'ATTO',
+              'DAIO', 'SPI', 'LITM', 'FSI', 'ICU', 'AIU', 'GBRG', 'DXR', 'BMRA', 'TLF', 'ICLK', 'VMAR', 'MSVB', 'CLRO',
+              'AWRE', 'SALM', 'RAND', 'PALI', 'AMAO', 'DWSN', 'EVAX', 'UGRO', 'GSUN', 'CYN', 'ADN', 'IRIX', 'DGHI',
+              'PYN', 'ACGN', 'CIF', 'MEGL', 'MBRX', 'USAU', 'COE', 'GURE', 'PTN', 'GTIM', 'UPH', 'NOVN', 'SRZN', 'EDTX',
+              'COSM', 'BFI', 'SDPI', 'TCON', 'MIGI', 'LNSR', 'XPON', 'AVTX', 'MTC', 'SWAG', 'OCC', 'HAPP', 'EZGO',
+              'SNT', 'DUOT', 'IMPL', 'CPIX', 'GRF', 'TISI', 'OCCI', 'EDUC', 'MTR', 'CCEL', 'PHCF', 'ELDN', 'TTCF',
+              'MFV', 'MTEX', 'ABIO', 'HUSA', 'ORGS', 'TMPO', 'CLPS', 'WVVI', 'CLAY', 'ZIVO', 'PMD', 'BWAY', 'RMCF',
+              'NTRB', 'GBNH', 'YGMZ', 'APWC', 'NTWK', 'SLS', 'PETV', 'SUNW', 'BBGI', 'APCX', 'CGRN', 'MNPR', 'CTIB',
+              'XIN', 'CNTG', 'OPFI', 'SGRP', 'MRM', 'CVR', 'IMMX', 'CEI', 'JEWL', 'BTCM', 'DTSS', 'SOS', 'PATI', 'RAYA',
+              'WKSP', 'MPTI', 'LUMO', 'GAME', 'SPCB', 'WLMS', 'EDSA', 'ELEV', 'DERM', 'GTEC', 'ISRL', 'TGL', 'RVSN',
+              'SAI', 'MXC', 'BIOR', 'BON', 'BTTX', 'SVT', 'PPSI', 'IPDN', 'EUDA', 'OPHC', 'ILAG', 'CUBA', 'CMRA',
+              'NMTC', 'CASI', 'GBNY', 'FENG', 'TNON', 'BEAT', 'AMPG', 'FTFT', 'LSDI', 'LXEH', 'FGF', 'ATHX', 'CYAD',
+              'MGOL', 'LGL', 'NVVE', 'NFTG', 'CORR', 'SOBR', 'DALN', 'GLBZ', 'BNRG', 'SHPH', 'ZCMD', 'JFU', 'MODD',
+              'NOM', 'TBLT', 'RVPH', 'BSQR', 'USEA', 'GLBS', 'ASST', 'VINC', 'YOSH', 'CVKD', 'BRN', 'SGMA', 'PXMD',
+              'MSGM', 'FPAY', 'LCI', 'NH', 'LSTA', 'DOMH', 'RGLS', 'SRGA', 'WHLM', 'NYC', 'TAIT', 'MBOT', 'RAVE',
+              'ALBT', 'BNOX', 'ATIF', 'ATNX', 'ISUN', 'NMTR', 'FBRX', 'EQS', 'AFGC', 'NXPL', 'CNFR', 'ASTC', 'MRAI',
+              'HTCR', 'MOGU', 'NRSN', 'KZIA', 'GRCY', 'FEDU', 'POLA', 'AEY', 'BQ', 'CMMB', 'CKX', 'SIF', 'BRLI', 'SLNO',
+              'VIVK', 'WAVE', 'ERNA', 'ZVSA', 'PALT', 'RMTI', 'GENE', 'DLPN', 'HALL', 'BTCS', 'ADD', 'ONVO', 'EKSO',
+              'EDTK', 'CARV', 'JCTCF', 'MDJH', 'VEEE', 'AMS', 'ENTX', 'APDN', 'AGRI', 'CHRA', 'BHV', 'TRT', 'ELTK',
+              'GCTK', 'AEI', 'WYY', 'IBIO', 'TSRI', 'FGI', 'LEXX', 'BWV', 'LMNL', 'BLPH', 'IINN', 'MRKR', 'MRIN',
+              'EEIQ', 'TPST', 'BRFH', 'PFIN', 'GEHI', 'PEGY', 'VJET', 'ISIG', 'MOXC', 'CING', 'BLBX', 'LEJU', 'CLRB',
+              'ELSE', 'AIRI', 'IHT', 'AEZS', 'MARPS', 'VRME', 'COHN', 'BFRG', 'COCP', 'GRIL', 'SCKT', 'SSNT', 'NNVC',
+              'SIEN', 'MARK', 'GIGM', 'ECOR', 'FRZA', 'KINS', 'PW', 'BNSO', 'YTEN', 'AUUD', 'WHLR', 'BPTH', 'STSS',
+              'BIAF', 'INDP', 'APRE', 'GIPR', 'CYTH', 'RCON', 'BRTX', 'ALIM', 'SQFT', 'LMFA', 'ISPC', 'NURO', 'ATHE',
+              'MITQ', 'VINE', 'CFMS', 'FEMY', 'ITRM', 'BTBD', 'SGBX', 'DGLY', 'LUCY', 'DTST', 'CRBP', 'HILS', 'PULM',
+              'LIPO', 'CREG', 'MF', 'DFFN', 'GWAV', 'APM', 'RCG', 'NDRA', 'NXTP', 'JVA', 'FORD', 'OXBR', 'FUV', 'LEDS',
+              'GFAI', 'IMNN', 'HSCS', 'IMRN', 'NERV', 'APVO', 'NEPH', 'ACRX', 'SWVL', 'GRNQ', 'BLIN', 'SECO', 'ARTW',
+              'CNET', 'AWX', 'BOSC', 'CLWT', 'WAFU', 'KWE', 'BREA', 'BTB', 'EVOK', 'NCRA', 'COMS', 'NSPR', 'VYNE',
+              'LSF', 'ANTE', 'CANF', 'OGEN', 'LCFY', 'JFBR', 'COEP', 'AYTU', 'QH', 'ONFO', 'ARTL', 'HIHO', 'MICS',
+              'MTEK', 'GHSI', 'SSY', 'NUZE', 'TRVN', 'KTRA', 'NXGL', 'REVB', 'AVGR', 'SNGX', 'WISA', 'MDGS', 'KPRX',
+              'RIBT', 'SVRE', 'CMND', 'MDIA', 'DYNT', 'TMBR', 'CYAN', 'RSLS', 'SNPX', 'XTLB', 'ONCS', 'ELOX', 'ALRN',
+              'NCPL', 'SINT', 'RMED', 'RHE', 'NAOV', 'SILO', 'ALAR', 'DBGI', 'GBR', 'CETX', 'RELI', 'GDC', 'PHIO',
+              'STAF', 'ATXI', 'TIRX', 'SNTG', 'UUU', 'INBS', 'UNAM', 'XCUR', 'CWBR', 'FRTX', 'EDBL', 'SNOA', 'NBRV',
+              'SLRX', 'SVFD', 'JAN', 'QLGN', 'ADTX', 'PSHG', 'VINO', 'GMVD', 'NUWE', 'BIMI', 'INM', 'NBY', 'BVXV',
+              'OBLG', 'ENVB', 'KAL', 'HOTH', 'PTPI', 'NVIV', 'HTGM', 'OPGN', 'FWBI', 'JAGX', 'CYTO', 'TCBP', 'THMO',
+              'MYSZ', 'CNSP', 'MOB', 'CFRX', 'SNES', 'BXRX', 'NEGG', 'AEPPZ', 'AESC', 'AQNA', 'AQNB', 'AQNU', 'CDZIP',
+              'CHRB', 'CMSA', 'CMSC', 'CMSD', 'DTB', 'DTG', 'DTW', 'DUKB', 'ENJ', 'NIMC', 'PCGU', 'PCTTU', 'PCTTW',
+              'SOJC', 'SOJD', 'SOJE', 'TVC', 'TVE', 'UGIC', 'VIASP', 'UZD', 'UZE', 'UZF', 'ARBKL', 'BEEMW', 'GEGGL',
+              'INDIW', 'LIFWZ', 'PAYOW', 'RUMBW', 'SLNHP', 'SNCRL', 'SURGW', 'XELAP', 'AGNCL', 'AGNCM', 'AGNCN',
+              'AGNCO', 'AGNCP', 'AIC', 'AJXA', 'BNH', 'BNJ', 'DHCNI', 'DHCNL', 'GOODN', 'GOODO', 'HCDIP', 'HTIA',
+              'HTIBP', 'LANDO', 'MDRRP', 'NYMTL', 'NYMTM', 'NYMTN', 'NYMTZ', 'OPINL', 'RCA', 'RTLPO', 'RTLPP', 'SACC',
+              'SCCB', 'SCCC', 'SCCD', 'SCCE', 'SCCF', 'SCCG', 'SOHOB', 'SOHON', 'SOHOO', 'SQFTP', 'TPTA', 'WHLRD',
+              'WHLRL', 'WHLRP', 'FRGAP', 'LFMDP', 'ACABU', 'ACACU', 'ACAHU', 'ADERU', 'AEAEU', 'ALPAU', 'ALTUU',
+              'AMAOU', 'ANZUU', 'APMIU', 'ARRWU', 'AVHIU', 'BLNGU', 'BMAQU', 'BNNRU', 'BRIVU', 'BRKHU', 'BWACU', 'BWNB',
+              'BWSN', 'BYNOU', 'CCAIU', 'CETUU', 'CFIVU', 'CIIGU', 'CMPOW', 'CNGLU', 'CONXU', 'DMYY', 'DUNEU', 'DWACU',
+              'DWACW', 'EMLDU', 'FGMCU', 'FIACU', 'FLFVU', 'FMIVU', 'FRLAU', 'FTIIU', 'FTPAU', 'GAMCU', 'GATEU',
+              'GMFIU', 'GXIIU', 'HCNEU', 'HCVIU', 'HPLTU', 'HUDAU', 'IIVI', 'INTEU', 'IPVIU', 'JAQCU', 'JMACU', 'LFACU',
+              'LIBYU', 'LIONU', 'LITTU', 'MCAFU', 'MINDP', 'MLAIU', 'MPRAU', 'MTCN', 'MTRYU', 'NBSTU', 'NHICU', 'NPABU',
+              'OHAAU', 'PGRWU', 'PMGMU', 'PNACU', 'POWWP', 'PPYAU', 'PTOCU', 'PUCKU', 'QOMOU', 'RBCP', 'RCLFU', 'REVEU',
+              'RFACU', 'ROCGU', 'RWODU', 'SAMAU', 'SCAQU', 'SDACU', 'SEATW', 'SGHLU', 'SMAPU', 'TBCPU', 'TETCU',
+              'TGVCU', 'THCPU', 'TWCBU', 'TWLVU', 'UPTDU', 'VIIAU', 'WAVSU', 'XFINU', 'XPDBU', 'ZTAQU', 'ALVOW',
+              'BCTXW', 'BDXB', 'BIPH', 'BKDT', 'CCLDO', 'CCLDP', 'CYCCP', 'FBIOP', 'GMVDW', 'HROWL', 'HROWM', 'IMTXW',
+              'NAMSW', 'ROIVW', 'RVPHW', 'STRRP', 'XOMAO', 'XOMAP', 'AAIN', 'ACGLN', 'ACGLO', 'ACQRU', 'AFARU', 'AFGB',
+              'AFGD', 'AGGRU', 'AIBBU', 'AIMBU', 'AIZN', 'ALSAU', 'ARGD', 'ATAKU', 'ATLCL', 'ATLCP', 'AURCU', 'BANFP',
+              'BCSAU', 'BHFAL', 'BHFAM', 'BHFAN', 'BHFAO', 'BHFAP', 'BIOSU', 'BLACU', 'BMN', 'BOCNU', 'BPOPM', 'BRLIU',
+              'BTWNU', 'BWBBP', 'BYTSU', 'CCNEP', 'CCTSU', 'CDAQU', 'CHEAU', 'CNFRL', 'CNOBP', 'CRECU', 'CUBB', 'DCOMP',
+              'DECAU', 'DHCAU', 'DISAU', 'DISTU', 'DPCSU', 'EBACU', 'ECCC', 'ECCV', 'ECCW', 'ECCX', 'EFSCP', 'EIC',
+              'EICA', 'EMCGU', 'ENTFU', 'ESGRO', 'ESGRP', 'EUCRU', 'EVGRU', 'FCNCO', 'FCNCP', 'FGBIP', 'FGFPP', 'FICVU',
+              'FITBI', 'FITBO', 'FITBP', 'FNVTU', 'FRMEP', 'FRONU', 'FSCO', 'FULTP', 'GAINN', 'GAINZ', 'GBRGU', 'GECCN',
+              'GECCO', 'GGAAU', 'GJH', 'GJO', 'GJP', 'GJS', 'GJT', 'GREEL', 'GSRMR', 'GVCIU', 'HAIAU', 'HBANM', 'HBANP',
+              'HCXY', 'HERAU', 'HNNAZ', 'HTFB', 'HTFC', 'HTLFP', 'HWCPZ', 'INBKZ', 'IVCAU', 'IVCBU', 'IVCPU', 'IXAQU',
+              'JSM', 'KMPB', 'KRNLU', 'KTH', 'KYCHU', 'LATGU', 'LCAAU', 'LGSTU', 'LVRAU', 'MACAU', 'MARXU', 'MBINM',
+              'MBINN', 'MBINO', 'MBINP', 'MBNKP', 'MCAAU', 'MGR', 'MGRB', 'MGRD', 'MHLA', 'MHNC', 'MITAU', 'MLACU',
+              'MNSBP', 'MSBIP', 'MSSAU', 'NEWTL', 'NRACU', 'NTRSO', 'OCCIN', 'OCCIO', 'OCFCP', 'OFSSH', 'ONBPO',
+              'ONBPP', 'ONYXU', 'ORIAU', 'OXLCL', 'OXLCM', 'OXLCN', 'OXLCO', 'OXLCP', 'OXLCZ', 'OXSQZ', 'OZKAP',
+              'PEGRU', 'PFH', 'PLAOU', 'PLMIU', 'PNFPP', 'PRH', 'PRLHU', 'PRSRU', 'PTHRU', 'PWUPU', 'RAMMU', 'RCC',
+              'RENEU', 'RILYL', 'RILYP', 'RLTY', 'RMGCU', 'RZB', 'RZC', 'SAJ', 'SAT', 'SAY', 'SBNYP', 'SCRMU', 'SFB',
+              'SHUAU', 'SIGIP', 'SIVBP', 'SKYAU', 'SLAMU', 'SLMBP', 'SMIHU', 'SPKBU', 'SSSSL', 'SVIIU', 'TCBIO',
+              'TECTP', 'TGAAU', 'TRINL', 'TRONU', 'UCBIO', 'UNMA', 'UTAAU', 'VCXAU', 'VLYPO', 'VLYPP', 'VMCAU', 'VPCBU',
+              'WAFDP', 'WSBCP', 'WTFCM', 'WTFCP', 'XPAXU', 'ZIONL', 'ZIONO', 'ZIONP', 'ARKOW', 'CHKEL', 'CHKEW', 'ENBA',
+              'HPKEW', 'METCL', 'TANNI', 'TANNL', 'TANNZ', 'TELZ', 'CHSCL', 'CHSCM', 'CHSCN', 'CHSCO', 'CHSCP', 'WESTW',
+              'WVVIP', 'ACBAU', 'AIRTP', 'ASTSW', 'CCV', 'CCZ', 'COMSP', 'CSSEN', 'CSSEP', 'DBGIW', 'DDT', 'FATBP',
+              'FOSLL', 'GMBLP', 'GTXAP', 'HOVNP', 'HTZWW', 'IMBIL', 'IMPPP', 'INVZW', 'LBRDP', 'OXSQG', 'OXSQL',
+              'PARAP', 'PXSAP', 'PXSAW', 'QRTEP', 'RILYG', 'RILYK', 'RILYM', 'RILYN', 'RILYO', 'RILYT', 'RILYZ',
+              'RSVRW', 'SABRP', 'SBBA', 'SREA', 'TBB', 'TBC', 'THWWW', 'ATCOL', 'AEFC', 'AFGE', 'APTMU', 'ASTLW',
+              'ATMCU', 'ATMV', 'ATMVU', 'AUVIP', 'BEPH', 'BEPI', 'BIPI', 'CGABL', 'CTBB', 'CTDD', 'EAI', 'ECX', 'ELC',
+              'EMP', 'ENO', 'FCRX', 'GFLU', 'GPCR', 'GPJA', 'ISRLU', 'JUGGU', 'KKRS', 'KTN', 'LCFYW', 'LGVCU', 'NEWTZ',
+              'NRUC', 'NSS', 'PACWP', 'QVCC', 'QVCD', 'RCB', 'RWAYL', 'RWAYZ', 'TFSA', 'INLX', 'UPBD', 'ELVN', 'ZVRA',
+              'LVRO', 'MCVT', 'QDRO', 'QDROU', 'TFINP', 'HHRS', 'HUBC', 'HUDA', 'IMCI', 'SCLXW']
+
 etf_tickers = ['AAAU', 'AAPD', 'AAPU', 'AAXJ', 'ABEQ', 'ACES', 'ACWI', 'ACWV', 'ACWX', 'AGG', 'AGGY', 'AGQ', 'AGZ',
-               'AGZD', 'AIA', 'AIRR', 'ALTL', 'AMLP', 'AMZA', 'AMZD', 'AMZU', 'ANGL', 'AOA', 'AOK', 'AOM', 'AOR',
+               'AGZD', 'AIA', 'AIRR', 'ALTL', 'AMZD', 'AMZU', 'ANGL', 'AOA', 'AOK', 'AOM', 'AOR',
                'ARKF', 'ARKG', 'ARKK', 'ARKQ', 'ARKW', 'ASHR', 'AVDE', 'AVDV', 'AVEM', 'AVES', 'AVIG', 'AVIV', 'AVLV',
                'AVRE', 'AVSD', 'AVUS', 'AVUV', 'BAB', 'BALT', 'BAR', 'BBAX', 'BBCA', 'BBEU', 'BBH', 'BBIN', 'BBJP',
                'BBRE', 'BBSA', 'BBUS', 'BCI', 'BERZ', 'BIB', 'BIBL', 'BIL', 'BILS', 'BITI', 'BITO', 'BIV', 'BIZD',
-               'BKLC', 'BKLN', 'BLCN', 'BLOK', 'BLV', 'BMAR', 'BMEZ', 'BND', 'BNDW', 'BNDX', 'BNO', 'BNOV', 'BOIL',
+               'BKLC', 'BKLN', 'BLCN', 'BLOK', 'BLV', 'BMAR', 'BMEZ', 'BND', 'BNDW', 'BNDX', 'BNOV', 'BOIL',
                'BOND', 'BOTZ', 'BRZU', 'BSCM', 'BSCN', 'BSCO', 'BSCP', 'BSCQ', 'BSCR', 'BSCS', 'BSJM', 'BSJN', 'BSJO',
                'BSJP', 'BSJQ', 'BSMN', 'BSMT', 'BSTZ', 'BSV', 'BTAL', 'BTF', 'BUCK', 'BUFD', 'BUFR', 'BUG', 'BULZ',
                'BWX', 'BYTE', 'CALF', 'CATH', 'CCOR', 'CDC', 'CDL', 'CEMB', 'CFO', 'CGCP', 'CGDV', 'CGGO', 'CGGR',
                'CGUS', 'CGW', 'CGXU', 'CHAU', 'CHIE', 'CHIQ', 'CIBR', 'CLOU', 'CLSC', 'CLTL', 'CMBS', 'CMDY', 'CMF',
-               'CNCR', 'CNRG', 'COM', 'COMB', 'COMT', 'COPX', 'CORN', 'CORP', 'COWZ', 'CPER', 'CQQQ', 'CRBN', 'CSB',
-               'CSTNL', 'CTA', 'CURE', 'CWB', 'CWEB', 'CWI', 'CXSE', 'CYA', 'DAPR', 'DAUG', 'DBA', 'DBB', 'DBC', 'DBE',
-               'DBEF', 'DBJP', 'DBMF', 'DBO', 'DDM', 'DEF', 'DEM', 'DES', 'DFAC', 'DFAE', 'DFAI', 'DFAR', 'DFAS',
+               'CNCR', 'CNRG', 'COM', 'COMB', 'COMT', 'COPX', 'CORP', 'COWZ', 'CQQQ', 'CRBN', 'CSB',
+               'CSTNL', 'CTA', 'CURE', 'CWB', 'CWEB', 'CWI', 'CXSE', 'CYA', 'DAPR', 'DAUG',
+               'DBEF', 'DBJP', 'DBMF', 'DDM', 'DEF', 'DEM', 'DES', 'DFAC', 'DFAE', 'DFAI', 'DFAR', 'DFAS',
                'DFAT', 'DFAU', 'DFAX', 'DFCF', 'DFEB', 'DFEM', 'DFEN', 'DFEV', 'DFIC', 'DFIP', 'DFIS', 'DFIV', 'DFNM',
                'DFSD', 'DFSV', 'DFUS', 'DFUV', 'DGRO', 'DGRW', 'DGS', 'DHS', 'DIA', 'DIAL', 'DIG', 'DIHP', 'DISV',
                'DIV', 'DIVB', 'DIVO', 'DJD', 'DJIA', 'DJUL', 'DLN', 'DLS', 'DLY', 'DMXF', 'DNL', 'DOCT', 'DOG', 'DOL',
                'DON', 'DPST', 'DRIP', 'DRIV', 'DRLL', 'DRN', 'DRSK', 'DRV', 'DSEP', 'DSI', 'DSTL', 'DTD', 'DTH', 'DUG',
                'DUHP', 'DUSL', 'DUST', 'DVY', 'DVYE', 'DWAS', 'DWM', 'DWX', 'DXD', 'DXJ', 'EAGG', 'EBND', 'ECH', 'EDC',
                'EDOG', 'EDV', 'EDZ', 'EELV', 'EEM', 'EEMS', 'EEMV', 'EES', 'EFA', 'EFAV', 'EFAX', 'EFG', 'EFV', 'EFZ',
-               'EIDO', 'EMB', 'EMGF', 'EMHY', 'EMLC', 'EMLP', 'EMQQ', 'EMXC', 'ENFR', 'EPHE', 'EPI', 'EPOL', 'EPP',
+               'EIDO', 'EMB', 'EMGF', 'EMHY', 'EMLC', 'EMLP', 'EMQQ', 'EMXC', 'EPHE', 'EPI', 'EPOL', 'EPP',
                'EPS', 'EPV', 'ERX', 'ERY', 'ESGD', 'ESGE', 'ESGU', 'ESGV', 'ESML', 'ESPO', 'ETHE', 'EUFN', 'EUM', 'EUO',
                'EUSA', 'EUSB', 'EWA', 'EWC', 'EWD', 'EWG', 'EWH', 'EWI', 'EWJ', 'EWL', 'EWM', 'EWN', 'EWP', 'EWQ',
                'EWS', 'EWSC', 'EWT', 'EWU', 'EWW', 'EWX', 'EWY', 'EWZ', 'EXI', 'EZA', 'EZU', 'FAAR', 'FAB', 'FALN',
@@ -457,7 +874,7 @@ etf_tickers = ['AAAU', 'AAPD', 'AAPU', 'AAXJ', 'ABEQ', 'ACES', 'ACWI', 'ACWV', '
                'FTXL', 'FTXN', 'FUMB', 'FUTY', 'FV', 'FVAL', 'FVD', 'FXB', 'FXC', 'FXE', 'FXG', 'FXH', 'FXI', 'FXL',
                'FXN', 'FXO', 'FXP', 'FXR', 'FXU', 'FXY', 'FXZ', 'FYC', 'FYT', 'FYX', 'GBF', 'GBIL', 'GBTC', 'GCC',
                'GCOR', 'GCOW', 'GDX', 'GDXJ', 'GDXU', 'GEM', 'GGLL', 'GHYB', 'GHYG', 'GIGB', 'GLD', 'GLDM', 'GLL',
-               'GLTR', 'GMF', 'GMOM', 'GNMA', 'GNR', 'GOVT', 'GQRE', 'GRES', 'GRID', 'GSEW', 'GSG', 'GSIE', 'GSLC',
+               'GLTR', 'GMF', 'GMOM', 'GNMA', 'GNR', 'GOVT', 'GQRE', 'GRES', 'GRID', 'GSEW', 'GSIE', 'GSLC',
                'GSSC', 'GSST', 'GSUS', 'GSY', 'GTO', 'GUNR', 'GUSH', 'GVI', 'GWX', 'GXC', 'HACK', 'HAUZ', 'HDEF',
                'HDGE', 'HDV', 'HEDJ', 'HEFA', 'HEQT', 'HFXI', 'HIBL', 'HIBS', 'HIGH', 'HLAL', 'HMOP', 'HNDL', 'HTRB',
                'HYBB', 'HYD', 'HYDB', 'HYEM', 'HYG', 'HYGH', 'HYGV', 'HYLB', 'HYLS', 'HYMB', 'HYS', 'HYZD', 'IAGG',
@@ -503,15 +920,15 @@ etf_tickers = ['AAAU', 'AAPD', 'AAPU', 'AAXJ', 'ABEQ', 'ACES', 'ACWI', 'ACWV', '
                'SVXY', 'SWAN', 'SYLD', 'TACK', 'TAIL', 'TAN', 'TARK', 'TBF', 'TBIL', 'TBLD', 'TBT', 'TBX', 'TCHP',
                'TDIV', 'TDSC', 'TDTF', 'TDTT', 'TECL', 'TECS', 'TFI', 'TFLO', 'THD', 'THLV', 'TILT', 'TIP', 'TIPX',
                'TLH', 'TLT', 'TLTD', 'TLTE', 'TMF', 'TMFC', 'TMV', 'TNA', 'TOLZ', 'TOTL', 'TPYP', 'TQQQ', 'TSLL',
-               'TSLQ', 'TSLS', 'TTT', 'TUR', 'TWM', 'TYO', 'TZA', 'UCO', 'UCON', 'UDN', 'UDOW', 'UGA', 'UGL', 'UITB',
-               'UJAN', 'UMAR', 'UNG', 'UOCT', 'UPAR', 'UPRO', 'URA', 'URNM', 'URTH', 'URTY', 'USCI', 'USD', 'USDU',
-               'USFR', 'USHY', 'USIG', 'USMF', 'USMV', 'USO', 'USRT', 'USTB', 'USVM', 'USXF', 'UTSL', 'UTWO', 'UUP',
+               'TSLQ', 'TSLS', 'TTT', 'TUR', 'TWM', 'TYO', 'TZA', 'UCO', 'UCON', 'UDOW', 'UGL', 'UITB',
+               'UJAN', 'UMAR', 'UOCT', 'UPAR', 'UPRO', 'URA', 'URNM', 'URTH', 'URTY', 'USD', 'USDU',
+               'USFR', 'USHY', 'USIG', 'USMF', 'USMV', 'USRT', 'USTB', 'USVM', 'USXF', 'UTSL', 'UTWO',
                'UVIX', 'UVXY', 'UWM', 'UYLD', 'VAMO', 'VAW', 'VB', 'VBK', 'VBR', 'VCIT', 'VCLT', 'VCR', 'VCSH', 'VDC',
                'VDE', 'VEA', 'VEGI', 'VEU', 'VFH', 'VFVA', 'VGDTF', 'VGIT', 'VGK', 'VGLT', 'VGSH', 'VGT', 'VHT', 'VIG',
                'VIGI', 'VIOG', 'VIOO', 'VIOV', 'VIS', 'VIXM', 'VIXY', 'VLU', 'VLUE', 'VMBS', 'VNGUF', 'VNLA', 'VNM',
                'VNQ', 'VNQI', 'VO', 'VOE', 'VONE', 'VONG', 'VONV', 'VOO', 'VOOG', 'VOOV', 'VOT', 'VOTE', 'VOX', 'VPL',
                'VPU', 'VRIG', 'VRP', 'VSGX', 'VSS', 'VT', 'VTC', 'VTEB', 'VTHR', 'VTI', 'VTIP', 'VTV', 'VTWG', 'VTWO',
-               'VTWV', 'VUG', 'VUSB', 'VV', 'VWO', 'VWOB', 'VXF', 'VXUS', 'VYM', 'VYMI', 'WANT', 'WCLD', 'WEAT', 'WEBL',
+               'VTWV', 'VUG', 'VUSB', 'VV', 'VWO', 'VWOB', 'VXF', 'VXUS', 'VYM', 'VYMI', 'WANT', 'WCLD', 'WEBL',
                'WEBS', 'WFHY', 'WIP', 'XAR', 'XBI', 'XBJL', 'XBOC', 'XCEM', 'XDEC', 'XES', 'XHB', 'XHE', 'XHS', 'XJH',
                'XJUN', 'XLB', 'XLC', 'XLE', 'XLF', 'XLG', 'XLI', 'XLK', 'XLP', 'XLRE', 'XLU', 'XLV', 'XLY', 'XME',
                'XMHQ', 'XMLV', 'XMMO', 'XNTK', 'XOP', 'XRT', 'XSD', 'XSEP', 'XSLV', 'XSOE', 'XSVM', 'XSW', 'XT', 'XTL',
@@ -529,13 +946,6 @@ def lineNotifyMessage(token, msg):
     return r.status_code
 
 
-if __name__ == "__main__":
-    token = 'YuvfgED98JDWMvATPEAnDu3u9Ge0R2B9BkrOvCwHZId'
-    # message = '基本功能測試'
-
-
-# lineNotifyMessage(token, message)
-
 def lineNotifyImage(token, message, image):
     url = 'https://notify-api.line.me/api/notify'
     headers = {'Authorization': 'Bearer ' + token}
@@ -547,36 +957,17 @@ def lineNotifyImage(token, message, image):
         return '圖片發送成功！'
     else:
         return f'圖片發送失敗: {r.status_code}'
+    image.close()
 
 
-# 需加入均線在上升的條件(今天VCMA需大於昨日VCMA)
-# start = datetime.datetime(2021,2,10)
-# start = ("2021-02-10")
-# end = datetime.datetime.now()
-# end = datetime.now().date().strftime("$Y-$m-$d")
-# delta = datetime.timedelta(days = 500)
-#
-# print (start)
-# print (end)
-# end = datetime.datetime(2022,8,18)
-# def genImage (tickers,df,)
-# plt.rcParams["font.family"]=["Microsoft JhengHei"]   # 中文字型
-# plt.title('Stock Price')
-# df = yf.download("TSLA", period="60d")
-# stock2330=twstock.Stock('2330')
-# plt.plot(df.Close)      # 取得近 31 日股價串列
-##plt.grid(True)
-# plt.savefig('stock.jpg')       # 將圖存成 JPEG 檔
-# for row in range(start,tickers):
 token = 'YuvfgED98JDWMvATPEAnDu3u9Ge0R2B9BkrOvCwHZId'
 
 
 def plotly_chart(dfin, ticker, number):
     # Reference: https://python.plainenglish.io/a-simple-guide-to-plotly-for-plotting-financial-chart-54986c996682
-    # ticker = 'AAPL'
-    # df = yf.download(symbol, start='2020-01-01')
-
-    df = dfin[-266:]
+    plot_period = -155  # 只保留特定天數的資料
+    df = dfin[plot_period:]
+    # df = dfin[-266:]
     # df = yf.download(ticker, period='1y', interval='1d')
 
     # first declare an empty figure
@@ -614,16 +1005,23 @@ def plotly_chart(dfin, ticker, number):
                   )
 
     # add moving averages to df
-    df['MA20'] = df['Close'].rolling(window=20).mean()
-    df['MA5'] = df['Close'].rolling(window=5).mean()
+    # df['MA20'] = df['Close'].rolling(window=20).mean()
+    # df['MA5'] = df['Close'].rolling(window=5).mean()
 
     # add VCMA to df
     df['total_price'] = df['Close'] * df['Volume']
-    df['vcma233'] = df['total_price'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
-    df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
-    df['vcma55'] = df['total_price'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
-    df['vcma21'] = df['total_price'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
-    df['vcma5'] = df['total_price'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
+    # df.loc[df['total_price']] = df['Close'] * df['Volume']
+
+    windows = [233, 144, 55, 21, 5]
+    for w in windows:
+        rolling_total_price = df['total_price'].rolling(window=w).sum()
+        rolling_volume = df['Volume'].rolling(window=w).sum()
+        df[f'vcma{w}'] = rolling_total_price / rolling_volume
+    # df['vcma233'] = df['total_price'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
+    # df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
+    # df['vcma55'] = df['total_price'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
+    # df['vcma21'] = df['total_price'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
+    # df['vcma5'] = df['total_price'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
 
     # add moving average traces
     fig.add_trace(go.Scatter(x=df.index,
@@ -658,52 +1056,59 @@ def plotly_chart(dfin, ticker, number):
     fig.update_layout(xaxis_rangeslider_visible=False)
     # add chart title
     fig.update_layout(title=ticker)
+    fig.update_layout(width=1920, height=1080,
+                      xaxis_title='Date',
+                      yaxis_title='Price',
+                      font=dict(family='Arial', size=24),
+                      title_font=dict(family='Arial', size=36))
 
     # Set MACD color
     colors = ['green' if val >= 0
               else 'red' for val in macd.macd_diff()]
+    # MACD_name = ['Positive MACD' if val >= 0
+    #  else 'Negative MACD' for val in macd.macd_diff()]
+
     # Add MACD trace
     fig.add_trace(go.Bar(x=df.index,
                          y=macd.macd_diff(),
-                         marker_color=colors
+                         marker_color=colors, name="MACD"
                          ), row=3, col=1)
     fig.add_trace(go.Scatter(x=df.index,
                              y=macd.macd(),
-                             line=dict(color='black', width=2)
+                             line=dict(color='blue', width=2),
+                             name='MACD Fast'
                              ), row=3, col=1)
+
     fig.add_trace(go.Scatter(x=df.index,
                              y=macd.macd_signal(),
-                             line=dict(color='blue', width=1)
+                             line=dict(color='red', width=2),
+                             name='MACD Signal'
                              ), row=3, col=1)
     fig.update_yaxes(title_text="MACD", showgrid=False, row=3, col=1)
 
     # Set Volume color
-    colors = ['green' if row['Open'] - row['Close'] >= 0
-              else 'red' for index, row in df.iterrows()]
+    colors = ['red' if row['Open'] - row['Close'] >= 0
+              else 'green' for index, row in df.iterrows()]
     # Add volume trace
     fig.add_trace(go.Bar(x=df.index,
                          y=df['Volume'],
-                         marker_color=colors
+                         marker_color=colors, name="Volume"
                          ), row=2, col=1)
+    # 添加 AvgVol 軌跡
+    fig.add_trace(
+        go.Scatter(x=df.index, y=df['AvgVol'], name="Average Volume"),
+        row=2, col=1
+    )
     fig.update_yaxes(title_text="Volume", row=2, col=1)
 
     # removing white space
     fig.update_layout(margin=go.layout.Margin(
-        l=20,  # left margin
-        r=20,  # right margin
-        b=20,  # bottom margin
-        t=40  # top margin
+        l=60,  # left margin
+        r=60,  # right margin
+        b=60,  # bottom margin
+        t=100  # top margin
     ))
 
-    # fig.write_image(str(number) +".jpg")
-    # layout = go.layout(
-    #    autosize=False,
-    #    width=1080,
-    #    height=960,
-    # )
-    # fig = go.Figure(layout=layout)
-    # img_bytes = fig.to_image(format="jpg",width=1080,height=960)
-    # Image()
     fig.show()
     fig.write_image(str(number) + ".jpg")
 
@@ -715,7 +1120,6 @@ def plot_chart(stock_data, true_number):
     plt.rc('figure', figsize=(15, 10))
     fig, axes = plt.subplots(2, 1, gridspec_kw={'height_ratios': [3, 1]})
     fig.tight_layout(pad=3)
-    # plt.plot(df.Close)
     print(stock_data)
     close = stock_data.Close
     vol = stock_data.Volume
@@ -731,10 +1135,6 @@ def plot_chart(stock_data, true_number):
     fig.suptitle('Daily Candlestick Chart of NIFTY50')
     ohlc.date = ohlc.index.apply(mpl_dates.date2num)
     ohlc = ohlc.astype(float)
-    # plot_vol = axes[1]
-    # plot_vol.bar(date, vol, width=15, color='darkgrey')
-    # plt.grid(True)
-    # Formatting Date
     date_format = mpl_dates.DateFormatter('%d-%m-%Y')
     ax.xaxis.set_major_formatter(date_format)
     fig.autofmt_xdate()
@@ -742,174 +1142,509 @@ def plot_chart(stock_data, true_number):
     plt.savefig(str(true_number) + ".jpg")  # 將圖存成 JPEG 檔
 
 
-# lineNotifyImage(token,'台積電 2330','stock.jpg')
-# start = 5000
-def gogogo(start, tickers, catgory):
-    # i = 0
+def VCMA_history(vcma_values):
+    pattern = np.array([False] * 20 + [True])
+    return np.array_equal(vcma_values[-21:-1], pattern[:-1]) and vcma_values[-1] == pattern[-1]
 
+
+import yfinance as yf
+import pandas as pd
+
+
+def detect_vcp(tickers, start, ptp_list):
     true_number = 0
     run_number = 0
     today = str(datetime.datetime.now().date())
-    token = 'YuvfgED98JDWMvATPEAnDu3u9Ge0R2B9BkrOvCwHZId'
-    lineNotifyMessage(token, "Start: " + today + " " + catgory)
+    lineNotifyMessage(token, "Start VCP: " + today + " ")
     for row in tickers[start:]:
-        start += 1
-        print(catgory + " " + str(start), str(row))
-        # print(row)
-        # df = yf.download(row, start=start, end=end)
-        df = yf.download(row, period="2y")
-        volatility_H = df['High'].max() / df['Close'].mean()
-        volatility_L = df['Low'].min() / df['Close'].mean()
-        volatility = volatility_H - volatility_L
-        # print (str(len(df.index)) + " " + str(volatility_H) + " " + str(volatility_L) + " " + str(volatility))
-        if (len(df.index) > 377 and volatility > 0.1):  # 過濾資料筆數少於377筆的股票，確保上市時間夠久並且判斷2年內的波動率，像死魚一樣不動的股票就不分析
-            run_number += 1
-            # print (df.head())
-            # print (df.tail())
-            # period = "ytd"
-            # print (df.shape[0])
-            df['total_price'] = df['Close'] * df['Volume']
-            vcma = pd.DataFrame()
-            vcma['vcma233'] = df['total_price'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
-            vcma['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
-            vcma['vcma55'] = df['total_price'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
-            vcma['vcma21'] = df['total_price'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
-            vcma['vcma5'] = df['total_price'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
-            vcma['Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (
-                        vcma['vcma55'] > vcma['vcma144']) & (vcma['vcma144'] > vcma['vcma233'])
-            if (TEST == 1):
-                # year = df[-200:]
-                plotly_chart(df, row, true_number)
+        ptp_no = 0
+        ptp = "False"
+        for row2 in ptp_list:  # for row2 in ptp_list[start:]:
+            # print (row,row2)
+            if (row == row2):
+                ptp = "True"
+                ptp_no += 1
+                lineNotifyMessage(token, row + " is PTP stock!")
+                print(row, " is PTP stock, skip analysis!")
+
+        if (ptp != "True"):
+            # print ("Start　analysis!")
+            start += 1
+            print(" " + str(start), str(row))
+            # print(row)
+            # df = yf.download(row, start=start, end=end)
+            try:
+                data = yf.download(row, period="2y", progress=False)
+                data['AvgVol'] = data['Volume'].rolling(55).mean()  # 55為平均的天數
+                last_close_price = round(data["Close"][-1], 2)
+
+            except:
+                lineNotifyMessage(token, row + " is not exist!")
+                # pass
+            # print(df)
+
+            plot_title = "{} {} {} {}".format(row, today, last_close_price, scenario)
+
+    data['Pct Change'] = data['Close'].pct_change()
+    data['Trend'] = 0
+    Trend = 0
+    for i in range(1, len(data)):
+        if data['Close'][i] > data['Close'][i - 1]:
+            if Trend == -1:
+                data['Trend'][i - 1] = -1
+                Trend = 0
+            else:
+                Trend = 1
+        elif data['Close'][i] < data['Close'][i - 1]:
+            if Trend == 1:
+                data['Trend'][i - 1] = 1
+                Trend = 0
+            else:
+                Trend = -1
+
+    data['Consolidation'] = 0
+    Consolidation = 0
+    for i in range(1, len(data)):
+        if data['Trend'][i] == 0:
+            Consolidation += 1
+            if Consolidation >= 5:
+                data['Consolidation'][i] = 1
+        else:
+            Consolidation = 0
+
+    cons_data = data[data['Consolidation'] == 1]
+    cons_data = cons_data[cons_data['Volume'] < cons_data['Volume'].shift()]
+
+    for i in range(1, len(cons_data)):
+        if data['Close'][cons_data.index[i]] > data['Close'][cons_data.index[i - 1]]:
+            if data['Volume'][cons_data.index[i]] > data['Volume'][cons_data.index[i - 1]]:
+                print("VCP pattern found!")
+                plotly_chart(data, plot_title, 0)
+                lineNotifyImage(token, "Meet VCP Criteria", str(true_number) + ".jpg")
+
+
+start = 0
+true_number = 0
+run_number = 0
+today = str(datetime.datetime.now().date())
+#start += 1
+
+
+# unique_tickers = list(set(un_unique_tickers))
+# for ticker in unique_tickers[start:]:
+#    process_data(ticker)
+#    run_number += 1
+def detect_vcp_20230304(ticker_in, data):
+    lineNotifyMessage(token, "Start VCP: " + today + " ")
+    data['AvgVol'] = data['Volume'].rolling(55).mean()  # 55為平均的天數
+    last_close_price = round(data["Close"][-1], 2)
+
+    plot_title = "{} {} {} {}".format(ticker_in, today, last_close_price, scenario)
+
+    data['Pct Change'] = data['Close'].pct_change()
+    data['Trend'] = 0
+    Trend = 0
+    for i in range(1, len(data)):
+        if data['Close'][i] > data['Close'][i - 1]:
+            if Trend == -1:
+                data['Trend'][i - 1] = -1
+                Trend = 0
+            else:
+                Trend = 1
+        elif data['Close'][i] < data['Close'][i - 1]:
+            if Trend == 1:
+                data['Trend'][i - 1] = 1
+                Trend = 0
+            else:
+                Trend = -1
+
+    data['Consolidation'] = 0
+    Consolidation = 0
+    for i in range(1, len(data)):
+        if data['Trend'][i] == 0:
+            Consolidation += 1
+            if Consolidation >= 5:
+                data['Consolidation'][i] = 1
+        else:
+            Consolidation = 0
+
+    cons_data = data[data['Consolidation'] == 1]
+    cons_data = cons_data[cons_data['Volume'] < cons_data['Volume'].shift()]
+
+    for i in range(1, len(cons_data)):
+        if data['Close'][cons_data.index[i]] > data['Close'][cons_data.index[i - 1]]:
+            if data['Volume'][cons_data.index[i]] > data['Volume'][cons_data.index[i - 1]]:
+                print("VCP pattern found!")
+                plotly_chart(data, plot_title, 0)
+                lineNotifyImage(token, "Meet VCP Criteria", str(true_number) + ".jpg")
+
+
+def gogogo_20230304(tickers_in, df, true_number, catgory):
+    global scenario
+    df['AvgVol'] = df['Volume'].rolling(55).mean()  # 55為平均的天數
+    last_close_price = round(df["Close"][-1], 2)
+
+    plot_title = "{} {} {} {}".format(tickers_in, today, last_close_price, scenario)
+    # plot_tile = (row + today + last_close_price)
+    volatility_H = df['High'].max() / df['Close'].mean()
+    volatility_L = df['Low'].min() / df['Close'].mean()
+    volatility = volatility_H - volatility_L
+    # print (str(len(df.index)) + " " + str(volatility_H) + " " + str(volatility_L) + " " + str(volatility))
+    if (len(df.index) > 144 and volatility > 0.1):  # 過濾資料筆數少於144筆的股票，確保上市時間有半年並且判斷半年內的波動率，像死魚一樣不動的股票就不分析
+        #print ("meet volume or volatility, start analysis!")
+        # run_number += 1
+        # print (df.head())
+        # print (df.tail())
+        # period = "ytd"
+        # print (df.shape[0])
+        df['total_price'] = df['Close'] * df['Volume']
+        vcma = pd.DataFrame()
+        # vcma['vcma233'] = df['total_price'].ewm(span=233, adjust=False).mean()
+        # vcma['vcma144'] = df['total_price'].ewm(span=144, adjust=False).mean()
+        # vcma['vcma89'] = df['total_price'].ewm(span=89, adjust=False).mean()
+        # vcma['vcma55'] = df['total_price'].ewm(span=55, adjust=False).mean()
+        # vcma['vcma21'] = df['total_price'].ewm(span=21, adjust=False).mean()
+        # vcma['vcma5'] = df['total_price'].ewm(span=5, adjust=False).mean()
+        vcma['vcma233'] = df['total_price'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
+        vcma['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
+        vcma['vcma89'] = df['total_price'].rolling(window=89).sum() / df['Volume'].rolling(window=89).sum()
+        vcma['vcma55'] = df['total_price'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
+        vcma['vcma21'] = df['total_price'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
+        vcma['vcma5'] = df['total_price'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
+        # vcma['Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (
+        #            vcma['vcma55'] > vcma['vcma144']) & (vcma['vcma144'] > vcma['vcma233'])
+
+        if (ForcePLOT == 1):
+            # year = df[-200:]
+            plotly_chart(df, plot_title, true_number)
+            # plotly_chart(df, row, true_number)
+            url = f'https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{tickers_in}'
+            linemessage = (
+                f"{true_number} - url - ")
+            # f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - {info_sector}")
+            lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+            webbrowser.open(url)
+
+        # vcma['VCMA89_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (vcma['vcma55'] > vcma['vcma89'])
+        # vcma['VCMA21_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55'])
+        vcma['VCMA55_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55'])
+        vcma['VCMA89_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (
+                vcma['vcma55'] > vcma['vcma89'])
+        vcma['VCMA144_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (
+                vcma['vcma55'] > vcma['vcma89']) & (vcma['vcma89'] > vcma['vcma144'])
+        vcma['VCMA233_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (
+                vcma['vcma55'] > vcma['vcma89']) & (vcma['vcma89'] > vcma['vcma144']) & (
+                                         vcma['vcma144'] > vcma['vcma233'])
+
+        VCMA5_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2])
+        VCMA21_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2]) and (
+                vcma['vcma21'].iloc[-1] > vcma['vcma21'].iloc[-2])
+        VCMA55_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2]) and (
+                vcma['vcma21'].iloc[-1] > vcma['vcma21'].iloc[-2]) and (
+                             vcma['vcma55'].iloc[-1] > vcma['vcma55'].iloc[-2])
+        VCMA89_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2]) and (
+                vcma['vcma21'].iloc[-1] > vcma['vcma21'].iloc[-2]) and (
+                             vcma['vcma55'].iloc[-1] > vcma['vcma55'].iloc[-2]) and (
+                             vcma['vcma89'].iloc[-1] > vcma['vcma89'].iloc[-2])
+        VCMA144_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2]) and (
+                vcma['vcma21'].iloc[-1] > vcma['vcma21'].iloc[-2]) and (
+                              vcma['vcma55'].iloc[-1] > vcma['vcma55'].iloc[-2]) and (
+                              vcma['vcma89'].iloc[-1] > vcma['vcma89'].iloc[-2]) and (
+                              vcma['vcma144'].iloc[-1] > vcma['vcma144'].iloc[-2])
+        VCMA233_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2]) and (
+                vcma['vcma21'].iloc[-1] > vcma['vcma21'].iloc[-2]) and (
+                              vcma['vcma55'].iloc[-1] > vcma['vcma55'].iloc[-2]) and (
+                              vcma['vcma89'].iloc[-1] > vcma['vcma89'].iloc[-2]) and (
+                              vcma['vcma144'].iloc[-1] > vcma['vcma144'].iloc[-2]) and (
+                              vcma['vcma233'].iloc[-1] > vcma['vcma233'].iloc[-2])
+
+        vcma_values_233 = vcma['VCMA233_Result'].values
+        pattern_233 = np.array([False] * 20 + [True])
+        VCMA233_history = np.array_equal(vcma_values_233[-21:-1], pattern_233[:-1]) and vcma_values_233[-1] == \
+                          pattern_233[-1]
+
+        vcma_values_144 = vcma['VCMA144_Result'].values
+        pattern_144 = np.array([False] * 20 + [True])
+        VCMA144_history = np.array_equal(vcma_values_144[-21:-1], pattern_144[:-1]) and vcma_values_144[-1] == \
+                          pattern_144[-1]
+
+        vcma_values_89 = vcma['VCMA89_Result'].values
+        pattern_89 = np.array([False] * 20 + [True])
+        VCMA89_history = np.array_equal(vcma_values_89[-21:-1], pattern_89[:-1]) and vcma_values_89[-1] == pattern_89[
+            -1]
+
+        vcma_values_55 = vcma['VCMA55_Result'].values
+        pattern_55 = np.array([False] * 20 + [True])
+        VCMA55_history = np.array_equal(vcma_values_55[-21:-1], pattern_55[:-1]) and vcma_values_55[-1] == pattern_55[
+            -1]
+
+        FinalResult = "FALSE"
+        scenario = 55
+        if (scenario == 55) and (VCMA55_history == True) and (VCMA55_inc == True):
+            FinalResult = "TRUE"
+        elif (scenario == 89) and (VCMA89_history == True) and (VCMA89_inc == True):
+            FinalResult = "TRUE"
+        elif (scenario == 144) and (VCMA144_history == True) and (VCMA144_inc == True):
+            FinalResult = "TRUE"
+        elif (scenario == 233) and (VCMA233_history == True) and (VCMA233_inc == True):
+            FinalResult = "TRUE"
+        else:
+            # print ("No Scenario")
+            return 1
+        # print(FinalResult)
+        if (FinalResult == 'TRUE'):
+
+            info_sector = ""
+
+            # plotly_chart(df, tickers_in, true_number)
+            plotly_chart(df, plot_title, true_number)
+            if (catgory != "TW"):
                 linemessage = (
-                    f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row} - ")
-                # f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - {info_sector}")
-                lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
-            if (vcma['Result'].values[-1] == True) \
-                    and (vcma['Result'].values[-2] == False) \
-                    and (vcma['Result'].values[-3] == False) \
-                    and (vcma['Result'].values[-4] == False) \
-                    and (vcma['Result'].values[-5] == False) \
-                    and (vcma['Result'].values[-6] == False) \
-                    and (vcma['Result'].values[-7] == False) \
-                    and (vcma['Result'].values[-8] == False) \
-                    and (vcma['Result'].values[-9] == False) \
-                    and (vcma['Result'].values[-10] == False) \
-                    and (vcma['Result'].values[-11] == False) \
-                    and (vcma['Result'].values[-12] == False) \
-                    and (vcma['Result'].values[-13] == False) \
-                    and (vcma['Result'].values[-14] == False) \
-                    and (vcma['Result'].values[-15] == False) \
-                    and (vcma['Result'].values[-16] == False) \
-                    and (vcma['Result'].values[-17] == False) \
-                    and (vcma['Result'].values[-18] == False) \
-                    and (vcma['Result'].values[-19] == False) \
-                    and (vcma['Result'].values[-20] == False) \
-                    and (vcma['vcma5'].values[-1] > vcma['vcma5'].values[-2]) \
-                    and (vcma['vcma21'].values[-1] > vcma['vcma21'].values[-2]) \
-                    and (vcma['vcma55'].values[-1] > vcma['vcma55'].values[-2]) \
-                    and (vcma['vcma144'].values[-1] > vcma['vcma144'].values[-2]):
-                # and (vcma['vcma233'].values[-1] > vcma['vcma233'].values[-2]) :
-                # filename = str(row) + ".jpg"
-                # print (filename)
-                # plot_df = df
-                # ticker = yf.Ticker(row)
-                # info = ticker.info
-                # info_sector = info['sector']
-                # plt.figure().clear()
-                # print (row,"TRUE")
-                ##plt.rcParams["font.family"]=["Microsoft JhengHei"]   # 中文字型
-                # plot_title = str(row) + str(info_sector)
-                print(row, "TRUE")
+                    f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in}")
+                url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
+                webbrowser.open(url)
 
-                if (catgory != "ETF"):
-                    ticker = yf.Ticker(row)
-                    info = ticker.info
-                    info_sector = info['sector']
-                    # info_sector = ""
-                else:
-                    info_sector = ""
-                # plt.figure().clear()
-                # plt.title(row)
-                # df = yf.download("TSLA", period="60d")
-                # stock2330=twstock.Stock('2330')
-                # print(info_sector)
-                # plt.plot(df.Close)  # 取得近 31 日股價串列
-                # plt.grid(True)
-                # plt.savefig(str(true_number) + ".jpg")  # 將圖存成 JPEG 檔
-                # plot_chart(df)
-                plotly_chart(df, row, true_number)
-                if (catgory != "TW"):
-
+            else:
+                if (tickers_in[-1] == "W"):
+                    row2 = tickers_in[:4]
                     linemessage = (
-                        f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={row} - {info_sector}")
+                        f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2}")
+                    url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
+                    webbrowser.open(url)
+
                 else:
-                    if (row[-1] == "W"):
-                        row2 = row[:4]
-                        linemessage = (
-                            f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - {info_sector}")
-                    else:
-                        row2 = row[:4]
-                        linemessage = (
-                            f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2} - {info_sector}")
+                    row2 = tickers_in[:4]
+                    linemessage = (
+                        f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2}")
+                    url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
+                    webbrowser.open(url)
 
-                # lineNotifyImage(token,str(start) + " - " + row+" - " + info_sector,str(true_number)+".jpg")
-                lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+            # open_web(url)
+            # lineNotifyImage(token,str(start) + " - " + row+" - " + info_sector,str(true_number)+".jpg")
+            lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
 
-                # lineNotifyMessage(token, row)
-                true_number += 1
-                if (catgory == "ETF" and catgory != "TEST"):
-                    t = Ticker(row)
-                    etf_weighting = t.fund_sector_weightings
-                    print(etf_weighting)
+        print("gogogo Finished")
+    else:
+        print ("Volume or volatility not meet, skip analysis!")
+    # lineNotifyMessage(token, "Finished: " + today + " " + catgory + "\nScanned " + str(run_number) + " of " + str(
+    #    start) + " Stocks in " + catgory + " Market\n" + str(true_number) + " Meet Criteria")
+def remove_ptp_list(ptp_tickers, tickers):
+    us_non_ptp_tickers = [x for x in tickers if x not in ptp_tickers]
+    us_ptp_tickers = [x for x in tickers if x in ptp_tickers]
+    print("PTP US stocks:", us_ptp_tickers)
+    print("Non-PTP US stocks:", us_non_ptp_tickers)
+    return us_non_ptp_tickers
 
-                    # lineNotifyMessage(token,etf_weighting)
-    print("Finished")
-    lineNotifyMessage(token, "Finished: " + today + " " + catgory + "\nScanned " + str(run_number) + " of " + str(
-        start) + " Stocks in " + catgory + " Market\n" + str(true_number) + " Meet Criteria")
-    # sector weightings, returns pandas DataFrame
 
-    # else:
-    # row_str = ''.join(str(row))
-    # print (row_str)
-    # print (row)
-    # string out = String.Join(delimiter, row);
-    # out = "https://tw.tradingview.com/chart/aHk3who2/?symbol="row
-    # lineNotifyMessage(token,result)
-    # lineNotifyMessage(token, row)
-    #    print ("FALSE")
+# for ticker in unique_tickers[start:]:
+#    process_data(ticker)
+#    run_number += 1
 
-    # US = "1"
+
+def get_data(ticker_in):
+    try:
+        data_org = yf.download(ticker_in, period="2y", progress=False)
+    except Exception as e:
+        lineNotifyMessage(token, f"{ticker_in} download failed: {str(e)}")
+        data_org = pd.DataFrame()  # 返回一個空的數據帧
+        print("Get Data Fail")
+    return data_org
+
+
+"""
+if (VCP == 1):
+    for ticker in us_tickers[start:]:
+        get_data(ticker)
+        run_number += 1
+    detect_vcp_20230304(us_tickers, vcp_start)
+
+if (TEST == 1):
+    gogogo(test_start, test_tickers, "TEST", ptp_lists)
+
+
+
+else:
+"""
+
+
+def vcma_and_volume_screener_old(tickers_in, df, true_number, catgory, day):
+    # print ("Start Screener")
+    global scenario
+    df['AvgVol'] = df['Volume'].rolling(5).mean()  # 55為平均的天數
+    df['total_price'] = df['Close'] * df['Volume']
+    last_close_price = round(df["Close"][-1], 2)
+    plot_title = "{} {} {} {}".format(tickers_in, today, last_close_price, scenario)
+    df['vcma{day}'] = df['total_price'].rolling(window=day).sum() / df['Volume'].rolling(window=day).sum()
+    # 获取vcma列的最后两个值
+    last_vcma = df['vcma{day}'].tail(1).iloc[0]
+    second_last_vcma = df['vcma{day}'].tail(2).iloc[0]
+    last_volume = df['Volume'].tail(1).iloc[0]
+    second_last_volume = df['AvgVol'].tail(1).iloc[0]
+
+    # 检查最后一个值是否大于最后第二个值的1.03倍
+    if last_vcma > second_last_vcma * 1.03 and last_volume > second_last_volume * 2:
+        plotly_chart(df, plot_title, true_number)
+        linemessage = (
+            f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{tickers_in} - ")
+        # f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - {info_sector}")
+
+        lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+
+
+def vcma_and_volume_screener_no_comment(tickers_in, df, true_number, catgory, day):
+    df = df.tail(21)  # 只留最後的資料
+    df['AvgVol'] = df['Volume'].rolling(5).mean()
+    df['total_price'] = df['Close'] * df['Volume']
+    last_close_price = round(df["Close"].iloc[-1], 2)
+    plot_title = f"{tickers_in} {today} {last_close_price} {scenario}"
+    df[f'vcma{day}'] = df['total_price'].rolling(window=day).sum() / df['Volume'].rolling(window=day).sum()
+    last_vcma = df[f'vcma{day}'].iloc[-1]
+    second_last_vcma = df[f'vcma{day}'].iloc[-2]
+    last_volume = df['Volume'].iloc[-1]
+    second_last_volume = df['AvgVol'].iloc[-1]
+    if last_vcma > second_last_vcma * 1.03 and last_volume > second_last_volume * 2:
+        plotly_chart(df, plot_title, true_number)
+        if (catgory != "TW"):
+            linemessage = (
+                f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in}")
+            url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
+            webbrowser.open(url)
+
+        else:
+            if (tickers_in[-1] == "W"):
+                row2 = tickers_in[:4]
+                linemessage = (
+                    f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2}")
+                url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
+                webbrowser.open(url)
+
+            else:
+                row2 = tickers_in[:4]
+                linemessage = (
+                    f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2}")
+                url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
+                webbrowser.open(url)
+        lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day):
+    # 只取最後144筆資料
+    # df = df.tail(144)
+
+    # 計算10天平均成交量和總成交金額
+    df['AvgVol'] = df['Volume'].rolling(10).mean()
+    df['total_price'] = df['Close'] * df['Volume']
+
+    # 取得最後一天的收盤價格，用於畫圖標題
+    last_close_price = round(df["Close"].iloc[-1], 2)
+    plot_title = f"{tickers_in} {today} {last_close_price} {scenario} screener"
+
+    # 計算vcma
+    df[f'vcma{day}'] = df['total_price'].rolling(window=day).sum() / df['Volume'].rolling(window=day).sum()
+
+    # 取得vcma列的最後兩個值
+    last_vcma = df[f'vcma{day}'].iloc[-1]
+    second_last_vcma = df[f'vcma{day}'].iloc[-2]
+
+    # 取得最後一天的成交量和5天平均成交量的最後一個值
+    last_volume = df['Volume'].iloc[-1]
+    second_last_volume = df['AvgVol'].iloc[-1]
+
+    # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
+    if last_vcma > second_last_vcma * 1.03 and last_volume > second_last_volume * 2:
+        plotly_chart(df, plot_title, true_number)
+        if (catgory != "TW"):
+            linemessage = (
+                f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in} - screener")
+            url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
+            webbrowser.open(url)
+
+        else:
+            if (tickers_in[-1] == "W"):
+                row2 = tickers_in[:4]
+                linemessage = (
+                    f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - screener")
+                url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
+                webbrowser.open(url)
+
+            else:
+                row2 = tickers_in[:4]
+                linemessage = (
+                    f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2} - screener")
+                url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
+                webbrowser.open(url)
+
+        lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+
+
+def party(ticker_type, tickers_in, start):
+    run_number = start
+    lineNotifyMessage(token, "Start: " + str(today) + " " + str(ticker_type))
+    # print ("US LOOP")
+    new_tickers = remove_ptp_list(ptp_lists, tickers_in)
+    # new_tickers = remove_ptp_list(ptp_lists, test_tickers)
+    # print (new_tickers)
+    for ticker in new_tickers[start:]:
+        print(ticker_type, run_number, " ", ticker)
+        data = get_data(ticker)
+        # print (data)
+        run_number += 1
+        # print ("before gogogo")
+        # print (ticker)
+        if (gogogo_run == 1):
+            gogogo_20230304(ticker, data, run_number, ticker_type)
+        if (VCP == 1):
+            detect_vcp_20230304(ticker, data)
+        if (VCMA_SCREENER == 1):
+            vcma_and_volume_screener(ticker, data, run_number, ticker_type, screener_day)
+
+
+scenario = 55
+VCP = 0
+VCP_TEST = 0
+ForcePLOT = 0
 TEST = 0
 ETF = 0
 TW = 1
 US = 0
+VCMA_SCREENER = 1
+vcp_start = 0
 test_start = 0
 us_start = 0
 tw_start = 0
 etf_start = 0
-# import csv
-# ticker_file = "test.csv"
-# ticker_file = "russell_2000_stocklist_test.csv"
-# ticker_file = "tw_all_stocklist.csv"
-# ticker_file = "E:\Rojer\Desktop\\sp500_stocklist_test.csv"
-# with open(ticker_file, newline='') as f:          # Read lines separately
-#    reader = csv.reader(f, delimiter='t')
-#    tickers = list(reader)
-# print(tickers)
-# country = "TW"
-# country = "US"
-
+ptp = 0
+screener_day = 10
+gogogo_run = 1
 
 if (TEST == 1):
-    gogogo(test_start, test_tickers, "TEST")
+    party("TEST", test_tickers, test_start)
+if (US == 1):
+    party("US", us_tickers, us_start)
+if (TW == 1):
+    party("TW", tw_tickers, tw_start)
+if (ETF == 1):
+    party("ETF", etf_tickers, etf_start)
 
+"""
+if (US == 1):
+    lineNotifyMessage(token, "Start: " + str(today) + " US")
+    #print ("US LOOP")
+    new_tickers = remove_ptp_list(ptp_lists, us_tickers)
+    #new_tickers = remove_ptp_list(ptp_lists, test_tickers)
 
-else:
-    if (US == 1):
-        gogogo(us_start, us_tickers, "US")
-    if (TW == 1):
-        gogogo(tw_start, tw_tickers, "TW")
-    if (ETF == 1):
-        gogogo(etf_start, etf_tickers, "ETF")
-# gogogo (us_tickers,"USTW")
-
+    #print (new_tickers)
+    for ticker in new_tickers:
+        print ("US" , run_number," ", ticker)
+        data = get_data(ticker)
+        #print (data)
+        run_number += 1
+        #print ("before gogogo")
+        #print (ticker)
+        gogogo_20230304(ticker, data, run_number, "US")
+        if (VCP == 1):
+            detect_vcp_20230304(ticker, data)
+        #print("after gogogo")
+if (TW == 1):
+    gogogo(tw_start, tw_tickers, "TW", ptp_lists)
+if (ETF == 1):
+    gogogo(etf_start, etf_tickers, "ETF", ptp_lists)
+"""
