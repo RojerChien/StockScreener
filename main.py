@@ -1524,6 +1524,7 @@ def vcma_and_volume_screener_no_comment(tickers_in, df, true_number, catgory, da
                 url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
                 webbrowser.open(url)
         lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+
 def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day):
     # 只取最後144筆資料
     # df = df.tail(144)
