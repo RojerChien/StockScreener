@@ -1517,7 +1517,6 @@ def vcma_and_volume_screener_no_comment(tickers_in, df, true_number, catgory, da
                     f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2}")
                 url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
                 webbrowser.open(url)
-
             else:
                 row2 = tickers_in[:4]
                 linemessage = (
@@ -1530,49 +1529,55 @@ def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day):
     # df = df.tail(144)
 
     # 計算10天平均成交量和總成交金額
-    df['AvgVol'] = df['Volume'].rolling(10).mean()
+    df['AvgVol'] = df['Volume'].rolling(day).mean()
+    #df['SMA'] = df['Close'].rolling(day).mean()
     df['total_price'] = df['Close'] * df['Volume']
+    df['total_price_day'] = df['total_price'].rolling(day).mean()
 
-    # 取得最後一天的收盤價格，用於畫圖標題
-    last_close_price = round(df["Close"].iloc[-1], 2)
-    plot_title = f"{tickers_in} {today} {last_close_price} {scenario} screener"
+    ## 最後day個交易金額大於100萬的話，才進行分析，避免掉一些太小的股票
+    last_data = int(round(df['total_price_day'].tail(1).iloc[0] / 1000000)) # 使用iloc[0]取得最後一筆資料，並計算成以百萬為單位
+    print(last_data)
+    if last_data > 1:
+        # 取得最後一天的收盤價格，用於畫圖標題
+        last_close_price = round(df["Close"].iloc[-1], 2)
+        plot_title = f"{tickers_in} {today} {last_close_price} {scenario} screener"
 
-    # 計算vcma
-    df[f'vcma{day}'] = df['total_price'].rolling(window=day).sum() / df['Volume'].rolling(window=day).sum()
+        # 計算vcma
+        df[f'vcma{day}'] = df['total_price'].rolling(window=day).sum() / df['Volume'].rolling(window=day).sum()
 
-    # 取得vcma列的最後兩個值
-    last_vcma = df[f'vcma{day}'].iloc[-1]
-    second_last_vcma = df[f'vcma{day}'].iloc[-2]
+        # 取得vcma列的最後兩個值
+        last_vcma = df[f'vcma{day}'].iloc[-1]
+        second_last_vcma = df[f'vcma{day}'].iloc[-2]
 
-    # 取得最後一天的成交量和5天平均成交量的最後一個值
-    last_volume = df['Volume'].iloc[-1]
-    second_last_volume = df['AvgVol'].iloc[-1]
+        # 取得最後一天的成交量和5天平均成交量的最後一個值
+        last_volume = df['Volume'].iloc[-1]
+        second_last_volume = df['AvgVol'].iloc[-1]
 
-    # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
-    if last_vcma > second_last_vcma * 1.03 and last_volume > second_last_volume * 2:
-        plotly_chart(df, plot_title, true_number)
-        if (catgory != "TW"):
-            linemessage = (
-                f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in} - screener")
-            url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
-            webbrowser.open(url)
-
-        else:
-            if (tickers_in[-1] == "W"):
-                row2 = tickers_in[:4]
+        # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
+        if last_vcma > second_last_vcma * 1.03 and last_volume > second_last_volume * 2:
+            plotly_chart(df, plot_title, true_number)
+            if (catgory != "TW"):
                 linemessage = (
-                    f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - screener")
-                url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
+                    f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in} - screener")
+                url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
                 webbrowser.open(url)
 
             else:
-                row2 = tickers_in[:4]
-                linemessage = (
-                    f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2} - screener")
-                url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
-                webbrowser.open(url)
+                if (tickers_in[-1] == "W"):
+                    row2 = tickers_in[:4]
+                    linemessage = (
+                        f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - screener")
+                    url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
+                    webbrowser.open(url)
 
-        lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+                else:
+                    row2 = tickers_in[:4]
+                    linemessage = (
+                        f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2} - screener")
+                    url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
+                    webbrowser.open(url)
+
+            lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
 
 
 def party(ticker_type, tickers_in, start):
