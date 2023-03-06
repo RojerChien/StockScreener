@@ -222,7 +222,7 @@ tw_tickers = ['1101.TW', '1102.TW', '1103.TW', '1104.TW', '1108.TW', '1109.TW', 
               '6242.TWO', '6243.TW', '6244.TWO', '6245.TWO', '6246.TWO', '6247.TWO', '6248.TWO', '6257.TW', '6259.TWO',
               '6261.TWO', '6263.TWO', '6264.TWO', '6265.TWO', '6266.TWO', '6269.TW', '6270.TWO', '6271.TW', '6274.TWO',
               '6275.TWO', '6276.TWO', '6277.TW', '6278.TW', '6279.TWO', '6281.TW', '6282.TW', '6283.TW', '6284.TWO',
-              '6285.TW', '6287.TWO', '6288.TW', '6289.TW', '6290.TWO', '6291.TWO', '6292.TWO', '6294.TWO', '6404.TWO',
+              '6285.TW', '6287.TWO', '6288.TW', '6290.TWO', '6291.TWO', '6292.TWO', '6294.TWO', '6404.TWO',
               '6405.TW', '6409.TW', '6411.TWO', '6412.TW', '6414.TW', '6415.TW', '6416.TW', '6417.TWO', '6418.TWO',
               '6419.TWO', '6425.TWO', '6431.TW', '6432.TWO', '6435.TWO', '6441.TWO', '6442.TW', '6443.TW', '6446.TWO',
               '6449.TW', '6451.TW', '6456.TW', '6457.TWO', '6461.TWO', '6462.TWO', '6464.TW', '6465.TWO', '6469.TWO',
@@ -1534,11 +1534,16 @@ def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day):
     #df['SMA'] = df['Close'].rolling(day).mean()
     df['total_price'] = df['Close'] * df['Volume']
     df['total_price_day'] = df['total_price'].rolling(day).mean()
+    # 計算vcma 144
+    df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
 
-    ## 最後day個交易金額大於100萬的話，才進行分析，避免掉一些太小的股票
-    last_data = int(round(df['total_price_day'].tail(1).iloc[0] / 1000000)) # 使用iloc[0]取得最後一筆資料，並計算成以百萬為單位
-    print(last_data)
-    if last_data > 1:
+
+    last_turnover_data = int(round(df['total_price_day'].tail(1).iloc[0] / 1000000)) # 使用iloc[0]取得最後一筆資料，並計算成以百萬為單位
+    last_vcma144_data = int(round(df['vcma144'].tail(1).iloc[0]))
+    last_close_data = int(round(df['Close'].tail(1).iloc[0]))
+    print("TurnOver: " + str(last_turnover_data) + " VCMA144: " + str(last_vcma144_data) + " Last Close: " + str(last_close_data))
+    ## 最後day個交易金額大於100萬的話，並且大於144 VCMA時才進行分析，避免掉一些成交金額太小或是弱勢的股票
+    if last_turnover_data > 1 and last_close_data > last_vcma144_data:
         # 取得最後一天的收盤價格，用於畫圖標題
         last_close_price = round(df["Close"].iloc[-1], 2)
         plot_title = f"{tickers_in} {today} {last_close_price} {scenario} screener"
@@ -1602,7 +1607,6 @@ def party(ticker_type, tickers_in, start):
         if (VCMA_SCREENER == 1):
             vcma_and_volume_screener(ticker, data, run_number, ticker_type, screener_day)
 
-
 scenario = 55
 VCP = 0
 VCP_TEST = 0
@@ -1618,7 +1622,7 @@ us_start = 0
 tw_start = 0
 etf_start = 0
 ptp = 0
-screener_day = 10
+screener_day = 15
 gogogo_run = 0
 
 if (TEST == 1):
