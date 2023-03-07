@@ -629,9 +629,9 @@ def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day, volume_f
         second_last_vcma = df[f'vcma{day}'].iloc[-2]
         last_volume = df['Volume'].iloc[-1] * volume_factor
         second_last_volume = df['AvgVol'].iloc[-1]
-        print(volume_factor)
-        print(df['Volume'].iloc[-1])
-        print(last_volume)
+        #print(volume_factor)
+        #print(df['Volume'].iloc[-1])
+        #print(last_volume)
         #plot_title = f"{tickers_in} {today} {last_close_price} {day} screener"
 
         # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
