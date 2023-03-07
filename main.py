@@ -606,22 +606,23 @@ def get_data(ticker_in):
 def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day):
     # 只取最後144筆資料
     # df = df.tail(144)
-
+    print(df.tail(1))
     # 計算10天平均成交量和總成交金額
     df['AvgVol'] = df['Volume'].rolling(day).mean()
     #df['SMA'] = df['Close'].rolling(day).mean()
     df['total_price'] = df['Close'] * df['Volume']
     df['total_price_day'] = df['total_price'].rolling(day).mean()
     # 計算vcma 144
-    df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
+    #df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
+    df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(
+        window=144).sum()
 
-
-    last_turnover_data = int(round(df['total_price_day'].tail(1).iloc[0] / 1000000)) # 使用iloc[0]取得最後一筆資料，並計算成以百萬為單位
-    last_vcma144_data = int(round(df['vcma144'].tail(1).iloc[0]))
-    last_close_price = round(df["Close"].iloc[-1], 2)
+    last_turnover_data = df['total_price_day'].tail(1).iloc[0]  # 使用iloc[0]取得最後一筆資料，並計算成以百萬為單位
+    last_vcma144_data = df['vcma144'].tail(1).iloc[0]
+    last_close_price = df["Close"].iloc[-1]
     print("TurnOver: " + str(last_turnover_data) + " VCMA144: " + str(last_vcma144_data) + " Last Close: " + str(last_close_price))
-    ## 最後day個交易金額大於100萬的話，並且大於144 VCMA時才進行分析，避免掉一些成交金額太小或是弱勢的股票
-    if last_turnover_data > 1 and last_close_price > last_vcma144_data:
+    ## 最後day個交易金額大於10萬的話，並且大於144 VCMA時才進行分析，避免掉一些成交金額太小或是弱勢的股票
+    if last_turnover_data > 100000 and last_close_price > last_vcma144_data:
         # 取得最後一天的收盤價格，用於畫圖標題
         #last_close_price = round(df["Close"].iloc[-1], 2)
         plot_title = f"{tickers_in} {today} {last_close_price} {day} screener"
@@ -691,8 +692,8 @@ VCP_TEST = 0
 ForcePLOT = 0
 TEST = 0
 ETF = 0
-TW = 1
-US = 0
+TW = 0
+US = 1
 VCMA_SCREENER = 1
 vcp_start = 0
 test_start = 0
@@ -712,27 +713,3 @@ if (TW == 1):
 if (ETF == 1):
     party("ETF", etf_tickers, etf_start)
 
-"""
-if (US == 1):
-    lineNotifyMessage(token, "Start: " + str(today) + " US")
-    #print ("US LOOP")
-    new_tickers = remove_ptp_list(ptp_lists, us_tickers)
-    #new_tickers = remove_ptp_list(ptp_lists, test_tickers)
-
-    #print (new_tickers)
-    for ticker in new_tickers:
-        print ("US" , run_number," ", ticker)
-        data = get_data(ticker)
-        #print (data)
-        run_number += 1
-        #print ("before gogogo")
-        #print (ticker)
-        gogogo_20230304(ticker, data, run_number, "US")
-        if (VCP == 1):
-            detect_vcp_20230304(ticker, data)
-        #print("after gogogo")
-if (TW == 1):
-    gogogo(tw_start, tw_tickers, "TW", ptp_lists)
-if (ETF == 1):
-    gogogo(etf_start, etf_tickers, "ETF", ptp_lists)
-"""
