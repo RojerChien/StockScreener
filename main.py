@@ -604,43 +604,36 @@ def get_data(ticker_in):
     return data_org
 
 def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day):
-    # 只取最後144筆資料
-    # df = df.tail(144)
-    print(df.tail(1))
-    # 計算10天平均成交量和總成交金額
+    # Check if the dataframe is empty
+    if df.empty:
+        return
+
+    # Calculate rolling averages and other computations
     df['AvgVol'] = df['Volume'].rolling(day).mean()
-    #df['SMA'] = df['Close'].rolling(day).mean()
     df['total_price'] = df['Close'] * df['Volume']
     df['total_price_day'] = df['total_price'].rolling(day).mean()
-    # 計算vcma 144
-    #df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
-    df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(
-        window=144).sum()
+    df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(window=144).sum()
 
-    last_turnover_data = df['total_price_day'].tail(1).iloc[0]  # 使用iloc[0]取得最後一筆資料，並計算成以百萬為單位
+    # Get the last data points
+    last_turnover_data = df['total_price_day'].tail(1).iloc[0]
     last_vcma144_data = df['vcma144'].tail(1).iloc[0]
     last_close_price = df["Close"].iloc[-1]
-    print("TurnOver: " + str(last_turnover_data) + " VCMA144: " + str(last_vcma144_data) + " Last Close: " + str(last_close_price))
-    ## 最後day個交易金額大於10萬的話，並且大於144 VCMA時才進行分析，避免掉一些成交金額太小或是弱勢的股票
-    if last_turnover_data > 100000 and last_close_price > last_vcma144_data:
-        # 取得最後一天的收盤價格，用於畫圖標題
-        #last_close_price = round(df["Close"].iloc[-1], 2)
-        plot_title = f"{tickers_in} {today} {last_close_price} {day} screener"
 
-        # 計算vcma
+    # Check if the conditions are met for analysis
+    if last_turnover_data > 100000 and last_close_price > last_vcma144_data:
+        # Calculate vcma
         df[f'vcma{day}'] = df['total_price'].rolling(window=day).sum() / df['Volume'].rolling(window=day).sum()
 
-        # 取得vcma列的最後兩個值
+        # Get the last data points
         last_vcma = df[f'vcma{day}'].iloc[-1]
         second_last_vcma = df[f'vcma{day}'].iloc[-2]
-
-        # 取得最後一天的成交量和5天平均成交量的最後一個值
         last_volume = df['Volume'].iloc[-1]
         second_last_volume = df['AvgVol'].iloc[-1]
+        #plot_title = f"{tickers_in} {today} {last_close_price} {day} screener"
 
         # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
         if last_vcma > second_last_vcma * 1.03 and last_volume > second_last_volume * 2:
-            plotly_chart(df, plot_title, true_number)
+            plot_title = f"{tickers_in} {today} {last_close_price} {day} screener"
             if (catgory != "TW"):
                 linemessage = (
                     f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in} - screener")
@@ -662,7 +655,93 @@ def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day):
                     url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
                     webbrowser.open(url)
 
+            plotly_chart(df, plot_title, true_number)
             lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+def vcma_and_volume_screener_pre_optimize(tickers_in, df, true_number, catgory, day):
+    # 判斷dataframe是否為空的，若不是空的才往下，以試著避免yfinance在穫取資料時的錯誤
+    if not df.empty:
+        # 只取最後144筆資料
+        # df = df.tail(144)
+        print(df.tail(1))
+        # 計算10天平均成交量和總成交金額
+        df['AvgVol'] = df['Volume'].rolling(day).mean()
+        #df['SMA'] = df['Close'].rolling(day).mean()
+        df['total_price'] = df['Close'] * df['Volume']
+        df['total_price_day'] = df['total_price'].rolling(day).mean()
+        # 計算vcma 144
+        #df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
+        df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(
+            window=144).sum()
+
+        last_turnover_data = df['total_price_day'].tail(1).iloc[0]  # 使用iloc[0]取得最後一筆資料，並計算成以百萬為單位
+        last_vcma144_data = df['vcma144'].tail(1).iloc[0]
+        last_close_price = df["Close"].iloc[-1]
+        print("TurnOver: " + str(last_turnover_data) + " VCMA144: " + str(last_vcma144_data) + " Last Close: " + str(last_close_price))
+        ## 最後day個交易金額大於10萬的話，並且大於144 VCMA時才進行分析，避免掉一些成交金額太小或是弱勢的股票
+        if last_turnover_data > 100000 and last_close_price > last_vcma144_data:
+            # 取得最後一天的收盤價格，用於畫圖標題
+            #last_close_price = round(df["Close"].iloc[-1], 2)
+            plot_title = f"{tickers_in} {today} {last_close_price} {day} screener"
+
+            # 計算vcma
+            df[f'vcma{day}'] = df['total_price'].rolling(window=day).sum() / df['Volume'].rolling(window=day).sum()
+
+            # 取得vcma列的最後兩個值
+            last_vcma = df[f'vcma{day}'].iloc[-1]
+            second_last_vcma = df[f'vcma{day}'].iloc[-2]
+
+            # 取得最後一天的成交量和5天平均成交量的最後一個值
+            last_volume = df['Volume'].iloc[-1]
+            second_last_volume = df['AvgVol'].iloc[-1]
+
+            # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
+            if last_vcma > second_last_vcma * 1.03 and last_volume > second_last_volume * 2:
+                plotly_chart(df, plot_title, true_number)
+                if (catgory != "TW"):
+                    linemessage = (
+                        f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in} - screener")
+                    url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
+                    webbrowser.open(url)
+
+                else:
+                    if (tickers_in[-1] == "W"):
+                        row2 = tickers_in[:4]
+                        linemessage = (
+                            f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - screener")
+                        url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
+                        webbrowser.open(url)
+
+                    else:
+                        row2 = tickers_in[:4]
+                        linemessage = (
+                            f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2} - screener")
+                        url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
+                        webbrowser.open(url)
+
+                lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+
+def my_vcp_screener (ticker_in, data):
+    volatility_5 = calculate_volatility(data, 5)
+    volatility_13 = calculate_volatility(data, 13)
+    volatility_21 = calculate_volatility(data, 21)
+    volatility_55 = calculate_volatility(data, 55)
+    if volatility_5 < volatility_13 < volatility_21 < volatility_55:
+        url = (f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}")
+        print(ticker_in, url)
+
+def calculate_volatility(df, n_days):
+    # 選擇最後n_days天的數據
+    hist = df.tail(n_days)
+
+    # 計算最高價格/平均價格和最低價格/平均價格
+    avg_close_price = hist['Close'].mean()
+    max_close_price = hist['Close'].max()
+    min_close_price = hist['Close'].min()
+    volatility_h = max_close_price / avg_close_price -1
+    volatility_l = avg_close_price / min_close_price -1
+    volatility = volatility_h + volatility_l
+
+    return volatility
 
 
 def party(ticker_type, tickers_in, start):
@@ -682,27 +761,48 @@ def party(ticker_type, tickers_in, start):
         if (gogogo_run == 1):
             gogogo_20230304(ticker, data, run_number, ticker_type)
         if (VCP == 1):
-            detect_vcp_20230304(ticker, data)
+            #detect_vcp_20230304(ticker, data)
+            print("Running VCP")
+            my_vcp_screener(ticker, data)
         if (VCMA_SCREENER == 1):
             vcma_and_volume_screener(ticker, data, run_number, ticker_type, screener_day)
 
-scenario = 55
+# VCMA Scenario
+scenario = 55 # 55, 89, 144, 233共4種
+
+#設定要執行的種類
 VCP = 0
 VCP_TEST = 0
-ForcePLOT = 0
-TEST = 0
-ETF = 0
-TW = 0
-US = 1
 VCMA_SCREENER = 1
+gogogo_run = 0
+
+#強制寫出plotly，主要用來測試
+ForcePLOT = 0
+
+# Test Tickers
+test_tickers = ['1906.TW', '1103.TW' ]
+
+#要執行的ticker種類
+TEST = 0
+US = 1
+TW = 0
+ETF = 0
+
+
+
+#screener要判斷的平均天數
+screener_day = 15
+
+#若程式執行至一半中斷，可以設定重新執行的位置
 vcp_start = 0
 test_start = 0
 us_start = 0
 tw_start = 0
 etf_start = 0
+
 ptp = 0
-screener_day = 15
-gogogo_run = 0
+
+test_tickers = ['BBIO', 'AAPL' ]
 
 if (TEST == 1):
     party("TEST", test_tickers, test_start)
@@ -712,4 +812,3 @@ if (TW == 1):
     party("TW", tw_tickers, tw_start)
 if (ETF == 1):
     party("ETF", etf_tickers, etf_start)
-
