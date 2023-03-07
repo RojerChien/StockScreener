@@ -603,7 +603,7 @@ def get_data(ticker_in):
         print("Get Data Fail")
     return data_org
 
-def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day):
+def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day, volume_factor):
     # Check if the dataframe is empty
     if df.empty:
         return
@@ -615,7 +615,7 @@ def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day):
     df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(window=144).sum()
 
     # Get the last data points
-    last_turnover_data = df['total_price_day'].tail(1).iloc[0]
+    last_turnover_data = df['total_price_day'].tail(1).iloc[0] * volume_factor
     last_vcma144_data = df['vcma144'].tail(1).iloc[0]
     last_close_price = df["Close"].iloc[-1]
 
@@ -627,8 +627,11 @@ def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day):
         # Get the last data points
         last_vcma = df[f'vcma{day}'].iloc[-1]
         second_last_vcma = df[f'vcma{day}'].iloc[-2]
-        last_volume = df['Volume'].iloc[-1]
+        last_volume = df['Volume'].iloc[-1] * volume_factor
         second_last_volume = df['AvgVol'].iloc[-1]
+        print(volume_factor)
+        print(df['Volume'].iloc[-1])
+        print(last_volume)
         #plot_title = f"{tickers_in} {today} {last_close_price} {day} screener"
 
         # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
@@ -765,10 +768,13 @@ def party(ticker_type, tickers_in, start):
             print("Running VCP")
             my_vcp_screener(ticker, data)
         if (VCMA_SCREENER == 1):
-            vcma_and_volume_screener(ticker, data, run_number, ticker_type, screener_day)
+            vcma_and_volume_screener(ticker, data, run_number, ticker_type, screener_day, vol_factor)
 
 # VCMA Scenario
 scenario = 55 # 55, 89, 144, 233共4種
+
+# Volume Factor
+vol_factor = 8
 
 #設定要執行的種類
 VCP = 0
