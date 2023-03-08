@@ -1,5 +1,50 @@
 from PIL import Image
 import glob
+import os
+
+# 設置每行顯示6張圖片，計算列數
+images_per_row = 6
+width_resolution = 1080
+height_resolution = int(width_resolution * 0.56)
+
+# 找到所有*date.jpg文件
+date = "2023-03-09"
+image_list = glob.glob(f"*{date}.jpg")
+
+# 將圖像列表分成多個列表
+num_images_per_list = 636  # 每個列表中包含100個圖像
+image_lists = [image_list[i:i+num_images_per_list] for i in range(0, len(image_list), num_images_per_list)]
+
+# 遍歷每個圖像列表
+for i, image_list in enumerate(image_lists):
+    # 計算輸出圖像大小和行數
+    num_rows = len(image_list) // images_per_row + (1 if len(image_list) % images_per_row else 0)
+    output_width = images_per_row * width_resolution
+    output_height = num_rows * height_resolution
+    # 創建一個空白的輸出圖像
+    output_image = Image.new('RGB', (output_width, output_height))
+    # 將所有圖像合併到輸出圖像中
+    for j, image_path in enumerate(image_list):
+        # 打開圖像
+        image = Image.open(image_path)
+        # 計算該圖像的位置
+        row = j // images_per_row
+        col = j % images_per_row
+        x = col * width_resolution
+        y = row * height_resolution
+        # 將圖像貼到輸出圖像中
+        output_image.paste(image, (x, y))
+    # 將輸出圖像保存為文件
+    output_image.save(f"merged_{i}_{date}.png")
+
+
+
+
+
+
+"""
+from PIL import Image
+import glob
 
 # 設置每行顯示6張圖片，計算列數
 images_per_row = 6
@@ -9,9 +54,6 @@ height_resolution = int(width_resolution * 0.56)
 # 找到所有*date.jpg文件
 date = "2023-03-08"
 image_list = glob.glob(f"*{date}.jpg")
-
-
-
 
 num_rows = len(image_list) // images_per_row + (1 if len(image_list) % images_per_row else 0)
 
@@ -35,7 +77,7 @@ for i, image_path in enumerate(image_list):
     output_image.paste(image, (x, y))
 
 # 將輸出圖像保存為文件
-output_image.save("output.png")
+output_image.save("output.png")"""
 
 
 
@@ -62,3 +104,4 @@ for i in range(len(image_files)):
 # 儲存新的合併圖像
 new_image.save('merged_image.png')
 """
+

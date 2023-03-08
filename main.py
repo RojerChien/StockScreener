@@ -2,7 +2,7 @@ from pickle import TRUE
 # https://medium.com/geekculture/top-4-python-libraries-for-technical-analysis-db4f1ea87e09
 
 import pandas as pd
-
+from finvizfinance.screener.overview import Overview
 pd.options.mode.chained_assignment = None  # 將警告訊息關閉
 import yfinance as yf
 import matplotlib.pyplot as plt
@@ -26,6 +26,16 @@ import webbrowser
 import requests
 from bs4 import BeautifulSoup
 
+
+def get_finviz_screener_tickers():
+    foverview = Overview()
+    filters_dict = {'20-Day Simple Moving Average':'SMA20 above SMA50',
+                    '50-Day Simple Moving Average':'SMA50 above SMA200',
+                    'Change':'Up 3%'}
+    foverview.set_filter(filters_dict=filters_dict)
+    df = foverview.screener_view()
+    tickers = df['Ticker'].tolist()
+    return tickers
 
 def get_ptp_tickers(url1, url2):
     # 第一個網站
@@ -79,14 +89,19 @@ df_etf = pd.read_excel("Tickers.xlsx", sheet_name="ETF", usecols=[0])
 tw_tickers = df_tw.iloc[:, 0].tolist()
 us_tickers = df_us.iloc[:, 0].tolist()
 etf_tickers = df_etf.iloc[:, 0].tolist()
+fin_tickers = get_finviz_screener_tickers()
+print(fin_tickers)
+#print(fin_tickers)
 
 tw_tickers_length = len(tw_tickers)
 us_tickers_length = len(us_tickers)
 etf_tickers_length = len(etf_tickers)
+fin_tickers_length = len(fin_tickers)
 
 print("Total TW Tickers:", tw_tickers_length)
 print("Total US Tickers:", us_tickers_length)
 print("Total ETF Tickers:", etf_tickers_length)
+print("Total FIN Tickers:", fin_tickers_length)
 
 #############################################################################
 
@@ -116,6 +131,8 @@ def lineNotifyImage(token, message, image):
 
 
 token = 'YuvfgED98JDWMvATPEAnDu3u9Ge0R2B9BkrOvCwHZId'
+
+
 
 
 def plotly_chart(dfin, plot_title, number, width):
@@ -264,9 +281,11 @@ def plotly_chart(dfin, plot_title, number, width):
         t=100  # top margin
     ))
     if not OnlyPLOT:
+        fig.to_image()
         fig.show()
     fig.write_image(str(number) + ".jpg")
-    filename = first_word = plot_title.split()[0] + '_' + plot_title.split()[1] + '.jpg'
+    #filename = first_word = plot_title.split()[0] + '_' + plot_title.split()[1] + '.jpg'
+    filename = f"{plot_title.split()[0]}_{plot_title.split()[1]}.jpg"
     fig.write_image(filename)
     # plt.savefig(str(true_number) +
     # fig.to_image(format="png", engine="kaleido")
@@ -614,11 +633,11 @@ def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day, volume_f
     last_vcma144_data = df['vcma144'].tail(1).iloc[0]
     last_close_price = df["Close"].iloc[-1]
     last2_close_price = df["Close"].iloc[-2]
-    print(df["Close"])
-    print(f'last_close_price:{last_close_price}')
-    print(f'last2_close_price:{last2_close_price}')
+    #print(df["Close"])
+    #print(f'last_close_price:{last_close_price}')
+    #print(f'last2_close_price:{last2_close_price}')
     change_percentage = ((last_close_price / last2_close_price) - 1) * 100
-    print(f'change_percentage:{change_percentage}')
+    #print(f'change_percentage:{change_percentage}')
     # Check if the conditions are met for analysis
     if last_turnover_data > 100000 and last_close_price > last_vcma144_data:
         # Calculate vcma
@@ -739,6 +758,7 @@ def my_vcp_screener (ticker_in, data):
         url = (f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}")
         print(ticker_in, url)
 
+
 def calculate_volatility(df, n_days):
     # 選擇最後n_days天的數據
     hist = df.tail(n_days)
@@ -781,26 +801,27 @@ def party(ticker_type, tickers_in, start):
 scenario = 21 # 21, 55, 89, 144, 233共5種
 
 # Volume Factor
-vol_factor = 1.2
+vol_factor = 2
 
 #設定要執行的種類
 VCP = 0
 VCP_TEST = 0
-VCMA_SCREENER = 0
-gogogo_run = 1
+VCMA_SCREENER = 1
+gogogo_run = 0
 
 #強制寫出plotly，主要用來測試
-ForcePLOT = 1
-OnlyPLOT = True
+ForcePLOT = 0
+OnlyPLOT = False # True / False
 
 # Test Tickers
 test_tickers = ['1456.TW', '1432.TW' ]
 
 #要執行的ticker種類
 TEST = 0
-US = 1
+US = 0
 TW = 0
 ETF = 0
+FIN = 1  # Filter tickers from finviz screener
 
 #plotly的圖檔大小
 plotly_resolution = "high"
@@ -820,6 +841,8 @@ test_start = 0
 us_start = 0
 tw_start = 0
 etf_start = 0
+fin_start = 0
+
 
 ptp = 0
 
@@ -831,3 +854,7 @@ if (TW == 1):
     party("TW", tw_tickers, tw_start)
 if (ETF == 1):
     party("ETF", etf_tickers, etf_start)
+if (FIN == 1):
+    fin_tickers.remove('CMPOW')
+    print(fin_tickers)
+    party("FIN", fin_tickers, fin_start)
