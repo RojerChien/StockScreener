@@ -2,27 +2,23 @@ from pickle import TRUE
 # https://medium.com/geekculture/top-4-python-libraries-for-technical-analysis-db4f1ea87e09
 
 import pandas as pd
-import webbrowser
 
 pd.options.mode.chained_assignment = None  # 將警告訊息關閉
-import requests
 import yfinance as yf
 import matplotlib.pyplot as plt
 import matplotlib.dates as mpl_dates
 import datetime
-import kaleido
+#import kaleido
 import numpy as np
 
 # from datetime import datetime
 from csv import reader
 
-import bs4 as bs
-import requests
-import csv
+#import bs4 as bs
+#import csv
 import plotly.graph_objects as go
 from ta.trend import MACD
 from ta.momentum import StochasticOscillator
-##from yahooquery import Ticker
 from plotly.subplots import make_subplots
 import webbrowser
 
@@ -122,12 +118,12 @@ def lineNotifyImage(token, message, image):
 token = 'YuvfgED98JDWMvATPEAnDu3u9Ge0R2B9BkrOvCwHZId'
 
 
-def plotly_chart(dfin, ticker, number):
+def plotly_chart(dfin, plot_title, number, width):
     # Reference: https://python.plainenglish.io/a-simple-guide-to-plotly-for-plotting-financial-chart-54986c996682
+    my_width = width
+    my_height = int(my_width * 0.56)
     plot_period = -155  # 只保留特定天數的資料
     df = dfin[plot_period:]
-    # df = dfin[-266:]
-    # df = yf.download(ticker, period='1y', interval='1d')
 
     # first declare an empty figure
     fig = go.Figure()
@@ -214,8 +210,8 @@ def plotly_chart(dfin, ticker, number):
     # remove rangeslider
     fig.update_layout(xaxis_rangeslider_visible=False)
     # add chart title
-    fig.update_layout(title=ticker)
-    fig.update_layout(width=1920, height=1080,
+    fig.update_layout(title=plot_title)
+    fig.update_layout(width=my_width, height=my_height,
                       xaxis_title='Date',
                       yaxis_title='Price',
                       font=dict(family='Arial', size=24),
@@ -267,10 +263,11 @@ def plotly_chart(dfin, ticker, number):
         b=60,  # bottom margin
         t=100  # top margin
     ))
-
-    fig.show()
+    if not OnlyPLOT:
+        fig.show()
     fig.write_image(str(number) + ".jpg")
-
+    filename = first_word = plot_title.split()[0] + '_' + plot_title.split()[1] + '.jpg'
+    fig.write_image(filename)
     # plt.savefig(str(true_number) +
     # fig.to_image(format="png", engine="kaleido")
 
@@ -304,10 +301,6 @@ def plot_chart(stock_data, true_number):
 def VCMA_history(vcma_values):
     pattern = np.array([False] * 20 + [True])
     return np.array_equal(vcma_values[-21:-1], pattern[:-1]) and vcma_values[-1] == pattern[-1]
-
-
-import yfinance as yf
-import pandas as pd
 
 
 def detect_vcp(tickers, start, ptp_list):
@@ -378,7 +371,7 @@ def detect_vcp(tickers, start, ptp_list):
         if data['Close'][cons_data.index[i]] > data['Close'][cons_data.index[i - 1]]:
             if data['Volume'][cons_data.index[i]] > data['Volume'][cons_data.index[i - 1]]:
                 print("VCP pattern found!")
-                plotly_chart(data, plot_title, 0)
+                plotly_chart(data, plot_title, 0, jpg_resolution)
                 lineNotifyImage(token, "Meet VCP Criteria", str(true_number) + ".jpg")
 
 
@@ -434,7 +427,7 @@ def detect_vcp_20230304(ticker_in, data):
         if data['Close'][cons_data.index[i]] > data['Close'][cons_data.index[i - 1]]:
             if data['Volume'][cons_data.index[i]] > data['Volume'][cons_data.index[i - 1]]:
                 print("VCP pattern found!")
-                plotly_chart(data, plot_title, 0)
+                plotly_chart(data, plot_title, 0, jpg_resolution)
                 lineNotifyImage(token, "Meet VCP Criteria", str(true_number) + ".jpg")
 
 
@@ -458,34 +451,26 @@ def gogogo_20230304(tickers_in, df, true_number, catgory):
         # print (df.shape[0])
         df['total_price'] = df['Close'] * df['Volume']
         vcma = pd.DataFrame()
-        # vcma['vcma233'] = df['total_price'].ewm(span=233, adjust=False).mean()
-        # vcma['vcma144'] = df['total_price'].ewm(span=144, adjust=False).mean()
-        # vcma['vcma89'] = df['total_price'].ewm(span=89, adjust=False).mean()
-        # vcma['vcma55'] = df['total_price'].ewm(span=55, adjust=False).mean()
-        # vcma['vcma21'] = df['total_price'].ewm(span=21, adjust=False).mean()
-        # vcma['vcma5'] = df['total_price'].ewm(span=5, adjust=False).mean()
+
         vcma['vcma233'] = df['total_price'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
         vcma['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
         vcma['vcma89'] = df['total_price'].rolling(window=89).sum() / df['Volume'].rolling(window=89).sum()
         vcma['vcma55'] = df['total_price'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
         vcma['vcma21'] = df['total_price'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
         vcma['vcma5'] = df['total_price'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
-        # vcma['Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (
-        #            vcma['vcma55'] > vcma['vcma144']) & (vcma['vcma144'] > vcma['vcma233'])
 
         if (ForcePLOT == 1):
             # year = df[-200:]
-            plotly_chart(df, plot_title, true_number)
+            plotly_chart(df, plot_title, true_number, jpg_resolution)
             # plotly_chart(df, row, true_number)
             url = f'https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{tickers_in}'
             linemessage = (
                 f"{true_number} - url - ")
             # f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - {info_sector}")
             lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
-            webbrowser.open(url)
-
-        # vcma['VCMA89_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (vcma['vcma55'] > vcma['vcma89'])
-        # vcma['VCMA21_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55'])
+            if not OnlyPLOT:
+                webbrowser.open(url)
+        vcma['VCMA21_Result'] = (vcma['vcma5'] > vcma['vcma21'])
         vcma['VCMA55_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55'])
         vcma['VCMA89_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (
                 vcma['vcma55'] > vcma['vcma89'])
@@ -536,10 +521,16 @@ def gogogo_20230304(tickers_in, df, true_number, catgory):
         pattern_55 = np.array([False] * 20 + [True])
         VCMA55_history = np.array_equal(vcma_values_55[-21:-1], pattern_55[:-1]) and vcma_values_55[-1] == pattern_55[
             -1]
-
+        vcma_values_21 = vcma['VCMA21_Result'].values
+        pattern_21 = np.array([False] * 20 + [True])
+        VCMA21_history = np.array_equal(vcma_values_21[-21:-1], pattern_21[:-1]) and vcma_values_21[-1] == pattern_21[
+            -1]
         FinalResult = "FALSE"
         scenario = 55
+
         if (scenario == 55) and (VCMA55_history == True) and (VCMA55_inc == True):
+            FinalResult = "TRUE"
+        elif (scenario == 21) and (VCMA21_history == True) and (VCMA21_inc == True):
             FinalResult = "TRUE"
         elif (scenario == 89) and (VCMA89_history == True) and (VCMA89_inc == True):
             FinalResult = "TRUE"
@@ -556,12 +547,13 @@ def gogogo_20230304(tickers_in, df, true_number, catgory):
             info_sector = ""
 
             # plotly_chart(df, tickers_in, true_number)
-            plotly_chart(df, plot_title, true_number)
+            plotly_chart(df, plot_title, true_number, jpg_resolution)
             if (catgory != "TW"):
                 linemessage = (
                     f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in}")
                 url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
-                webbrowser.open(url)
+                if not OnlyPLOT:
+                    webbrowser.open(url)
 
             else:
                 if (tickers_in[-1] == "W"):
@@ -569,18 +561,21 @@ def gogogo_20230304(tickers_in, df, true_number, catgory):
                     linemessage = (
                         f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2}")
                     url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
-                    webbrowser.open(url)
+                    if not OnlyPLOT:
+                        webbrowser.open(url)
 
                 else:
                     row2 = tickers_in[:4]
                     linemessage = (
                         f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2}")
                     url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
-                    webbrowser.open(url)
+                    if not OnlyPLOT:
+                        webbrowser.open(url)
 
             # open_web(url)
             # lineNotifyImage(token,str(start) + " - " + row+" - " + info_sector,str(true_number)+".jpg")
-            lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+            if not OnlyPLOT:
+                lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
 
         print("gogogo Finished")
     else:
@@ -618,7 +613,12 @@ def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day, volume_f
     last_turnover_data = df['total_price_day'].tail(1).iloc[0] * volume_factor
     last_vcma144_data = df['vcma144'].tail(1).iloc[0]
     last_close_price = df["Close"].iloc[-1]
-
+    last2_close_price = df["Close"].iloc[-2]
+    print(df["Close"])
+    print(f'last_close_price:{last_close_price}')
+    print(f'last2_close_price:{last2_close_price}')
+    change_percentage = ((last_close_price / last2_close_price) - 1) * 100
+    print(f'change_percentage:{change_percentage}')
     # Check if the conditions are met for analysis
     if last_turnover_data > 100000 and last_close_price > last_vcma144_data:
         # Calculate vcma
@@ -633,15 +633,20 @@ def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day, volume_f
         #print(df['Volume'].iloc[-1])
         #print(last_volume)
         #plot_title = f"{tickers_in} {today} {last_close_price} {day} screener"
+        if (catgory != "TW"):
+            is_meet = last_close_price > last2_close_price * 1.03 and last_volume > second_last_volume * 2
+        else:
+            is_meet = last2_close_price * 1.09 > last_close_price > last2_close_price * 1.03 and last_volume > second_last_volume * 2
 
         # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
-        if last_vcma > second_last_vcma * 1.03 and last_volume > second_last_volume * 2:
-            plot_title = f"{tickers_in} {today} {last_close_price} {day} screener"
+        if is_meet:
+            plot_title = f"{tickers_in} {today} {day} {change_percentage}% screener"
             if (catgory != "TW"):
                 linemessage = (
                     f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in} - screener")
                 url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
-                webbrowser.open(url)
+                if not OnlyPLOT:
+                    webbrowser.open(url)
 
             else:
                 if (tickers_in[-1] == "W"):
@@ -649,16 +654,18 @@ def vcma_and_volume_screener(tickers_in, df, true_number, catgory, day, volume_f
                     linemessage = (
                         f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - screener")
                     url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
-                    webbrowser.open(url)
+                    if not OnlyPLOT:
+                        webbrowser.open(url)
 
                 else:
                     row2 = tickers_in[:4]
                     linemessage = (
                         f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2} - screener")
                     url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
-                    webbrowser.open(url)
+                    if not OnlyPLOT:
+                        webbrowser.open(url)
 
-            plotly_chart(df, plot_title, true_number)
+            plotly_chart(df, plot_title, true_number, jpg_resolution)
             lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
 def vcma_and_volume_screener_pre_optimize(tickers_in, df, true_number, catgory, day):
     # 判斷dataframe是否為空的，若不是空的才往下，以試著避免yfinance在穫取資料時的錯誤
@@ -699,7 +706,7 @@ def vcma_and_volume_screener_pre_optimize(tickers_in, df, true_number, catgory, 
 
             # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
             if last_vcma > second_last_vcma * 1.03 and last_volume > second_last_volume * 2:
-                plotly_chart(df, plot_title, true_number)
+                plotly_chart(df, plot_title, true_number, jpg_resolution)
                 if (catgory != "TW"):
                     linemessage = (
                         f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in} - screener")
@@ -771,22 +778,23 @@ def party(ticker_type, tickers_in, start):
             vcma_and_volume_screener(ticker, data, run_number, ticker_type, screener_day, vol_factor)
 
 # VCMA Scenario
-scenario = 55 # 55, 89, 144, 233共4種
+scenario = 21 # 21, 55, 89, 144, 233共5種
 
 # Volume Factor
-vol_factor = 8
+vol_factor = 1.2
 
 #設定要執行的種類
 VCP = 0
 VCP_TEST = 0
-VCMA_SCREENER = 1
-gogogo_run = 0
+VCMA_SCREENER = 0
+gogogo_run = 1
 
 #強制寫出plotly，主要用來測試
-ForcePLOT = 0
+ForcePLOT = 1
+OnlyPLOT = True
 
 # Test Tickers
-test_tickers = ['1906.TW', '1103.TW' ]
+test_tickers = ['1456.TW', '1432.TW' ]
 
 #要執行的ticker種類
 TEST = 0
@@ -794,6 +802,13 @@ US = 1
 TW = 0
 ETF = 0
 
+#plotly的圖檔大小
+plotly_resolution = "high"
+
+if plotly_resolution == "high":
+    jpg_resolution = 1080
+else:
+    jpg_resolution = 800
 
 
 #screener要判斷的平均天數
@@ -807,8 +822,6 @@ tw_start = 0
 etf_start = 0
 
 ptp = 0
-
-test_tickers = ['BBIO', 'AAPL' ]
 
 if (TEST == 1):
     party("TEST", test_tickers, test_start)
