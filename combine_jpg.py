@@ -2,7 +2,7 @@ from PIL import Image
 import glob
 
 # 設置每行顯示6張圖片，計算列數
-images_per_row = 12
+images_per_row = 6
 width_resolution = 1080
 height_resolution = int(width_resolution * 0.56)
 
