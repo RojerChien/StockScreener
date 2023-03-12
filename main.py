@@ -30,10 +30,12 @@ from bs4 import BeautifulSoup
 
 def get_finviz_screener_tickers():
     foverview = Overview()
-    # filters_dict = {'20-Day Simple Moving Average': 'SMA20 above SMA50',
-    #                 '50-Day Simple Moving Average': 'SMA50 above SMA200',
-    #                 'Change': 'Up 3%'}
-    filters_dict = {'Change': 'Up 3%'}
+    filters_dict = {'20-Day Simple Moving Average': 'SMA20 above SMA50',
+                     '50-Day Simple Moving Average': 'SMA50 above SMA200',
+                     'Average Volume': 'Over 100K',
+                     'Price': 'Over $3',
+                     'Change': 'Up 2%'}
+    #filters_dict = {'Change': 'Up 3%'}
     foverview.set_filter(filters_dict=filters_dict)
     df = foverview.screener_view()
     tickers = df['Ticker'].tolist()
@@ -649,6 +651,7 @@ def vcma_and_volume_screener(tickers_in, df, true_number, category, day, volume_
         last_close_price = df["Close"].iloc[-1]
         last2_close_price = df["Close"].iloc[-2]
         change_percentage = ((last_close_price / last2_close_price) - 1) * 100
+        change_percentage = round(change_percentage, 2)
         # print(df["Close"])
         # print(f'last_close_price:{last_close_price}')
         # rint(f'last2_close_price:{last2_close_price}')
@@ -665,13 +668,13 @@ def vcma_and_volume_screener(tickers_in, df, true_number, category, day, volume_
             # last_vcma = df[f'vcma{day}'].iloc[-1]
             # second_last_vcma = df[f'vcma{day}'].iloc[-2]
             last_volume = df['Volume'].iloc[-1] * volume_factor
-            second_last_volume = df['AvgVol'].iloc[-1]
+            second_last_avg_volume = df['AvgVol'].iloc[-1]
 
             # Check if price and volume conditions are met based on the category
             if (category != "TW"):
-                is_meet_price_and_volume = last_close_price > last2_close_price * 1.03 and last_volume > second_last_volume * 2
+                is_meet_price_and_volume = last2_close_price * 1.05 > last_close_price > last2_close_price * 1.02 and last_volume > second_last_avg_volume * 1.5
             else:
-                is_meet_price_and_volume = last2_close_price * 1.09 > last_close_price > last2_close_price * 1.03 and last_volume > second_last_volume * 2
+                is_meet_price_and_volume = last2_close_price * 1.09 > last_close_price > last2_close_price * 1.02 and last_volume > second_last_avg_volume * 1.5
 
             # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
             if is_meet_price_and_volume:
@@ -754,10 +757,10 @@ def party(ticker_type, tickers_in, start):
 
 
 # VCMA Scenario
-scenario = 21  # 21, 55, 89, 144, 233共5種
+scenario = 55  # 21, 55, 89, 144, 233共5種
 
 # Volume Factor
-vol_factor = 3
+vol_factor = 8
 
 # 設定要執行的種類
 VCP = 0
@@ -796,7 +799,7 @@ test_start = 0
 us_start = 0
 tw_start = 0
 etf_start = 0
-fin_start = 120
+fin_start = 0
 
 ptp = 0
 
