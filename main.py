@@ -26,24 +26,67 @@ import webbrowser
 ########################## 從Firstrade以及老處取得ptp stock tickers #####################
 import requests
 from bs4 import BeautifulSoup
+from finviz.screener import Screener
 
+"""def get_finviz_screener_tickers():
+    print("Start getting finviz tickers")
+    filters_dict = {'20-Day Simple Moving Average': 'SMA20 above SMA50',
+                    '50-Day Simple Moving Average': 'SMA50 above SMA200',
+                    'Average Volume': 'Over 100K',
+                    'Price': 'Over $3',
+                    'EPS growthpast 5 years' : 'Positive (>0%)',
+                    'Change': 'Up 2%'}
+    tickers = []
+    for stock in Screener(filters=filters_dict, order='ticker'):
+        tickers.append(stock['Ticker'])
+    print("Finished getting finviz tickers")
+    return tickers"""
 
-def get_finviz_screener_tickers():
+"""def get_finviz_screener_tickers():
+    print("Start getting finviz tickers")
     foverview = Overview()
     filters_dict = {'20-Day Simple Moving Average': 'SMA20 above SMA50',
                      '50-Day Simple Moving Average': 'SMA50 above SMA200',
                      'Average Volume': 'Over 100K',
                      'Price': 'Over $3',
+                     'EPS growthpast 5 years' : 'Positive (>0%)',
                      'Change': 'Up 2%'}
     #filters_dict = {'Change': 'Up 3%'}
     foverview.set_filter(filters_dict=filters_dict)
     df = foverview.screener_view()
     tickers = df['Ticker'].tolist()
+    print("Finished getting finviz tickers")
+    return tickers"""
+
+
+def get_finviz_screener_tickers():
+    print("Start getting finviz tickers")
+    # 創建 Overview 物件
+    foverview = Overview()
+
+    # 定義 Finviz Screener 的篩選條件
+    filters_dict = {
+        '20-Day Simple Moving Average': 'SMA20 above SMA50',
+        '50-Day Simple Moving Average': 'SMA50 above SMA200',
+        'Average Volume': 'Over 100K',
+        'Price': 'Over $3',
+        'EPS growthpast 5 years': 'Positive (>0%)',
+        'Change': 'Up 2%'
+    }
+
+    # 設置篩選條件
+    foverview.set_filter(filters_dict=filters_dict)
+
+    # 獲取篩選後的數據，轉換為 Ticker 列表
+    df = foverview.screener_view()
+    tickers = df['Ticker'].tolist()
+
+    # 返回 Ticker 列表
     return tickers
 
 
 def get_ptp_tickers(url1, url2):
-    # 第一個網站
+    # 爬取第一個網站的 PTP 股票代號列表
     response1 = requests.get(url1)
     soup1 = BeautifulSoup(response1.content, "html.parser")
 
@@ -58,7 +101,7 @@ def get_ptp_tickers(url1, url2):
             symbol = cols[2].get_text().strip()
             ptp_lists.append(symbol)
 
-    # 第二個網站
+    # 爬取第二個網站的 PTP 股票代號列表
     response2 = requests.get(url2)
     soup2 = BeautifulSoup(response2.text, 'html.parser')
     table2 = soup2.find('table', {'class': 'table'})
@@ -70,7 +113,7 @@ def get_ptp_tickers(url1, url2):
         if code:
             ptp_tickers.append(code.text.strip())
 
-    # 合併兩個列表，並取得不重覆的值
+    # 合併兩個列表，並取得不重覆的值，最終返回 PTP 股票代號列表
     ptp_lists.extend(ptp_tickers)
     ptp_lists = list(set(ptp_lists))
 
@@ -672,7 +715,7 @@ def vcma_and_volume_screener(tickers_in, df, true_number, category, day, volume_
 
             # Check if price and volume conditions are met based on the category
             if (category != "TW"):
-                is_meet_price_and_volume = last2_close_price * 1.05 > last_close_price > last2_close_price * 1.02 and last_volume > second_last_avg_volume * 1.5
+                is_meet_price_and_volume = last2_close_price * 1.06 > last_close_price > last2_close_price * 1.02 and last_volume > second_last_avg_volume * 1.5
             else:
                 is_meet_price_and_volume = last2_close_price * 1.09 > last_close_price > last2_close_price * 1.02 and last_volume > second_last_avg_volume * 1.5
 
@@ -760,7 +803,7 @@ def party(ticker_type, tickers_in, start):
 scenario = 55  # 21, 55, 89, 144, 233共5種
 
 # Volume Factor
-vol_factor = 8
+vol_factor = 1
 
 # 設定要執行的種類
 VCP = 0
@@ -778,9 +821,9 @@ test_tickers = ['1456.TW', '1432.TW']
 # 要執行的ticker種類
 TEST = 0
 US = 0
-TW = 0
+TW = 1
 ETF = 0
-FIN = 1  # Filter tickers from finviz screener
+FIN = 0  # Filter tickers from finviz screener
 
 # plotly的圖檔大小
 plotly_resolution = "high"
