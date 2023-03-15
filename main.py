@@ -121,38 +121,7 @@ def get_ptp_tickers(url1, url2):
     print(ptp_lists)
 
 
-url1 = "https://help.zh-tw.firstrade.com/article/841-new-1446-f-regulations"
-url2 = 'https://www.itigerup.com/bulletin/ptp'
-ptp_lists = get_ptp_tickers(url1, url2)
 
-vcp_test_tickers = ['AAPL', 'ICPT']
-test_tickers = ['UFPT', 'IPVF', 'SCU', 'ICD']
-
-### 從Tickers.xlsx，去讀取不同的sheet，然後設成ticker list ###
-# 讀取 Excel 檔案，選取 TW 工作表中的第一欄資料
-df_tw = pd.read_excel("Tickers.xlsx", sheet_name="TW", usecols=[0])
-df_us = pd.read_excel("Tickers.xlsx", sheet_name="US", usecols=[0])
-df_etf = pd.read_excel("Tickers.xlsx", sheet_name="ETF", usecols=[0])
-# 將讀取到的資料轉換為 list，並存入 tw_tickers 變數中
-tw_tickers = df_tw.iloc[:, 0].tolist()
-us_tickers = df_us.iloc[:, 0].tolist()
-etf_tickers = df_etf.iloc[:, 0].tolist()
-fin_tickers = get_finviz_screener_tickers()
-print(fin_tickers)
-# print(fin_tickers)
-
-tw_tickers_length = len(tw_tickers)
-us_tickers_length = len(us_tickers)
-etf_tickers_length = len(etf_tickers)
-fin_tickers_length = len(fin_tickers)
-
-print("Total TW Tickers:", tw_tickers_length)
-print("Total US Tickers:", us_tickers_length)
-print("Total ETF Tickers:", etf_tickers_length)
-print("Total FIN Tickers:", fin_tickers_length)
-
-
-#############################################################################
 
 def lineNotifyMessage(token, msg):
     headers = {
@@ -754,12 +723,30 @@ def my_vcp_screener(ticker_in, data):
     volatility_5 = calculate_volatility(data, 5)
     volatility_13 = calculate_volatility(data, 13)
     volatility_21 = calculate_volatility(data, 21)
+    volatility_34 = calculate_volatility(data, 34)
+    avg_volume_5 = calculate_avg_volume(data, 5)
+    avg_volume_13 = calculate_avg_volume(data, 13)
+    avg_volume_21 = calculate_avg_volume(data, 21)
+    avg_volume_34 = calculate_avg_volume(data, 34)
+    if volatility_5 < 0.03 < volatility_13 < volatility_21 < volatility_34 and avg_volume_5 < avg_volume_13 < avg_volume_21 < avg_volume_34:
+        url = (f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}")
+        webbrowser.open(url)
+        #print(ticker_in, url)
+
+"""def my_vcp_screener(ticker_in, data):
+    volatility_5 = calculate_volatility(data, 5)
+    volatility_13 = calculate_volatility(data, 13)
+    volatility_21 = calculate_volatility(data, 21)
     volatility_55 = calculate_volatility(data, 55)
     if volatility_5 < volatility_13 < volatility_21 < volatility_55:
         url = (f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}")
         print(ticker_in, url)
+"""
 
-
+def calculate_avg_volume(df, n_days):
+    hist = df.tail(n_days)
+    avg_volume = hist['Volume'].mean()
+    return avg_volume
 def calculate_volatility(df, n_days):
     # 選擇最後n_days天的數據
     hist = df.tail(n_days)
@@ -770,7 +757,10 @@ def calculate_volatility(df, n_days):
     min_close_price = hist['Close'].min()
     volatility_h = max_close_price / avg_close_price - 1
     volatility_l = avg_close_price / min_close_price - 1
+    print(f"Volativity High: {n_days} days {volatility_h}")
+    print(f"Volativity Low:  {n_days} days {volatility_l}")
     volatility = volatility_h + volatility_l
+    print(f"Volativity: {n_days} days {volatility}")
 
     return volatility
 
@@ -803,12 +793,12 @@ def party(ticker_type, tickers_in, start):
 scenario = 55  # 21, 55, 89, 144, 233共5種
 
 # Volume Factor
-vol_factor = 1
+vol_factor = 6
 
 # 設定要執行的種類
-VCP = 0
+VCP = 1
 VCP_TEST = 0
-VCMA_SCREENER = 1
+VCMA_SCREENER = 0
 gogogo_run = 0
 
 # 強制寫出plotly，主要用來測試
@@ -820,8 +810,8 @@ test_tickers = ['1456.TW', '1432.TW']
 
 # 要執行的ticker種類
 TEST = 0
-US = 0
-TW = 1
+US = 1
+TW = 0
 ETF = 0
 FIN = 0  # Filter tickers from finviz screener
 
@@ -834,7 +824,7 @@ else:
     jpg_resolution = 800
 
 # screener要判斷的平均天數
-screener_day = 15
+screener_day = 8
 
 # 若程式執行至一半中斷，可以設定重新執行的位置
 vcp_start = 0
@@ -845,6 +835,38 @@ etf_start = 0
 fin_start = 0
 
 ptp = 0
+
+url1 = "https://help.zh-tw.firstrade.com/article/841-new-1446-f-regulations"
+url2 = 'https://www.itigerup.com/bulletin/ptp'
+ptp_lists = get_ptp_tickers(url1, url2)
+
+vcp_test_tickers = ['AAPL', 'ICPT']
+test_tickers = ['UFPT', 'IPVF', 'SCU', 'ICD']
+
+# 將讀取到的資料轉換為 list，並存入 tw_tickers 變數中
+if TW == 1:
+    df_tw = pd.read_excel("Tickers.xlsx", sheet_name="TW", usecols=[0])
+    tw_tickers = df_tw.iloc[:, 0].tolist()
+    tw_tickers_length = len(tw_tickers)
+    print("Total TW Tickers:", tw_tickers_length)
+if US == 1:
+    df_us = pd.read_excel("Tickers.xlsx", sheet_name="US", usecols=[0])
+    us_tickers = df_us.iloc[:, 0].tolist()
+    us_tickers_length = len(us_tickers)
+    print("Total US Tickers:", us_tickers_length)
+if ETF == 1:
+    df_etf = pd.read_excel("Tickers.xlsx", sheet_name="ETF", usecols=[0])
+    etf_tickers = df_etf.iloc[:, 0].tolist()
+    etf_tickers_length = len(etf_tickers)
+    print("Total ETF Tickers:", etf_tickers_length)
+if FIN == 1:
+    fin_tickers = get_finviz_screener_tickers()
+    fin_tickers_length = len(fin_tickers)
+    print("Total FIN Tickers:", fin_tickers_length)
+    print(fin_tickers)
+
+#############################################################################
+
 
 if TEST == 1:
     party("TEST", test_tickers, test_start)
