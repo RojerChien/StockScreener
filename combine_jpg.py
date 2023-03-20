@@ -8,7 +8,7 @@ width_resolution = 1080
 height_resolution = int(width_resolution * 0.56)
 
 # 找到所有*date.jpg文件
-date = "2023-03-09"
+date = "2023-03-17"
 image_list = glob.glob(f"*{date}.jpg")
 
 # 將圖像列表分成多個列表
