@@ -11,7 +11,7 @@ import matplotlib.dates as mpl_dates
 import datetime
 # import kaleido
 import numpy as np
-from highcharts import Highchart
+from highcharts import Highstock
 from IPython.display import HTML,display
 import os
 # from datetime import datetime
@@ -153,7 +153,101 @@ def lineNotifyImage(token, message, image):
 token = 'YuvfgED98JDWMvATPEAnDu3u9Ge0R2B9BkrOvCwHZId'
 
 def highchart_chart(dfin, plot_title):
-    # 客制化調整參數
+    # 初始化Highstock对象
+    chart = Highstock(renderTo='container', width=1600, height=600)  # 添加宽度和高度
+
+    # 添加蜡烛图序列
+    ohlc = dfin[['Open', 'High', 'Low', 'Close']].values.tolist()
+    ohlc = [[int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(o, 2), round(h, 2), round(l, 2), round(c, 2)] for
+            i, (o, h, l, c) in enumerate(ohlc)]
+
+    chart.add_data_set(ohlc, 'candlestick', 'TSLA', dataGrouping={'units': [['day', [1]]]})
+
+    # 添加成交量序列
+    volume = dfin[['Open', 'Close', 'Volume']].values.tolist()
+    volume = [{'x': int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), 'y': v, 'color': 'green' if o > c else 'red'} for
+              i, (o, c, v) in enumerate(volume)]
+
+    chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'units': [['day', [1]]]})
+
+    # 设置图表选项
+    options = {
+        'rangeSelector': {'selected': 1},
+        'title': {'text': 'Tesla Inc.'},
+        'yAxis': [
+            {'labels': {'align': 'right', 'x': -3},
+             'title': {'text': 'OHLC'},
+             'height': '60%',
+             'lineWidth': 2},
+            {'labels': {'align': 'right', 'x': -3},
+             'title': {'text': '成交量'},
+             'top': '65%',
+             'height': '35%',
+             'offset': 0,
+             'lineWidth': 2}
+        ],
+        'tooltip': {
+            'shared': True
+        },
+        'plotOptions': {
+            'candlestick': {
+                'color': 'red',
+                'upColor': 'green'
+            },
+            'column': {
+                'borderColor': 'none'
+            }
+        }
+    }
+
+    chart.set_dict_options(options)
+
+    # 显示图表
+    chart.save_file('candlestick_volume')
+    webbrowser.open('candlestick_volume.html')
+def highchart_chart_2(dfin, plot_title):
+    # 初始化Highstock对象
+    chart = Highstock()
+
+    # 添加蜡烛图序列
+    ohlc = dfin[['Open', 'High', 'Low', 'Close']].values.tolist()
+    ohlc = [[int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), o, h, l, c] for i, (o, h, l, c) in enumerate(ohlc)]
+
+    chart.add_data_set(ohlc, 'candlestick', 'TSLA', dataGrouping={'units': [['day', [1]]]})
+
+    # 添加成交量序列
+    volume = dfin['Volume'].values.tolist()
+    volume = [[int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), v] for i, v in enumerate(volume)]
+
+    chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'units': [['day', [1]]]})
+
+    # 设置图表选项
+    options = {
+        'rangeSelector': {'selected': 1},
+        'title': {'text': 'Tesla Inc.'},
+        'yAxis': [
+            {'labels': {'align': 'right', 'x': -3},
+             'title': {'text': 'OHLC'},
+             'height': '60%',
+             'lineWidth': 2},
+            {'labels': {'align': 'right', 'x': -3},
+             'title': {'text': '成交量'},
+             'top': '65%',
+             'height': '35%',
+             'offset': 0,
+             'lineWidth': 2}
+        ],
+        'tooltip': {
+            'shared': True
+        }
+    }
+
+    chart.set_dict_options(options)
+
+    # 显示图表
+    chart.save_file('candlestick_volume')
+    webbrowser.open('candlestick_volume.html')
+    """"# 客制化調整參數
     color = '#4285f4'  # 線的顏色 (red/green/blue/purple)
     linewidth = 2  # 線的粗細
     title = plot_title  # 標題名稱
@@ -184,7 +278,7 @@ def highchart_chart(dfin, plot_title):
     chart.htmlcontent
     webbrowser.open('chart.html')
     # os.remove('chart.html')
-
+    """
 
 def plotly_chart(dfin, plot_title, number, width):
     # Reference: https://python.plainenglish.io/a-simple-guide-to-plotly-for-plotting-financial-chart-54986c996682
@@ -750,9 +844,9 @@ def vcma_and_volume_screener(tickers_in, df, true_number, category, day, volume_
                         if not OnlyPLOT:
                             webbrowser.open(url)
 
-                plotly_chart(df, plot_title, true_number, jpg_resolution)
+                # plotly_chart(df, plot_title, true_number, jpg_resolution)
                 highchart_chart(df, plot_title)
-                lineNotifyImage(token, line_message, str(true_number) + ".jpg")
+                # lineNotifyImage(token, line_message, str(true_number) + ".jpg")
 
 
 def my_vcp_screener(ticker_in, data):
@@ -829,7 +923,7 @@ def party(ticker_type, tickers_in, start):
 scenario = 55  # 21, 55, 89, 144, 233共5種
 
 # Volume Factor
-vol_factor = 10 # voulume factor for VCMA_SCREENER
+vol_factor = 10  # voluume factor for VCMA_SCREENER
 
 # 設定要執行的種類
 VCP = 0
