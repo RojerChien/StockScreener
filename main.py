@@ -152,28 +152,37 @@ def lineNotifyImage(token, message, image):
 
 token = 'YuvfgED98JDWMvATPEAnDu3u9Ge0R2B9BkrOvCwHZId'
 
-def highchart_chart(dfin, plot_title):
+def highchart_chart(dfin, ticker_in, date):
     # 初始化Highstock对象
     chart = Highstock(renderTo='container', width=1600, height=600)  # 添加宽度和高度
+
+    # 添加10日成交量移動平均線
+    dfin['volume_10ma'] = dfin['Volume'].rolling(window=10).mean()
+    volume_10ma = dfin['volume_10ma'].values.tolist()
+    volume_10ma = [
+        [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), v]
+        for i, v in enumerate(volume_10ma)
+    ]
+    chart.add_data_set(volume_10ma, 'line', '10日成交量移動平均', yAxis=1, dataGrouping={'units': [['day', [1]]]})
 
     # 添加蜡烛图序列
     ohlc = dfin[['Open', 'High', 'Low', 'Close']].values.tolist()
     ohlc = [[int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(o, 2), round(h, 2), round(l, 2), round(c, 2)] for
             i, (o, h, l, c) in enumerate(ohlc)]
 
-    chart.add_data_set(ohlc, 'candlestick', 'TSLA', dataGrouping={'units': [['day', [1]]]})
+    chart.add_data_set(ohlc, 'candlestick', ticker_in, dataGrouping={'units': [['day', [1]]]})
 
     # 添加成交量序列
     volume = dfin[['Open', 'Close', 'Volume']].values.tolist()
-    volume = [{'x': int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), 'y': v, 'color': 'green' if o > c else 'red'} for
+    volume = [{'x': int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), 'y': v, 'color': 'red' if o > c else 'green'} for
               i, (o, c, v) in enumerate(volume)]
 
     chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'units': [['day', [1]]]})
 
     # 设置图表选项
     options = {
-        'rangeSelector': {'selected': 1},
-        'title': {'text': 'Tesla Inc.'},
+        'rangeSelector': {'selected': 4},
+        'title': {'text': f'{ticker_in} ({date})'},
         'yAxis': [
             {'labels': {'align': 'right', 'x': -3},
              'title': {'text': 'OHLC'},
@@ -187,7 +196,35 @@ def highchart_chart(dfin, plot_title):
              'lineWidth': 2}
         ],
         'tooltip': {
-            'shared': True
+            'formatter': f"""
+                function () {{
+                    var s = '<b>' + Highcharts.dateFormat('%A, %b %e, %Y', this.x) + '</b>';
+                    s += '<br/>';
+
+                    this.points.forEach(function (point) {{
+                        if (point.series.name === '{ticker_in}') {{
+                            s += '<br/>' + point.series.name + ': ';
+                            s += 'Open: ' + point.point.open.toFixed(2);
+                            s += ', High: ' + point.point.high.toFixed(2);
+                            s += ', Low: ' + point.point.low.toFixed(2);
+                            s += ', Close: ' + point.point.close.toFixed(2);
+
+                            // 计算涨跌幅
+                            var change = 0;
+                            var previousCloseIndex = point.index - 1;
+                            if (previousCloseIndex >= 0) {{
+                                var previousClose = point.series.options.data[previousCloseIndex][4];
+                                change = ((point.point.close - previousClose) / previousClose) * 100;
+                            }}
+                            s += '<br/>Change: ' + change.toFixed(2) + '%';
+                        }} else {{
+                            s += '<br/>' + point.series.name + ': ' + point.y;
+                        }}
+                    }});
+
+                    return s;
+                }}
+            """
         },
         'plotOptions': {
             'candlestick': {
@@ -203,7 +240,9 @@ def highchart_chart(dfin, plot_title):
     chart.set_dict_options(options)
 
     # 显示图表
-    chart.save_file('candlestick_volume')
+    #chart.save_file('candlestick_volume')
+    with open('candlestick_volume.html', 'w', encoding='utf-8') as f:
+        f.write(chart.htmlcontent)
     webbrowser.open('candlestick_volume.html')
 def highchart_chart_2(dfin, plot_title):
     # 初始化Highstock对象
@@ -845,7 +884,7 @@ def vcma_and_volume_screener(tickers_in, df, true_number, category, day, volume_
                             webbrowser.open(url)
 
                 # plotly_chart(df, plot_title, true_number, jpg_resolution)
-                highchart_chart(df, plot_title)
+                highchart_chart(df, tickers_in, today)
                 # lineNotifyImage(token, line_message, str(true_number) + ".jpg")
 
 
