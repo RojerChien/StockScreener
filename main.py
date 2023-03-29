@@ -12,7 +12,7 @@ import datetime
 # import kaleido
 import numpy as np
 from highcharts import Highstock
-from IPython.display import HTML,display
+from IPython.display import HTML, display
 import os
 # from datetime import datetime
 from csv import reader
@@ -59,6 +59,14 @@ from finviz.screener import Screener
     tickers = df['Ticker'].tolist()
     print("Finished getting finviz tickers")
     return tickers"""
+
+
+def calculate_vwap(df_in, duration):
+    # data['Typical Price'] = (data['High'] + data['Low'] + data['Close']) / 3
+    df_in['VWPrice'] = df_in['Close'] * df_in['Volume']
+    df_in[f'vwap{duration}'] = df_in['VWPrice'].rolling(window=duration).sum() / df_in['Volume'].rolling(
+        window=duration).sum()
+    return df_in
 
 
 def get_finviz_screener_tickers():
@@ -123,8 +131,6 @@ def get_ptp_tickers(url1, url2):
     print(ptp_lists)
 
 
-
-
 def lineNotifyMessage(token, msg):
     headers = {
         "Authorization": "Bearer " + token,
@@ -152,9 +158,28 @@ def lineNotifyImage(token, message, image):
 
 token = 'YuvfgED98JDWMvATPEAnDu3u9Ge0R2B9BkrOvCwHZId'
 
+"""def add_vwap_tochart(chart, dfin, window, color, line_width, yAxis=0):
+    vwap = dfin[f'vwap{window}'].values.tolist()
+    vwap = [
+        [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(v, 2)]
+        for i, v in enumerate(vwap)
+    ]
+    chart.add_data_set(vwap, 'line', f'vwap{window}', yAxis=yAxis, color=color, lineWidth=line_width, dataGrouping={'units': [['day', [1]]]})
+"""
+
+
+def add_vwap_to_chart(chart, dfin, window, color, line_width, yAxis=0, id=None):
+    vwap = dfin[f'vwap{window}'].values.tolist()
+    vwap = [
+        [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(v, 2)]
+        for i, v in enumerate(vwap)
+    ]
+    chart.add_data_set(vwap, 'line', f'vwap{window}', yAxis=yAxis, color=color, lineWidth=line_width, id=id, dataGrouping={'units': [['day', [1]]]})
+
+
 def highchart_chart(dfin, ticker_in, date, url):
     # 初始化Highstock对象
-    chart = Highstock(renderTo='container', width=None, height=960)  # 添加宽度和高度
+    chart = Highstock(renderTo='container', width=None, height=930)  # 添加宽度和高度
     # chart = Highstock(renderTo='container', width=1800, height=900)  # 添加宽度和高度
     # 添加10日成交量移動平均線
     dfin['volume_10ma'] = dfin['Volume'].rolling(window=10).mean()
@@ -171,6 +196,9 @@ def highchart_chart(dfin, ticker_in, date, url):
             i, (o, h, l, c) in enumerate(ohlc)]
 
     chart.add_data_set(ohlc, 'candlestick', ticker_in, dataGrouping={'units': [['day', [1]]]})
+    add_vwap_to_chart(chart, dfin, 144, 'purple', 3, id='vwap144')
+    add_vwap_to_chart(chart, dfin, 21, 'orange', 3, id='vwap21')
+    add_vwap_to_chart(chart, dfin, 55, 'red', 3, id='vwap55')
 
     # 添加成交量序列
     volume = dfin[['Open', 'Close', 'Volume']].values.tolist()
@@ -180,9 +208,35 @@ def highchart_chart(dfin, ticker_in, date, url):
     # chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'units': [['day', [1]]]})
     # 禁用datagroup，讓volume在顯示時是正常的，但也可能影響效能
     chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'enabled': False})
+    # 使用示例：
 
     # 设置图表选项
     options = {
+        # 'chart': {
+        #    'backgroundColor': '#808080'    # 將背景改成灰色
+        # },
+        'exporting': {
+            'buttons': {
+                'toggleVwapLines': {
+                    'text': 'Toggle VWAP Lines',
+                    'onclick': """
+                    function () {
+                        var chart = this,
+                            vwap144 = chart.get('vwap144'),
+                            vwap21 = chart.get('vwap21');
+
+                        if (vwap144.visible) {
+                            vwap144.hide();
+                            vwap21.hide();
+                        } else {
+                            vwap144.show();
+                            vwap21.show();
+                        }
+                    }
+                """
+                }
+            }
+        },
         'rangeSelector': {'selected': 4},
         'title': {'text': f'{ticker_in} ({date})'},
         'yAxis': [
@@ -229,6 +283,9 @@ def highchart_chart(dfin, ticker_in, date, url):
             """
         },
         'plotOptions': {
+            'line': {
+                'showInLegend': True
+            },
             'candlestick': {
                 'color': 'red',
                 'upColor': 'green'
@@ -344,10 +401,12 @@ def highchart_chart3(dfin, ticker_in, date):
     chart.set_dict_options(options)
 
     # 显示图表
-    #chart.save_file('candlestick_volume')
+    # chart.save_file('candlestick_volume')
     with open('candlestick_volume.html', 'w', encoding='utf-8') as f:
         f.write(chart.htmlcontent)
     webbrowser.open('candlestick_volume.html')
+
+
 def highchart_chart_2(dfin, plot_title):
     # 初始化Highstock对象
     chart = Highstock()
@@ -423,6 +482,7 @@ def highchart_chart_2(dfin, plot_title):
     # os.remove('chart.html')
     """
 
+
 def plotly_chart(dfin, plot_title, number, width):
     # Reference: https://python.plainenglish.io/a-simple-guide-to-plotly-for-plotting-financial-chart-54986c996682
     my_width = width
@@ -468,47 +528,47 @@ def plotly_chart(dfin, plot_title, number, width):
     # df['MA20'] = df['Close'].rolling(window=20).mean()
     # df['MA5'] = df['Close'].rolling(window=5).mean()
 
-    # add VCMA to df
-    df['total_price'] = df['Close'] * df['Volume']
-    # df.loc[df['total_price']] = df['Close'] * df['Volume']
+    # add VWAP to df
+    df['VWPrice'] = df['Close'] * df['Volume']
+    # df.loc[df['VWPrice']] = df['Close'] * df['Volume']
 
     windows = [233, 144, 55, 21, 5]
     for w in windows:
-        rolling_total_price = df['total_price'].rolling(window=w).sum()
+        rolling_VWPrice = df['VWPrice'].rolling(window=w).sum()
         rolling_volume = df['Volume'].rolling(window=w).sum()
-        df[f'vcma{w}'] = rolling_total_price / rolling_volume
-    # df['vcma233'] = df['total_price'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
-    # df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
-    # df['vcma55'] = df['total_price'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
-    # df['vcma21'] = df['total_price'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
-    # df['vcma5'] = df['total_price'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
+        df[f'vwap{w}'] = rolling_VWPrice / rolling_volume
+    # df['vwap233'] = df['VWPrice'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
+    # df['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
+    # df['vwap55'] = df['VWPrice'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
+    # df['vwap21'] = df['VWPrice'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
+    # df['vwap5'] = df['VWPrice'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
 
     # add moving average traces
     fig.add_trace(go.Scatter(x=df.index,
-                             y=df['vcma5'],
+                             y=df['vwap5'],
                              opacity=0.7,
                              line=dict(color='blue', width=2),
-                             name='VCMA 5'))
+                             name='VWAP 5'))
     fig.add_trace(go.Scatter(x=df.index,
-                             y=df['vcma21'],
+                             y=df['vwap21'],
                              opacity=0.7,
                              line=dict(color='green', width=2),
-                             name='VCMA 21'))
+                             name='VWAP 21'))
     fig.add_trace(go.Scatter(x=df.index,
-                             y=df['vcma55'],
+                             y=df['vwap55'],
                              opacity=0.7,
                              line=dict(color='red', width=2),
-                             name='VCMA 55'))
+                             name='VWAP 55'))
     fig.add_trace(go.Scatter(x=df.index,
-                             y=df['vcma144'],
+                             y=df['vwap144'],
                              opacity=0.7,
                              line=dict(color='magenta', width=2),
-                             name='VCMA 144'))
+                             name='VWAP 144'))
     fig.add_trace(go.Scatter(x=df.index,
-                             y=df['vcma233'],
+                             y=df['vwap233'],
                              opacity=0.7,
                              line=dict(color='goldenrod', width=2),
-                             name='VCMA 233'))
+                             name='VWAP 233'))
 
     # hide dates with no values
     fig.update_xaxes(rangebreaks=[dict(values=dt_breaks)])
@@ -605,9 +665,9 @@ def plot_chart(stock_data, true_number):
     plt.savefig(str(true_number) + ".jpg")  # 將圖存成 JPEG 檔
 
 
-def VCMA_history(vcma_values):
+def VWAP_history(vwap_values):
     pattern = np.array([False] * 20 + [True])
-    return np.array_equal(vcma_values[-21:-1], pattern[:-1]) and vcma_values[-1] == pattern[-1]
+    return np.array_equal(vwap_values[-21:-1], pattern[:-1]) and vwap_values[-1] == pattern[-1]
 
 
 def detect_vcp(tickers, start, ptp_list):
@@ -758,111 +818,112 @@ def gogogo_20230304(tickers_in, df, true_number, category):
         # print (df.tail())
         # period = "ytd"
         # print (df.shape[0])
-        df['total_price'] = df['Close'] * df['Volume']
-        vcma = pd.DataFrame()
+        # df['VWPrice'] = df['Close'] * df['Volume']
+        # vwap = pd.DataFrame()
 
-        vcma['vcma233'] = df['total_price'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
-        vcma['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
-        vcma['vcma89'] = df['total_price'].rolling(window=89).sum() / df['Volume'].rolling(window=89).sum()
-        vcma['vcma55'] = df['total_price'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
-        vcma['vcma21'] = df['total_price'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
-        vcma['vcma5'] = df['total_price'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
+        # vwap['vwap233'] = df['VWPrice'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
+        # vwap['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
+        # vwap['vwap89'] = df['VWPrice'].rolling(window=89).sum() / df['Volume'].rolling(window=89).sum()
+        # vwap['vwap55'] = df['VWPrice'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
+        # vwap['vwap21'] = df['VWPrice'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
+        # vwap['vwap5'] = df['VWPrice'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
 
         if (ForcePLOT == 1):
             # year = df[-200:]
-            plotly_chart(df, plot_title, true_number, jpg_resolution)
+
             # plotly_chart(df, row, true_number)
             url = f'https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{tickers_in}'
             linemessage = (
                 f"{true_number} - url - ")
             # f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - {info_sector}")
-            lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
-            if not OnlyPLOT:
-                webbrowser.open(url)
-        vcma['VCMA21_Result'] = (vcma['vcma5'] > vcma['vcma21'])
-        vcma['VCMA55_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55'])
-        vcma['VCMA89_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (
-                vcma['vcma55'] > vcma['vcma89'])
-        vcma['VCMA144_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (
-                vcma['vcma55'] > vcma['vcma89']) & (vcma['vcma89'] > vcma['vcma144'])
-        vcma['VCMA233_Result'] = (vcma['vcma5'] > vcma['vcma21']) & (vcma['vcma21'] > vcma['vcma55']) & (
-                vcma['vcma55'] > vcma['vcma89']) & (vcma['vcma89'] > vcma['vcma144']) & (
-                                         vcma['vcma144'] > vcma['vcma233'])
+            # lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+            highchart_chart(df, tickers_in, today, url)
+            # if not OnlyPLOT:
+            #    webbrowser.open(url)
+        df['VWAP21_Result'] = (df['vwap5'] > df['vwap21'])
+        df['VWAP55_Result'] = (df['vwap5'] > df['vwap21']) & (df['vwap21'] > df['vwap55'])
+        df['VWAP89_Result'] = (df['vwap5'] > df['vwap21']) & (df['vwap21'] > df['vwap55']) & (
+                df['vwap55'] > df['vwap89'])
+        df['VWAP144_Result'] = (df['vwap5'] > df['vwap21']) & (df['vwap21'] > df['vwap55']) & (
+                df['vwap55'] > df['vwap89']) & (df['vwap89'] > df['vwap144'])
+        df['VWAP233_Result'] = (df['vwap5'] > df['vwap21']) & (df['vwap21'] > df['vwap55']) & (
+                df['vwap55'] > df['vwap89']) & (df['vwap89'] > df['vwap144']) & (
+                                       df['vwap144'] > df['vwap233'])
 
-        VCMA5_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2])
-        VCMA21_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2]) and (
-                vcma['vcma21'].iloc[-1] > vcma['vcma21'].iloc[-2])
-        VCMA55_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2]) and (
-                vcma['vcma21'].iloc[-1] > vcma['vcma21'].iloc[-2]) and (
-                             vcma['vcma55'].iloc[-1] > vcma['vcma55'].iloc[-2])
-        VCMA89_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2]) and (
-                vcma['vcma21'].iloc[-1] > vcma['vcma21'].iloc[-2]) and (
-                             vcma['vcma55'].iloc[-1] > vcma['vcma55'].iloc[-2]) and (
-                             vcma['vcma89'].iloc[-1] > vcma['vcma89'].iloc[-2])
-        VCMA144_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2]) and (
-                vcma['vcma21'].iloc[-1] > vcma['vcma21'].iloc[-2]) and (
-                              vcma['vcma55'].iloc[-1] > vcma['vcma55'].iloc[-2]) and (
-                              vcma['vcma89'].iloc[-1] > vcma['vcma89'].iloc[-2]) and (
-                              vcma['vcma144'].iloc[-1] > vcma['vcma144'].iloc[-2])
-        VCMA233_inc = (vcma['vcma5'].iloc[-1] > vcma['vcma5'].iloc[-2]) and (
-                vcma['vcma21'].iloc[-1] > vcma['vcma21'].iloc[-2]) and (
-                              vcma['vcma55'].iloc[-1] > vcma['vcma55'].iloc[-2]) and (
-                              vcma['vcma89'].iloc[-1] > vcma['vcma89'].iloc[-2]) and (
-                              vcma['vcma144'].iloc[-1] > vcma['vcma144'].iloc[-2]) and (
-                              vcma['vcma233'].iloc[-1] > vcma['vcma233'].iloc[-2])
+        VWAP5_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2])
+        VWAP21_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
+                df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2])
+        VWAP55_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
+                df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2]) and (
+                             df['vwap55'].iloc[-1] > df['vwap55'].iloc[-2])
+        VWAP89_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
+                df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2]) and (
+                             df['vwap55'].iloc[-1] > df['vwap55'].iloc[-2]) and (
+                             df['vwap89'].iloc[-1] > df['vwap89'].iloc[-2])
+        VWAP144_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
+                df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2]) and (
+                              df['vwap55'].iloc[-1] > df['vwap55'].iloc[-2]) and (
+                              df['vwap89'].iloc[-1] > df['vwap89'].iloc[-2]) and (
+                              df['vwap144'].iloc[-1] > df['vwap144'].iloc[-2])
+        VWAP233_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
+                df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2]) and (
+                              df['vwap55'].iloc[-1] > df['vwap55'].iloc[-2]) and (
+                              df['vwap89'].iloc[-1] > df['vwap89'].iloc[-2]) and (
+                              df['vwap144'].iloc[-1] > df['vwap144'].iloc[-2]) and (
+                              df['vwap233'].iloc[-1] > df['vwap233'].iloc[-2])
 
-        vcma_values_233 = vcma['VCMA233_Result'].values
+        vwap_values_233 = df['VWAP233_Result'].values
         pattern_233 = np.array([False] * 20 + [True])
-        VCMA233_history = np.array_equal(vcma_values_233[-21:-1], pattern_233[:-1]) and vcma_values_233[-1] == \
+        VWAP233_history = np.array_equal(vwap_values_233[-21:-1], pattern_233[:-1]) and vwap_values_233[-1] == \
                           pattern_233[-1]
 
-        vcma_values_144 = vcma['VCMA144_Result'].values
+        vwap_values_144 = df['VWAP144_Result'].values
         pattern_144 = np.array([False] * 20 + [True])
-        VCMA144_history = np.array_equal(vcma_values_144[-21:-1], pattern_144[:-1]) and vcma_values_144[-1] == \
+        VWAP144_history = np.array_equal(vwap_values_144[-21:-1], pattern_144[:-1]) and vwap_values_144[-1] == \
                           pattern_144[-1]
 
-        vcma_values_89 = vcma['VCMA89_Result'].values
+        vwap_values_89 = df['VWAP89_Result'].values
         pattern_89 = np.array([False] * 20 + [True])
-        VCMA89_history = np.array_equal(vcma_values_89[-21:-1], pattern_89[:-1]) and vcma_values_89[-1] == pattern_89[
+        VWAP89_history = np.array_equal(vwap_values_89[-21:-1], pattern_89[:-1]) and vwap_values_89[-1] == pattern_89[
             -1]
 
-        vcma_values_55 = vcma['VCMA55_Result'].values
+        vwap_values_55 = df['VWAP55_Result'].values
         pattern_55 = np.array([False] * 20 + [True])
-        VCMA55_history = np.array_equal(vcma_values_55[-21:-1], pattern_55[:-1]) and vcma_values_55[-1] == pattern_55[
+        VWAP55_history = np.array_equal(vwap_values_55[-21:-1], pattern_55[:-1]) and vwap_values_55[-1] == pattern_55[
             -1]
-        vcma_values_21 = vcma['VCMA21_Result'].values
+        vwap_values_21 = df['VWAP21_Result'].values
         pattern_21 = np.array([False] * 20 + [True])
-        VCMA21_history = np.array_equal(vcma_values_21[-21:-1], pattern_21[:-1]) and vcma_values_21[-1] == pattern_21[
+        VWAP21_history = np.array_equal(vwap_values_21[-21:-1], pattern_21[:-1]) and vwap_values_21[-1] == pattern_21[
             -1]
-        FinalResult = "FALSE"
+        final_result = "FALSE"
         scenario = 55
 
-        if (scenario == 55) and (VCMA55_history == True) and (VCMA55_inc == True):
-            FinalResult = "TRUE"
-        elif (scenario == 21) and (VCMA21_history == True) and (VCMA21_inc == True):
-            FinalResult = "TRUE"
-        elif (scenario == 89) and (VCMA89_history == True) and (VCMA89_inc == True):
-            FinalResult = "TRUE"
-        elif (scenario == 144) and (VCMA144_history == True) and (VCMA144_inc == True):
-            FinalResult = "TRUE"
-        elif (scenario == 233) and (VCMA233_history == True) and (VCMA233_inc == True):
-            FinalResult = "TRUE"
+        if (scenario == 55) and (VWAP55_history == True) and (VWAP55_inc == True):
+            final_result = "TRUE"
+        elif (scenario == 21) and (VWAP21_history == True) and (VWAP21_inc == True):
+            final_result = "TRUE"
+        elif (scenario == 89) and (VWAP89_history == True) and (VWAP89_inc == True):
+            final_result = "TRUE"
+        elif (scenario == 144) and (VWAP144_history == True) and (VWAP144_inc == True):
+            final_result = "TRUE"
+        elif (scenario == 233) and (VWAP233_history == True) and (VWAP233_inc == True):
+            final_result = "TRUE"
         else:
             # print ("No Scenario")
             return 1
-        # print(FinalResult)
-        if (FinalResult == 'TRUE'):
+        # print(final_result)
+        if (final_result == 'TRUE'):
 
             info_sector = ""
 
             # plotly_chart(df, tickers_in, true_number)
-            plotly_chart(df, plot_title, true_number, jpg_resolution)
+            # plotly_chart(df, plot_title, true_number, jpg_resolution)
             if (category != "TW"):
                 linemessage = (
                     f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in}")
                 url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
-                if not OnlyPLOT:
-                    webbrowser.open(url)
+                # if not OnlyPLOT:
+                #    webbrowser.open(url)
 
             else:
                 if (tickers_in[-1] == "W"):
@@ -870,21 +931,21 @@ def gogogo_20230304(tickers_in, df, true_number, category):
                     linemessage = (
                         f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2}")
                     url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
-                    if not OnlyPLOT:
-                        webbrowser.open(url)
+                    # if not OnlyPLOT:
+                    #    webbrowser.open(url)
 
                 else:
                     row2 = tickers_in[:4]
                     linemessage = (
                         f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2}")
                     url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
-                    if not OnlyPLOT:
-                        webbrowser.open(url)
-
+                    # if not OnlyPLOT:
+                    #    webbrowser.open(url)
+            highchart_chart(df, tickers_in, today, url)
             # open_web(url)
             # lineNotifyImage(token,str(start) + " - " + row+" - " + info_sector,str(true_number)+".jpg")
-            if not OnlyPLOT:
-                lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
+            # if not OnlyPLOT:
+            #    lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
 
         print("gogogo Finished")
     else:
@@ -904,6 +965,18 @@ def remove_ptp_list(ptp_tickers, tickers):
 def get_data(ticker_in):
     try:
         data_org = yf.download(ticker_in, period="2y", progress=False)
+        data_org = calculate_vwap(data_org, 5)
+        data_org = calculate_vwap(data_org, 8)
+        data_org = calculate_vwap(data_org, 13)
+        data_org = calculate_vwap(data_org, 21)
+        data_org = calculate_vwap(data_org, 34)
+        data_org = calculate_vwap(data_org, 55)
+        data_org = calculate_vwap(data_org, 89)
+        data_org = calculate_vwap(data_org, 144)
+        data_org = calculate_vwap(data_org, 233)
+        data_org = calculate_vwap(data_org, 377)
+        data_org = calculate_vwap(data_org, 610)
+        print(data_org)
     except Exception as e:
         lineNotifyMessage(token, f"{ticker_in} download failed: {str(e)}")
         data_org = pd.DataFrame()  # 返回一個空的數據帧
@@ -911,27 +984,26 @@ def get_data(ticker_in):
     return data_org
 
 
-def vcma_and_volume_screener(tickers_in, df, true_number, category, day, volume_factor):
+def vwap_and_volume_screener(tickers_in, df, true_number, category, day, volume_factor):
     # Check if the dataframe is empty
     if df.empty:
         return
 
     # Calculate rolling averages and other computations
     df['AvgVol'] = df['Volume'].rolling(day).mean()
-    df['total_price'] = df['Close'] * df['Volume']
-    df['total_price_day'] = df['total_price'].rolling(day).mean()
+    df['VWPrice'] = df['Close'] * df['Volume']
+    df['VWPrice_day'] = df['VWPrice'].rolling(day).mean()
 
-    # Calculate vcma and use NaN to avoid divide by zero error
-    df['vcma144'] = df['total_price'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(
+    # Calculate vwap and use NaN to avoid divide by zero error
+    df['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(
         window=144).sum()
-
 
     if len(df) < 2:
         print("Error: The DataFrame must have at least two rows.")
     else:
         # Get the last data points
-        last_turnover_data = df['total_price_day'].tail(1).iloc[0] * volume_factor
-        last_vcma144_data = df['vcma144'].tail(1).iloc[0]
+        last_turnover_data = df['VWPrice_day'].tail(1).iloc[0] * volume_factor
+        last_vwap144_data = df['vwap144'].tail(1).iloc[0]
         last_close_price = df["Close"].iloc[-1]
         last2_close_price = df["Close"].iloc[-2]
         change_percentage = ((last_close_price / last2_close_price) - 1) * 100
@@ -944,13 +1016,13 @@ def vcma_and_volume_screener(tickers_in, df, true_number, category, day, volume_
         # print(f'change_percentage:{change_percentage}')
 
         # Check if the conditions are met for analysis
-        if last_turnover_data > 100000 and last_close_price > last_vcma144_data:
-            # Calculate vcma
-            df[f'vcma{day}'] = df['total_price'].rolling(window=day).sum() / df['Volume'].rolling(window=day).sum()
+        if last_turnover_data > 100000 and last_close_price > last_vwap144_data:
+            # Calculate vwap
+            df[f'vwap{day}'] = df['VWPrice'].rolling(window=day).sum() / df['Volume'].rolling(window=day).sum()
 
             # Get the last data points
-            # last_vcma = df[f'vcma{day}'].iloc[-1]
-            # second_last_vcma = df[f'vcma{day}'].iloc[-2]
+            # last_vwap = df[f'vwap{day}'].iloc[-1]
+            # second_last_vwap = df[f'vwap{day}'].iloc[-2]
             last_volume = df['Volume'].iloc[-1] * volume_factor
             second_last_avg_volume = df['AvgVol'].iloc[-1]
 
@@ -960,16 +1032,15 @@ def vcma_and_volume_screener(tickers_in, df, true_number, category, day, volume_
             else:
                 is_meet_price_and_volume = last2_close_price * 1.09 > last_close_price > last2_close_price * 1.02 and last_volume > second_last_avg_volume * 1.5
 
-            # 如果最後一天的vcma大於最後第二天的vcma的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
+            # 如果最後一天的vwap大於最後第二天的vwap的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
             if is_meet_price_and_volume:
                 plot_title = f"{tickers_in} {today} {day} {change_percentage}% screener"
                 if category != "TW":
                     line_message = (
                         f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in} - screener")
                     url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
-                    if not OnlyPLOT:
-                        print("Empty")
-                        # webbrowser.open(url)
+                    # if not OnlyPLOT:
+                    #   webbrowser.open(url)
 
                 else:
                     if (tickers_in[-1] == "W"):
@@ -977,18 +1048,16 @@ def vcma_and_volume_screener(tickers_in, df, true_number, category, day, volume_
                         line_message = (
                             f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - screener")
                         url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
-                        if not OnlyPLOT:
-                            print ("Empty")
-                            # webbrowser.open(url)
+                        # if not OnlyPLOT:
+                        # webbrowser.open(url)
 
                     else:
                         row2 = tickers_in[:4]
                         line_message = (
                             f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2} - screener")
                         url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
-                        if not OnlyPLOT:
-                            print("Empty")
-                            # webbrowser.open(url)
+                        # if not OnlyPLOT:
+                        # webbrowser.open(url)
 
                 # plotly_chart(df, plot_title, true_number, jpg_resolution)
                 highchart_chart(df, tickers_in, today, url)
@@ -1007,7 +1076,8 @@ def my_vcp_screener(ticker_in, data):
     if volatility_5 < 0.03 < volatility_13 < volatility_21 < volatility_34 and avg_volume_5 < avg_volume_13 < avg_volume_21 < avg_volume_34:
         url = (f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}")
         webbrowser.open(url)
-        #print(ticker_in, url)
+        # print(ticker_in, url)
+
 
 """def my_vcp_screener(ticker_in, data):
     volatility_5 = calculate_volatility(data, 5)
@@ -1019,10 +1089,13 @@ def my_vcp_screener(ticker_in, data):
         print(ticker_in, url)
 """
 
+
 def calculate_avg_volume(df, n_days):
     hist = df.tail(n_days)
     avg_volume = hist['Volume'].mean()
     return avg_volume
+
+
 def calculate_volatility(df, n_days):
     # 選擇最後n_days天的數據
     hist = df.tail(n_days)
@@ -1061,24 +1134,24 @@ def party(ticker_type, tickers_in, start):
             # detect_vcp_20230304(ticker, data)
             print("Running VCP")
             my_vcp_screener(ticker, data)
-        if (VCMA_SCREENER == 1):
-            vcma_and_volume_screener(ticker, data, run_number, ticker_type, screener_day, vol_factor)
+        if (VWAP_SCREENER == 1):
+            vwap_and_volume_screener(ticker, data, run_number, ticker_type, screener_day, vol_factor)
 
 
-# VCMA Scenario
+# VWAP Scenario
 scenario = 55  # 21, 55, 89, 144, 233共5種
 
 # Volume Factor
-vol_factor = 10  # voluume factor for VCMA_SCREENER
+vol_factor = 1  # voluume factor for VWAP_SCREENER
 
 # 設定要執行的種類
 VCP = 0
 VCP_TEST = 0
-VCMA_SCREENER = 1
-gogogo_run = 0
+VWAP_SCREENER = 0
+gogogo_run = 1
 
 # 強制寫出plotly，主要用來測試
-ForcePLOT = 0
+ForcePLOT = 1
 OnlyPLOT = False  # True / False
 
 # Test Tickers
@@ -1108,7 +1181,7 @@ test_start = 0
 us_start = 0
 tw_start = 0
 etf_start = 0
-fin_start = 23
+fin_start = 0
 
 ptp = 0
 
