@@ -176,7 +176,6 @@ def add_vwap_to_chart(chart, dfin, window, color, line_width, yAxis=0, id=None):
     ]
     chart.add_data_set(vwap, 'line', f'vwap{window}', yAxis=yAxis, color=color, lineWidth=line_width, id=id, dataGrouping={'units': [['day', [1]]]})
 
-
 def highchart_chart(dfin, ticker_in, date, url):
     # 初始化Highstock对象
     chart = Highstock(renderTo='container', width=None, height=930)  # 添加宽度和高度
@@ -208,33 +207,47 @@ def highchart_chart(dfin, ticker_in, date, url):
     # chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'units': [['day', [1]]]})
     # 禁用datagroup，讓volume在顯示時是正常的，但也可能影響效能
     chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'enabled': False})
-    # 使用示例：
 
     # 设置图表选项
     options = {
-        # 'chart': {
-        #    'backgroundColor': '#808080'    # 將背景改成灰色
-        # },
-        'exporting': {
-            'buttons': {
-                'toggleVwapLines': {
-                    'text': 'Toggle VWAP Lines',
-                    'onclick': """
+        'chart': {
+            'events': {
+                'load': """
                     function () {
-                        var chart = this,
-                            vwap144 = chart.get('vwap144'),
-                            vwap21 = chart.get('vwap21');
+                        var chart = this;
 
-                        if (vwap144.visible) {
-                            vwap144.hide();
-                            vwap21.hide();
-                        } else {
-                            vwap144.show();
-                            vwap21.show();
-                        }
+                        // Create the toggleVwapLines function
+                        var toggleVwapLines = function () {
+                            var vwap144 = chart.get('vwap144'),
+                                vwap55 = chart.get('vwap55'),
+                                vwap21 = chart.get('vwap21');
+
+                            if (vwap144.visible) {
+                                vwap144.hide();
+                                vwap55.hide();
+                                vwap21.hide();
+                            } else {
+                                vwap144.show();
+                                vwap55.show();
+                                vwap21.show();
+                            }
+                        };
+
+                        // Add a custom button
+                        chart.renderer.button('Toggle VWAP Lines', null, null, toggleVwapLines)
+                            .attr({
+                                zIndex: 3
+                            })
+                            .add();
                     }
                 """
-                }
+            }
+        },
+        'navigation': {
+            'buttonOptions': {
+                'align': 'right',
+                'verticalAlign': 'top',
+                'y': 0
             }
         },
         'rangeSelector': {'selected': 4},
@@ -299,8 +312,9 @@ def highchart_chart(dfin, ticker_in, date, url):
             'useHTML': True,
             'align': 'center',
             'y': 35
-        }
+        },
     }
+
     chart.set_dict_options(options)
 
     # 显示图表
@@ -964,7 +978,7 @@ def remove_ptp_list(ptp_tickers, tickers):
 
 def get_data(ticker_in):
     try:
-        data_org = yf.download(ticker_in, period="2y", progress=False)
+        data_org = yf.download(ticker_in, period="3y", progress=False)
         data_org = calculate_vwap(data_org, 5)
         data_org = calculate_vwap(data_org, 8)
         data_org = calculate_vwap(data_org, 13)
@@ -976,7 +990,7 @@ def get_data(ticker_in):
         data_org = calculate_vwap(data_org, 233)
         data_org = calculate_vwap(data_org, 377)
         data_org = calculate_vwap(data_org, 610)
-        print(data_org)
+        # print(data_org)
     except Exception as e:
         lineNotifyMessage(token, f"{ticker_in} download failed: {str(e)}")
         data_org = pd.DataFrame()  # 返回一個空的數據帧
@@ -995,8 +1009,8 @@ def vwap_and_volume_screener(tickers_in, df, true_number, category, day, volume_
     df['VWPrice_day'] = df['VWPrice'].rolling(day).mean()
 
     # Calculate vwap and use NaN to avoid divide by zero error
-    df['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(
-        window=144).sum()
+    #df['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(
+    #    window=144).sum()
 
     if len(df) < 2:
         print("Error: The DataFrame must have at least two rows.")
@@ -1147,11 +1161,11 @@ vol_factor = 1  # voluume factor for VWAP_SCREENER
 # 設定要執行的種類
 VCP = 0
 VCP_TEST = 0
-VWAP_SCREENER = 0
+VWAP_SCREENER = 1
 gogogo_run = 1
 
 # 強制寫出plotly，主要用來測試
-ForcePLOT = 1
+ForcePLOT = 0
 OnlyPLOT = False  # True / False
 
 # Test Tickers
@@ -1160,9 +1174,9 @@ test_tickers = ['1456.TW', '1432.TW']
 # 要執行的ticker種類
 TEST = 0
 US = 0
-TW = 0
+TW = 1
 ETF = 0
-FIN = 1  # Filter tickers from finviz screener
+FIN = 0  # Filter tickers from finviz screener
 
 # plotly的圖檔大小
 plotly_resolution = "high"
