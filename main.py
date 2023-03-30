@@ -174,7 +174,9 @@ def add_vwap_to_chart(chart, dfin, window, color, line_width, yAxis=0, id=None):
         [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(v, 2)]
         for i, v in enumerate(vwap)
     ]
-    chart.add_data_set(vwap, 'line', f'vwap{window}', yAxis=yAxis, color=color, lineWidth=line_width, id=id, dataGrouping={'units': [['day', [1]]]})
+    chart.add_data_set(vwap, 'line', f'vwap{window}', yAxis=yAxis, color=color, lineWidth=line_width, id=id,
+                       dataGrouping={'units': [['day', [1]]]})
+
 
 def highchart_chart(dfin, ticker_in, date, url):
     # 初始化Highstock对象
@@ -196,8 +198,9 @@ def highchart_chart(dfin, ticker_in, date, url):
 
     chart.add_data_set(ohlc, 'candlestick', ticker_in, dataGrouping={'units': [['day', [1]]]})
     add_vwap_to_chart(chart, dfin, 144, 'purple', 3, id='vwap144')
-    add_vwap_to_chart(chart, dfin, 21, 'orange', 3, id='vwap21')
     add_vwap_to_chart(chart, dfin, 55, 'red', 3, id='vwap55')
+    add_vwap_to_chart(chart, dfin, 21, 'orange', 3, id='vwap21')
+    add_vwap_to_chart(chart, dfin, 5, 'blue', 3, id='vwap5')
 
     # 添加成交量序列
     volume = dfin[['Open', 'Close', 'Volume']].values.tolist()
@@ -221,15 +224,17 @@ def highchart_chart(dfin, ticker_in, date, url):
                             var vwap144 = chart.get('vwap144'),
                                 vwap55 = chart.get('vwap55'),
                                 vwap21 = chart.get('vwap21');
-
+                                vwap5 = chart.get('vwap5');
                             if (vwap144.visible) {
                                 vwap144.hide();
                                 vwap55.hide();
                                 vwap21.hide();
+                                vwap5.hide();
                             } else {
                                 vwap144.show();
                                 vwap55.show();
                                 vwap21.show();
+                                vwap5.show();
                             }
                         };
 
@@ -376,7 +381,7 @@ def highchart_chart3(dfin, ticker_in, date):
                     var dataIndex = this.points[0].point.index;
                     var s = '<b>' + Highcharts.dateFormat('%A, %b %e, %Y', this.x) + '</b>';
                     s += '<br/>';
-    
+
                     this.points.forEach(function (point) {{
                         if (point.series.name === '{ticker_in}') {{
                             s += '<br/>' + point.series.name + ': ';
@@ -384,7 +389,7 @@ def highchart_chart3(dfin, ticker_in, date):
                             s += ', High: ' + point.point.high.toFixed(2);
                             s += ', Low: ' + point.point.low.toFixed(2);
                             s += ', Close: ' + point.point.close.toFixed(2);
-    
+
                             // 計算漲跌幅
                             var change = 0;
                             if (dataIndex > 0) {{
@@ -396,7 +401,7 @@ def highchart_chart3(dfin, ticker_in, date):
                             s += '<br/>' + point.series.name + ': ' + point.y;
                         }}
                     }});
-    
+
                     return s;
                 }}
             """
@@ -1009,7 +1014,7 @@ def vwap_and_volume_screener(tickers_in, df, true_number, category, day, volume_
     df['VWPrice_day'] = df['VWPrice'].rolling(day).mean()
 
     # Calculate vwap and use NaN to avoid divide by zero error
-    #df['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(
+    # df['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(
     #    window=144).sum()
 
     if len(df) < 2:
@@ -1089,7 +1094,8 @@ def my_vcp_screener(ticker_in, data):
     avg_volume_34 = calculate_avg_volume(data, 34)
     if volatility_5 < 0.03 < volatility_13 < volatility_21 < volatility_34 and avg_volume_5 < avg_volume_13 < avg_volume_21 < avg_volume_34:
         url = (f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}")
-        webbrowser.open(url)
+        #webbrowser.open(url)
+        highchart_chart(data, ticker_in, today, url)
         # print(ticker_in, url)
 
 
@@ -1120,10 +1126,10 @@ def calculate_volatility(df, n_days):
     min_close_price = hist['Close'].min()
     volatility_h = max_close_price / avg_close_price - 1
     volatility_l = avg_close_price / min_close_price - 1
-    print(f"Volativity High: {n_days} days {volatility_h}")
-    print(f"Volativity Low:  {n_days} days {volatility_l}")
+    # print(f"Volativity High: {n_days} days {volatility_h}")
+    # print(f"Volativity Low:  {n_days} days {volatility_l}")
     volatility = volatility_h + volatility_l
-    print(f"Volativity: {n_days} days {volatility}")
+    # print(f"Volativity: {n_days} days {volatility}")
 
     return volatility
 
@@ -1161,7 +1167,7 @@ vol_factor = 1  # voluume factor for VWAP_SCREENER
 # 設定要執行的種類
 VCP = 0
 VCP_TEST = 0
-VWAP_SCREENER = 1
+VWAP_SCREENER = 0
 gogogo_run = 1
 
 # 強制寫出plotly，主要用來測試
@@ -1173,8 +1179,8 @@ test_tickers = ['1456.TW', '1432.TW']
 
 # 要執行的ticker種類
 TEST = 0
-US = 0
-TW = 1
+US = 1
+TW = 0
 ETF = 0
 FIN = 0  # Filter tickers from finviz screener
 
@@ -1192,7 +1198,7 @@ screener_day = 8
 # 若程式執行至一半中斷，可以設定重新執行的位置
 vcp_start = 0
 test_start = 0
-us_start = 0
+us_start = 4394
 tw_start = 0
 etf_start = 0
 fin_start = 0
