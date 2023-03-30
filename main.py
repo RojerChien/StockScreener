@@ -332,6 +332,24 @@ def highchart_chart(dfin, ticker_in, date, url):
     webbrowser.open(filename)
 
 
+def find_stocks_in_range(data, days=233, percentage=2):
+    # 計算過去 days 天的最高價
+    highest_price = data['Close'].rolling(window=days).max().iloc[-1]
+
+    # 計算正負 percentage% 的範圍
+    upper_range = highest_price * (1 + percentage / 100)
+    lower_range = highest_price * (1 - percentage / 100)
+    print(upper_range)
+    print(lower_range)
+
+    # 篩選出最近的收盤價在範圍內的股票
+    recent_close = data['Close'].iloc[-1]
+    print(recent_close)
+    stocks_in_range = (recent_close >= lower_range) & (recent_close <= upper_range)
+
+    return stocks_in_range
+
+
 def highchart_chart3(dfin, ticker_in, date):
     # 初始化Highstock对象
     chart = Highstock(renderTo='container', width=1600, height=600)  # 添加宽度和高度
@@ -1156,19 +1174,26 @@ def party(ticker_type, tickers_in, start):
             my_vcp_screener(ticker, data)
         if (VWAP_SCREENER == 1):
             vwap_and_volume_screener(ticker, data, run_number, ticker_type, screener_day, vol_factor)
+        if (STOCK_RANGE == 1):
+            stocks_in_range = find_stocks_in_range(data)
+            if stocks_in_range.any():
+                url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + ticker)
+                highchart_chart(data, ticker, today, url)
+
 
 
 # VWAP Scenario
 scenario = 55  # 21, 55, 89, 144, 233共5種
 
 # Volume Factor
-vol_factor = 1  # voluume factor for VWAP_SCREENER
+vol_factor = 8  # volume factor for VWAP_SCREENER
 
 # 設定要執行的種類
 VCP = 0
 VCP_TEST = 0
 VWAP_SCREENER = 0
-gogogo_run = 1
+gogogo_run = 0
+STOCK_RANGE = 1
 
 # 強制寫出plotly，主要用來測試
 ForcePLOT = 0
@@ -1198,7 +1223,7 @@ screener_day = 8
 # 若程式執行至一半中斷，可以設定重新執行的位置
 vcp_start = 0
 test_start = 0
-us_start = 4394
+us_start = 0
 tw_start = 0
 etf_start = 0
 fin_start = 0
