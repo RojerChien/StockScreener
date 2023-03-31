@@ -157,6 +157,17 @@ def highchart_chart(dfin, ticker_in, date, url):
     # 初始化Highstock对象
     chart = Highstock(renderTo='container', width=None, height=930)  # 添加宽度和高度
     # chart = Highstock(renderTo='container', width=1800, height=900)  # 添加宽度和高度
+
+    # 加入RSI data
+    rsi_data = dfin['RSI'].values.tolist()
+    rsi_data = [
+        [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(r, 2)]
+        for i, r in enumerate(rsi_data)
+    ]
+
+    # 將RSI加到數據中
+    chart.add_data_set(rsi_data, 'line', 'RSI', yAxis=2, dataGrouping={'units': [['day', [1]]]})
+
     # 添加10日成交量移動平均線
     dfin['volume_10ma'] = dfin['Volume'].rolling(window=10).mean()
     volume_10ma = dfin['volume_10ma'].values.tolist()
@@ -239,10 +250,24 @@ def highchart_chart(dfin, ticker_in, date, url):
              'lineWidth': 2},
             {'labels': {'align': 'right', 'x': -3},
              'title': {'text': '成交量'},
-             'top': '75%',
-             'height': '25%',
+             'top': '72%',
+             'height': '13%',
              'offset': 0,
-             'lineWidth': 2}
+             'lineWidth': 2},
+            {'labels': {'align': 'right', 'x': -3},
+             'title': {'text': 'RSI'},
+             'top': '87%',  # 調整此值以設置RSI圖表的位置
+             'height': '13%',  # 調整此值以設置RSI圖表的高度
+             'offset': 0,
+             'lineWidth': 2,
+             'plotLines': [
+                 {'value': 30,
+                  'color': '#FF4500',
+                  'width': 1},
+                 {'value': 70,
+                  'color': '#FF4500',
+                  'width': 1}
+             ]}
         ],
         'tooltip': {
             'formatter': f"""
@@ -611,6 +636,20 @@ def remove_ptp_list(ptp_tickers, tickers):
     return us_non_ptp_tickers
 
 
+def calculate_rsi(data, period):
+    delta = data['Close'].diff().dropna()
+    gain = delta.where(delta > 0, 0)
+    loss = -delta.where(delta < 0, 0)
+
+    avg_gain = gain.rolling(window=period).mean()
+    avg_loss = loss.rolling(window=period).mean()
+
+    rs = avg_gain / avg_loss
+    rsi = 100 - (100 / (1 + rs))
+
+    return rsi
+
+
 def get_data(ticker_in):
     try:
         data_org = yf.download(ticker_in, period="3y", progress=False)
@@ -626,7 +665,7 @@ def get_data(ticker_in):
         data_org = calculate_vwap(data_org, 377)
         data_org = calculate_vwap(data_org, 610)
         data_org['AvgVol'] = data_org['Volume'].rolling(55).mean()  # 55為平均的天數
-        # print(data_org)
+        data_org['RSI'] = calculate_rsi(data_org, rsi_period)
     except Exception as e:
         lineNotifyMessage(token, f"{ticker_in} download failed: {str(e)}")
         data_org = pd.DataFrame()  # 返回一個空的數據帧
@@ -769,6 +808,7 @@ def party(ticker_type, tickers_in, start):
         run_number += 1
         last_close_price = round(data["Close"][-1], 2)
         plot_title = "{} {} {} {}".format(ticker, today, last_close_price, scenario)
+
         # print (ticker)
         if gogogo_run == 1:
             gogogo(ticker, data, run_number, ticker_type)
@@ -789,8 +829,10 @@ def party(ticker_type, tickers_in, start):
 # VWAP Scenario
 scenario = 55  # 21, 55, 89, 144, 233共5種
 
+rsi_period = 14
+
 # Volume Factor
-vol_factor = 8  # volume factor for VWAP_SCREENER
+vol_factor = 10  # volume factor for VWAP_SCREENER
 
 # 設定要執行的種類
 VCP = 0
