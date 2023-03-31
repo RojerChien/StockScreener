@@ -30,35 +30,10 @@ import requests
 from bs4 import BeautifulSoup
 from finviz.screener import Screener
 
-"""def get_finviz_screener_tickers():
-    print("Start getting finviz tickers")
-    filters_dict = {'20-Day Simple Moving Average': 'SMA20 above SMA50',
-                    '50-Day Simple Moving Average': 'SMA50 above SMA200',
-                    'Average Volume': 'Over 100K',
-                    'Price': 'Over $3',
-                    'EPS growthpast 5 years' : 'Positive (>0%)',
-                    'Change': 'Up 2%'}
-    tickers = []
-    for stock in Screener(filters=filters_dict, order='ticker'):
-        tickers.append(stock['Ticker'])
-    print("Finished getting finviz tickers")
-    return tickers"""
-
-"""def get_finviz_screener_tickers():
-    print("Start getting finviz tickers")
-    foverview = Overview()
-    filters_dict = {'20-Day Simple Moving Average': 'SMA20 above SMA50',
-                     '50-Day Simple Moving Average': 'SMA50 above SMA200',
-                     'Average Volume': 'Over 100K',
-                     'Price': 'Over $3',
-                     'EPS growthpast 5 years' : 'Positive (>0%)',
-                     'Change': 'Up 2%'}
-    #filters_dict = {'Change': 'Up 3%'}
-    foverview.set_filter(filters_dict=filters_dict)
-    df = foverview.screener_view()
-    tickers = df['Ticker'].tolist()
-    print("Finished getting finviz tickers")
-    return tickers"""
+start = 0
+true_number = 0
+run_number = 0
+today = str(datetime.datetime.now().date())
 
 
 def calculate_vwap(df_in, duration):
@@ -350,181 +325,11 @@ def find_stocks_in_range(data, days=233, percentage=2):
     return stocks_in_range
 
 
-def highchart_chart3(dfin, ticker_in, date):
-    # 初始化Highstock对象
-    chart = Highstock(renderTo='container', width=1600, height=600)  # 添加宽度和高度
-
-    # 添加10日成交量移動平均線
-    dfin['volume_10ma'] = dfin['Volume'].rolling(window=10).mean()
-    volume_10ma = dfin['volume_10ma'].values.tolist()
-    volume_10ma = [
-        [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), v]
-        for i, v in enumerate(volume_10ma)
-    ]
-    chart.add_data_set(volume_10ma, 'line', '10日成交量移動平均', yAxis=1, dataGrouping={'units': [['day', [1]]]})
-
-    # 添加蜡烛图序列
-    ohlc = dfin[['Open', 'High', 'Low', 'Close']].values.tolist()
-    ohlc = [[int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(o, 2), round(h, 2), round(l, 2), round(c, 2)] for
-            i, (o, h, l, c) in enumerate(ohlc)]
-
-    chart.add_data_set(ohlc, 'candlestick', ticker_in, dataGrouping={'units': [['day', [1]]]})
-
-    # 添加成交量序列
-    volume = dfin[['Open', 'Close', 'Volume']].values.tolist()
-    volume = [{'x': int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), 'y': v, 'color': 'red' if o > c else 'green'} for
-              i, (o, c, v) in enumerate(volume)]
-
-    chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'units': [['day', [1]]]})
-
-    # 设置图表选项
-    options = {
-        'rangeSelector': {'selected': 4},
-        'title': {'text': f'{ticker_in} ({date})'},
-        'yAxis': [
-            {'labels': {'align': 'right', 'x': -3},
-             'title': {'text': 'OHLC'},
-             'height': '60%',
-             'lineWidth': 2},
-            {'labels': {'align': 'right', 'x': -3},
-             'title': {'text': '成交量'},
-             'top': '65%',
-             'height': '35%',
-             'offset': 0,
-             'lineWidth': 2}
-        ],
-        'tooltip': {
-            'formatter': f"""
-                function () {{
-                    var dataIndex = this.points[0].point.index;
-                    var s = '<b>' + Highcharts.dateFormat('%A, %b %e, %Y', this.x) + '</b>';
-                    s += '<br/>';
-
-                    this.points.forEach(function (point) {{
-                        if (point.series.name === '{ticker_in}') {{
-                            s += '<br/>' + point.series.name + ': ';
-                            s += 'Open: ' + point.point.open.toFixed(2);
-                            s += ', High: ' + point.point.high.toFixed(2);
-                            s += ', Low: ' + point.point.low.toFixed(2);
-                            s += ', Close: ' + point.point.close.toFixed(2);
-
-                            // 計算漲跌幅
-                            var change = 0;
-                            if (dataIndex > 0) {{
-                                var previousClose = point.series.options.data[dataIndex - 1][4];
-                                change = ((point.point.close - previousClose) / previousClose) * 100;
-                            }}
-                            s += '<br/>漲跌幅: ' + change.toFixed(2) + '%';
-                        }} else {{
-                            s += '<br/>' + point.series.name + ': ' + point.y;
-                        }}
-                    }});
-
-                    return s;
-                }}
-            """
-        },
-        'plotOptions': {
-            'candlestick': {
-                'color': 'red',
-                'upColor': 'green'
-            },
-            'column': {
-                'borderColor': 'none'
-            }
-        }
-    }
-
-    chart.set_dict_options(options)
-
-    # 显示图表
-    # chart.save_file('candlestick_volume')
-    with open('candlestick_volume.html', 'w', encoding='utf-8') as f:
-        f.write(chart.htmlcontent)
-    webbrowser.open('candlestick_volume.html')
-
-
-def highchart_chart_2(dfin, plot_title):
-    # 初始化Highstock对象
-    chart = Highstock()
-
-    # 添加蜡烛图序列
-    ohlc = dfin[['Open', 'High', 'Low', 'Close']].values.tolist()
-    ohlc = [[int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), o, h, l, c] for i, (o, h, l, c) in enumerate(ohlc)]
-
-    chart.add_data_set(ohlc, 'candlestick', 'TSLA', dataGrouping={'units': [['day', [1]]]})
-
-    # 添加成交量序列
-    volume = dfin['Volume'].values.tolist()
-    volume = [[int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), v] for i, v in enumerate(volume)]
-
-    chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'units': [['day', [1]]]})
-
-    # 设置图表选项
-    options = {
-        'rangeSelector': {'selected': 1},
-        'title': {'text': 'Tesla Inc.'},
-        'yAxis': [
-            {'labels': {'align': 'right', 'x': -3},
-             'title': {'text': 'OHLC'},
-             'height': '60%',
-             'lineWidth': 2},
-            {'labels': {'align': 'right', 'x': -3},
-             'title': {'text': '成交量'},
-             'top': '65%',
-             'height': '35%',
-             'offset': 0,
-             'lineWidth': 2}
-        ],
-        'tooltip': {
-            'shared': True
-        }
-    }
-
-    chart.set_dict_options(options)
-
-    # 显示图表
-    chart.save_file('candlestick_volume')
-    webbrowser.open('candlestick_volume.html')
-    """"# 客制化調整參數
-    color = '#4285f4'  # 線的顏色 (red/green/blue/purple)
-    linewidth = 2  # 線的粗細
-    title = plot_title  # 標題名稱
-    width = 800  # 圖的寬度
-    height = 500  # 圖的高度
-
-    # 繪圖設定
-    chart = Highchart(width=width, height=height)
-
-    x = dfin.index
-    y = round(dfin.Close, 2)
-
-    # 設置圖表基本屬性
-    chart.set_options('chart', {'type': 'line'})
-    chart.set_options('title', {'text': 'Stock Price'})
-    chart.set_options('xAxis', {'categories': df['date'].tolist()})
-    chart.set_options('yAxis', {'title': {'text': 'Price'}})
-
-    data = [[index, s] for index, s in zip(x, y)]
-    chart.add_data_set(data, 'line', 'data', color=color)
-
-    chart.set_options('xAxis', {'type': 'datetime'})
-    chart.set_options('title', {'text': title, 'style': {'color': 'black'}})  # 設定title
-    chart.set_options('plotOptions', {'line': {'lineWidth': linewidth, 'dataLabels': {'enabled': False}}})  # 設定線的粗度
-    chart.set_options('tooltip', {'shared': True, 'crosshairs': True})  # 設定為可互動式
-    chart.save_file('chart')
-    display(HTML('chart.html'))
-    chart.htmlcontent
-    webbrowser.open('chart.html')
-    # os.remove('chart.html')
-    """
-
-
-def plotly_chart(dfin, plot_title, number, width):
+def plotly_chart(dfin, plot_title, number, width=1800):
     # Reference: https://python.plainenglish.io/a-simple-guide-to-plotly-for-plotting-financial-chart-54986c996682
     my_width = width
     my_height = int(my_width * 0.56)
-    plot_period = -155  # 只保留特定天數的資料
+    plot_period = -233  # 只保留特定天數的資料
     df = dfin[plot_period:]
 
     # first declare an empty figure
@@ -574,12 +379,6 @@ def plotly_chart(dfin, plot_title, number, width):
         rolling_VWPrice = df['VWPrice'].rolling(window=w).sum()
         rolling_volume = df['Volume'].rolling(window=w).sum()
         df[f'vwap{w}'] = rolling_VWPrice / rolling_volume
-    # df['vwap233'] = df['VWPrice'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
-    # df['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
-    # df['vwap55'] = df['VWPrice'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
-    # df['vwap21'] = df['VWPrice'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
-    # df['vwap5'] = df['VWPrice'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
-
     # add moving average traces
     fig.add_trace(go.Scatter(x=df.index,
                              y=df['vwap5'],
@@ -668,7 +467,7 @@ def plotly_chart(dfin, plot_title, number, width):
     if not OnlyPLOT:
         fig.to_image()
         fig.show()
-    fig.write_image(str(number) + ".jpg")
+    # fig.write_image(str(number) + ".jpg")
     # filename = first_word = plot_title.split()[0] + '_' + plot_title.split()[1] + '.jpg'
     filename = f"{plot_title.split()[0]}_{plot_title.split()[1]}.jpg"
     fig.write_image(filename)
@@ -676,168 +475,7 @@ def plotly_chart(dfin, plot_title, number, width):
     # fig.to_image(format="png", engine="kaleido")
 
 
-def plot_chart(stock_data, true_number):
-    plt.rc('figure', figsize=(15, 10))
-    fig, axes = plt.subplots(2, 1, gridspec_kw={'height_ratios': [3, 1]})
-    fig.tight_layout(pad=3)
-    print(stock_data)
-    close = stock_data.Close
-    vol = stock_data.Volume
-    date = stock_data.index
-    plot_price = axes[0]
-    plot_price.plot(date, close, color='blue',
-                    linewidth=2, label='Price')
-    ohlc = stock_data.loc[:, [stock_data.index, stock_data.Open, stock_data.High, stock_data.Low, stock_data.Close]]
-    ohlc.date = pd.to_datetime(ohlc.index)
-    fig, ax = plt.subplots()
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Price')
-    fig.suptitle('Daily Candlestick Chart of NIFTY50')
-    ohlc.date = ohlc.index.apply(mpl_dates.date2num)
-    ohlc = ohlc.astype(float)
-    date_format = mpl_dates.DateFormatter('%d-%m-%Y')
-    ax.xaxis.set_major_formatter(date_format)
-    fig.autofmt_xdate()
-    fig.tight_layout()
-    plt.savefig(str(true_number) + ".jpg")  # 將圖存成 JPEG 檔
-
-
-def VWAP_history(vwap_values):
-    pattern = np.array([False] * 20 + [True])
-    return np.array_equal(vwap_values[-21:-1], pattern[:-1]) and vwap_values[-1] == pattern[-1]
-
-
-def detect_vcp(tickers, start, ptp_list):
-    true_number = 0
-    run_number = 0
-    today = str(datetime.datetime.now().date())
-    lineNotifyMessage(token, "Start VCP: " + today + " ")
-    for row in tickers[start:]:
-        ptp_no = 0
-        ptp = "False"
-        for row2 in ptp_list:  # for row2 in ptp_list[start:]:
-            # print (row,row2)
-            if (row == row2):
-                ptp = "True"
-                ptp_no += 1
-                lineNotifyMessage(token, row + " is PTP stock!")
-                print(row, " is PTP stock, skip analysis!")
-
-        if (ptp != "True"):
-            # print ("Start　analysis!")
-            start += 1
-            print(" " + str(start), str(row))
-            # print(row)
-            # df = yf.download(row, start=start, end=end)
-            try:
-                data = yf.download(row, period="2y", progress=False)
-                data['AvgVol'] = data['Volume'].rolling(55).mean()  # 55為平均的天數
-                last_close_price = round(data["Close"][-1], 2)
-
-            except:
-                lineNotifyMessage(token, row + " is not exist!")
-                # pass
-            # print(df)
-
-            plot_title = "{} {} {} {}".format(row, today, last_close_price, scenario)
-
-    data['Pct Change'] = data['Close'].pct_change()
-    data['Trend'] = 0
-    Trend = 0
-    for i in range(1, len(data)):
-        if data['Close'][i] > data['Close'][i - 1]:
-            if Trend == -1:
-                data['Trend'][i - 1] = -1
-                Trend = 0
-            else:
-                Trend = 1
-        elif data['Close'][i] < data['Close'][i - 1]:
-            if Trend == 1:
-                data['Trend'][i - 1] = 1
-                Trend = 0
-            else:
-                Trend = -1
-
-    data['Consolidation'] = 0
-    Consolidation = 0
-    for i in range(1, len(data)):
-        if data['Trend'][i] == 0:
-            Consolidation += 1
-            if Consolidation >= 5:
-                data['Consolidation'][i] = 1
-        else:
-            Consolidation = 0
-
-    cons_data = data[data['Consolidation'] == 1]
-    cons_data = cons_data[cons_data['Volume'] < cons_data['Volume'].shift()]
-
-    for i in range(1, len(cons_data)):
-        if data['Close'][cons_data.index[i]] > data['Close'][cons_data.index[i - 1]]:
-            if data['Volume'][cons_data.index[i]] > data['Volume'][cons_data.index[i - 1]]:
-                print("VCP pattern found!")
-                plotly_chart(data, plot_title, 0, jpg_resolution)
-                lineNotifyImage(token, "Meet VCP Criteria", str(true_number) + ".jpg")
-
-
-start = 0
-true_number = 0
-run_number = 0
-today = str(datetime.datetime.now().date())
-
-
-# start += 1
-
-
-# unique_tickers = list(set(un_unique_tickers))
-# for ticker in unique_tickers[start:]:
-#    process_data(ticker)
-#    run_number += 1
-def detect_vcp_20230304(ticker_in, data):
-    lineNotifyMessage(token, "Start VCP: " + today + " ")
-    data['AvgVol'] = data['Volume'].rolling(55).mean()  # 55為平均的天數
-    last_close_price = round(data["Close"][-1], 2)
-
-    plot_title = "{} {} {} {}".format(ticker_in, today, last_close_price, scenario)
-
-    data['Pct Change'] = data['Close'].pct_change()
-    data['Trend'] = 0
-    Trend = 0
-    for i in range(1, len(data)):
-        if data['Close'][i] > data['Close'][i - 1]:
-            if Trend == -1:
-                data['Trend'][i - 1] = -1
-                Trend = 0
-            else:
-                Trend = 1
-        elif data['Close'][i] < data['Close'][i - 1]:
-            if Trend == 1:
-                data['Trend'][i - 1] = 1
-                Trend = 0
-            else:
-                Trend = -1
-
-    data['Consolidation'] = 0
-    Consolidation = 0
-    for i in range(1, len(data)):
-        if data['Trend'][i] == 0:
-            Consolidation += 1
-            if Consolidation >= 5:
-                data['Consolidation'][i] = 1
-        else:
-            Consolidation = 0
-
-    cons_data = data[data['Consolidation'] == 1]
-    cons_data = cons_data[cons_data['Volume'] < cons_data['Volume'].shift()]
-
-    for i in range(1, len(cons_data)):
-        if data['Close'][cons_data.index[i]] > data['Close'][cons_data.index[i - 1]]:
-            if data['Volume'][cons_data.index[i]] > data['Volume'][cons_data.index[i - 1]]:
-                print("VCP pattern found!")
-                plotly_chart(data, plot_title, 0, jpg_resolution)
-                lineNotifyImage(token, "Meet VCP Criteria", str(true_number) + ".jpg")
-
-
-def gogogo_20230304(tickers_in, df, true_number, category):
+def gogogo(tickers_in, df, true_number, category):
     global scenario
     df['AvgVol'] = df['Volume'].rolling(55).mean()  # 55為平均的天數
     last_close_price = round(df["Close"][-1], 2)
@@ -849,32 +487,15 @@ def gogogo_20230304(tickers_in, df, true_number, category):
     volatility = volatility_H - volatility_L
     # print (str(len(df.index)) + " " + str(volatility_H) + " " + str(volatility_L) + " " + str(volatility))
     if (len(df.index) > 144 and volatility > 0.1):  # 過濾資料筆數少於144筆的股票，確保上市時間有半年並且判斷半年內的波動率，像死魚一樣不動的股票就不分析
-        # print ("meet volume or volatility, start analysis!")
-        # run_number += 1
-        # print (df.head())
-        # print (df.tail())
-        # period = "ytd"
-        # print (df.shape[0])
-        # df['VWPrice'] = df['Close'] * df['Volume']
-        # vwap = pd.DataFrame()
-
-        # vwap['vwap233'] = df['VWPrice'].rolling(window=233).sum() / df['Volume'].rolling(window=233).sum()
-        # vwap['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['Volume'].rolling(window=144).sum()
-        # vwap['vwap89'] = df['VWPrice'].rolling(window=89).sum() / df['Volume'].rolling(window=89).sum()
-        # vwap['vwap55'] = df['VWPrice'].rolling(window=55).sum() / df['Volume'].rolling(window=55).sum()
-        # vwap['vwap21'] = df['VWPrice'].rolling(window=21).sum() / df['Volume'].rolling(window=21).sum()
-        # vwap['vwap5'] = df['VWPrice'].rolling(window=5).sum() / df['Volume'].rolling(window=5).sum()
-
         if (ForcePLOT == 1):
             # year = df[-200:]
-
-            # plotly_chart(df, row, true_number)
             url = f'https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{tickers_in}'
             linemessage = (
                 f"{true_number} - url - ")
             # f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - {info_sector}")
             # lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
             highchart_chart(df, tickers_in, today, url)
+            plotly_chart(df, plot_title, 0)
             # if not OnlyPLOT:
             #    webbrowser.open(url)
         df['VWAP21_Result'] = (df['vwap5'] > df['vwap21'])
@@ -950,11 +571,6 @@ def gogogo_20230304(tickers_in, df, true_number, category):
             return 1
         # print(final_result)
         if (final_result == 'TRUE'):
-
-            info_sector = ""
-
-            # plotly_chart(df, tickers_in, true_number)
-            # plotly_chart(df, plot_title, true_number, jpg_resolution)
             if (category != "TW"):
                 linemessage = (
                     f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in}")
@@ -979,12 +595,8 @@ def gogogo_20230304(tickers_in, df, true_number, category):
                     # if not OnlyPLOT:
                     #    webbrowser.open(url)
             highchart_chart(df, tickers_in, today, url)
-            # open_web(url)
-            # lineNotifyImage(token,str(start) + " - " + row+" - " + info_sector,str(true_number)+".jpg")
-            # if not OnlyPLOT:
-            #    lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
-
-        print("gogogo Finished")
+            plotly_chart(df, plot_title, 0)
+        # print("gogogo Finished")
     else:
         print("Volume or volatility not meet, skip analysis!")
     # lineNotifyMessage(token, "Finished: " + today + " " + category + "\nScanned " + str(run_number) + " of " + str(
@@ -1013,6 +625,7 @@ def get_data(ticker_in):
         data_org = calculate_vwap(data_org, 233)
         data_org = calculate_vwap(data_org, 377)
         data_org = calculate_vwap(data_org, 610)
+        data_org['AvgVol'] = data_org['Volume'].rolling(55).mean()  # 55為平均的天數
         # print(data_org)
     except Exception as e:
         lineNotifyMessage(token, f"{ticker_in} download failed: {str(e)}")
@@ -1095,9 +708,8 @@ def vwap_and_volume_screener(tickers_in, df, true_number, category, day, volume_
                         url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
                         # if not OnlyPLOT:
                         # webbrowser.open(url)
-
-                # plotly_chart(df, plot_title, true_number, jpg_resolution)
                 highchart_chart(df, tickers_in, today, url)
+                plotly_chart(df, plot_title, 0)
                 # lineNotifyImage(token, line_message, str(true_number) + ".jpg")
 
 
@@ -1114,18 +726,9 @@ def my_vcp_screener(ticker_in, data):
         url = (f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}")
         #webbrowser.open(url)
         highchart_chart(data, ticker_in, today, url)
-        # print(ticker_in, url)
 
-
-"""def my_vcp_screener(ticker_in, data):
-    volatility_5 = calculate_volatility(data, 5)
-    volatility_13 = calculate_volatility(data, 13)
-    volatility_21 = calculate_volatility(data, 21)
-    volatility_55 = calculate_volatility(data, 55)
-    if volatility_5 < volatility_13 < volatility_21 < volatility_55:
-        url = (f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}")
-        print(ticker_in, url)
-"""
+        plot_title = "{} {} {} {}".format(ticker_in, today, last_close_price, scenario)
+        plotly_chart(data, plot_title, 0)
 
 
 def calculate_avg_volume(df, n_days):
@@ -1164,21 +767,22 @@ def party(ticker_type, tickers_in, start):
         data = get_data(ticker)
         # print (data)
         run_number += 1
-        # print ("before gogogo")
+        last_close_price = round(data["Close"][-1], 2)
+        plot_title = "{} {} {} {}".format(ticker, today, last_close_price, scenario)
         # print (ticker)
-        if (gogogo_run == 1):
-            gogogo_20230304(ticker, data, run_number, ticker_type)
-        if (VCP == 1):
-            # detect_vcp_20230304(ticker, data)
+        if gogogo_run == 1:
+            gogogo(ticker, data, run_number, ticker_type)
+        if VCP == 1:
             print("Running VCP")
             my_vcp_screener(ticker, data)
-        if (VWAP_SCREENER == 1):
+        if VWAP_SCREENER == 1:
             vwap_and_volume_screener(ticker, data, run_number, ticker_type, screener_day, vol_factor)
-        if (STOCK_RANGE == 1):
+        if STOCK_RANGE == 1:
             stocks_in_range = find_stocks_in_range(data)
             if stocks_in_range.any():
                 url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + ticker)
                 highchart_chart(data, ticker, today, url)
+                plotly_chart(data, plot_title, 0)
 
 
 
@@ -1192,8 +796,8 @@ vol_factor = 8  # volume factor for VWAP_SCREENER
 VCP = 0
 VCP_TEST = 0
 VWAP_SCREENER = 0
-gogogo_run = 0
-STOCK_RANGE = 1
+gogogo_run = 1
+STOCK_RANGE = 0
 
 # 強制寫出plotly，主要用來測試
 ForcePLOT = 0
@@ -1204,10 +808,10 @@ test_tickers = ['1456.TW', '1432.TW']
 
 # 要執行的ticker種類
 TEST = 0
-US = 1
+US = 0
 TW = 0
 ETF = 0
-FIN = 0  # Filter tickers from finviz screener
+FIN = 1  # Filter tickers from finviz screener
 
 # plotly的圖檔大小
 plotly_resolution = "high"
