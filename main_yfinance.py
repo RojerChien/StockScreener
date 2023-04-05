@@ -2,17 +2,13 @@ from pickle import TRUE
 # https://medium.com/geekculture/top-4-python-libraries-for-technical-analysis-db4f1ea87e09
 
 import pandas as pd
-import pytz
 from finvizfinance.screener.overview import Overview
-import time
 
 pd.options.mode.chained_assignment = None  # 將警告訊息關閉
-# import yfinance as yf
+import yfinance as yf
 import matplotlib.pyplot as plt
 import matplotlib.dates as mpl_dates
-from datetime import datetime as dt
 import datetime
-from yahooquery import Ticker
 # import kaleido
 import numpy as np
 from highcharts import Highstock
@@ -34,9 +30,6 @@ import requests
 from bs4 import BeautifulSoup
 from finviz.screener import Screener
 
-# pd.set_option("display.max_rows", None)
-# pd.set_option("display.max_columns", None)
-
 start = 0
 true_number = 0
 run_number = 0
@@ -44,9 +37,9 @@ today = str(datetime.datetime.now().date())
 
 
 def calculate_vwap(df_in, duration):
-    # data['Typical Price'] = (data['high'] + data['low'] + data['close']) / 3
-    df_in['VWPrice'] = df_in['close'] * df_in['volume']
-    df_in[f'vwap{duration}'] = df_in['VWPrice'].rolling(window=duration).sum() / df_in['volume'].rolling(
+    # data['Typical Price'] = (data['High'] + data['Low'] + data['Close']) / 3
+    df_in['VWPrice'] = df_in['Close'] * df_in['Volume']
+    df_in[f'vwap{duration}'] = df_in['VWPrice'].rolling(window=duration).sum() / df_in['Volume'].rolling(
         window=duration).sum()
     return df_in
 
@@ -108,8 +101,7 @@ def get_ptp_tickers(url1, url2):
     # 合併兩個列表，並取得不重覆的值，最終返回 PTP 股票代號列表
     ptp_lists.extend(ptp_tickers)
     ptp_lists = list(set(ptp_lists))
-    ptp_lists_len = len(ptp_lists)
-    print("Total PTP Tickers:", ptp_lists_len)
+
     return ptp_lists
     print(ptp_lists)
 
@@ -144,7 +136,7 @@ token = 'YuvfgED98JDWMvATPEAnDu3u9Ge0R2B9BkrOvCwHZId'
 """def add_vwap_tochart(chart, dfin, window, color, line_width, yAxis=0):
     vwap = dfin[f'vwap{window}'].values.tolist()
     vwap = [
-        [int(pd.Timestamp(dfin.index[i][1]).value // 10 ** 6), round(v, 2)]
+        [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(v, 2)]
         for i, v in enumerate(vwap)
     ]
     chart.add_data_set(vwap, 'line', f'vwap{window}', yAxis=yAxis, color=color, lineWidth=line_width, dataGrouping={'units': [['day', [1]]]})
@@ -162,9 +154,9 @@ def add_vwap_to_chart(chart, dfin, window, color, line_width, yAxis=0, id=None):
 
 
 def highchart_chart(dfin, ticker_in, date, url):
-    # 初始化highstock对象
+    # 初始化Highstock对象
     chart = Highstock(renderTo='container', width=None, height=930)  # 添加宽度和高度
-    # chart = highstock(renderTo='container', width=1800, height=900)  # 添加宽度和高度
+    # chart = Highstock(renderTo='container', width=1800, height=900)  # 添加宽度和高度
 
     # 加入RSI data
     rsi_data = dfin['RSI'].values.tolist()
@@ -177,7 +169,7 @@ def highchart_chart(dfin, ticker_in, date, url):
     chart.add_data_set(rsi_data, 'line', 'RSI', yAxis=2, dataGrouping={'units': [['day', [1]]]})
 
     # 添加10日成交量移動平均線
-    dfin['volume_10ma'] = dfin['volume'].rolling(window=10).mean()
+    dfin['volume_10ma'] = dfin['Volume'].rolling(window=10).mean()
     volume_10ma = dfin['volume_10ma'].values.tolist()
     volume_10ma = [
         [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), v]
@@ -186,7 +178,7 @@ def highchart_chart(dfin, ticker_in, date, url):
     chart.add_data_set(volume_10ma, 'line', '10日成交量移動平均', yAxis=1, dataGrouping={'units': [['day', [1]]]})
 
     # 添加蜡烛图序列
-    ohlc = dfin[['open', 'high', 'low', 'close']].values.tolist()
+    ohlc = dfin[['Open', 'High', 'Low', 'Close']].values.tolist()
     ohlc = [[int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(o, 2), round(h, 2), round(l, 2), round(c, 2)] for
             i, (o, h, l, c) in enumerate(ohlc)]
 
@@ -197,7 +189,7 @@ def highchart_chart(dfin, ticker_in, date, url):
     add_vwap_to_chart(chart, dfin, 5, 'blue', 3, id='vwap5')
 
     # 添加成交量序列
-    volume = dfin[['open', 'close', 'volume']].values.tolist()
+    volume = dfin[['Open', 'Close', 'Volume']].values.tolist()
     volume = [{'x': int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), 'y': v, 'color': 'red' if o > c else 'green'} for
               i, (o, c, v) in enumerate(volume)]
 
@@ -342,7 +334,7 @@ def highchart_chart(dfin, ticker_in, date, url):
 
 def find_stocks_in_range(data, days=233, percentage=2):
     # 計算過去 days 天的最高價
-    highest_price = data['close'].rolling(window=days).max().iloc[-1]
+    highest_price = data['Close'].rolling(window=days).max().iloc[-1]
 
     # 計算正負 percentage% 的範圍
     upper_range = highest_price * (1 + percentage / 100)
@@ -351,7 +343,7 @@ def find_stocks_in_range(data, days=233, percentage=2):
     print(lower_range)
 
     # 篩選出最近的收盤價在範圍內的股票
-    recent_close = data['close'].iloc[-1]
+    recent_close = data['Close'].iloc[-1]
     print(recent_close)
     stocks_in_range = (recent_close >= lower_range) & (recent_close <= upper_range)
 
@@ -359,14 +351,11 @@ def find_stocks_in_range(data, days=233, percentage=2):
 
 
 def plotly_chart(dfin, plot_title, number, width=1800):
-    print(dfin)
     # Reference: https://python.plainenglish.io/a-simple-guide-to-plotly-for-plotting-financial-chart-54986c996682
     my_width = width
     my_height = int(my_width * 0.56)
     plot_period = -233  # 只保留特定天數的資料
     df = dfin[plot_period:]
-    # df = dfin
-    # print(f"Number of rows in input DataFrame: {len(dfin)}")
 
     # first declare an empty figure
     fig = go.Figure()
@@ -374,47 +363,46 @@ def plotly_chart(dfin, plot_title, number, width=1800):
                         vertical_spacing=0.01,
                         row_heights=[0.5, 0.1, 0.1])
 
+    # removing all empty dates
+    # build complete timeline from start date to end date
     dt_all = pd.date_range(start=df.index[0], end=df.index[-1])
-
-    # 使用提取的日期列表创建日期范围
+    # retrieve the dates that ARE in the original datset
     dt_obs = [d.strftime("%Y-%m-%d") for d in pd.to_datetime(df.index)]
-
     # define dates with missing values
     dt_breaks = [d for d in dt_all.strftime("%Y-%m-%d").tolist() if not d in dt_obs]
-
     fig.update_xaxes(rangebreaks=[dict(values=dt_breaks)])
     # MACD
-    macd = MACD(close=df['close'],
+    macd = MACD(close=df['Close'],
                 window_slow=26,
                 window_fast=12,
                 window_sign=9)
     # stochastic
-    stoch = StochasticOscillator(high=df['high'],
-                                 close=df['close'],
-                                 low=df['low'],
+    stoch = StochasticOscillator(high=df['High'],
+                                 close=df['Close'],
+                                 low=df['Low'],
                                  window=14,
                                  smooth_window=3)
     # add OHLC
     fig.add_trace(go.Candlestick(x=df.index,
-                                 open=df['open'],
-                                 high=df['high'],
-                                 low=df['low'],
-                                 close=df['close'],
+                                 open=df['Open'],
+                                 high=df['High'],
+                                 low=df['Low'],
+                                 close=df['Close'],
                                  showlegend=False)
                   )
 
     # add moving averages to df
-    # df['MA20'] = df['close'].rolling(window=20).mean()
-    # df['MA5'] = df['close'].rolling(window=5).mean()
+    # df['MA20'] = df['Close'].rolling(window=20).mean()
+    # df['MA5'] = df['Close'].rolling(window=5).mean()
 
     # add VWAP to df
-    df['VWPrice'] = df['close'] * df['volume']
-    # df.loc[df['VWPrice']] = df['close'] * df['volume']
+    df['VWPrice'] = df['Close'] * df['Volume']
+    # df.loc[df['VWPrice']] = df['Close'] * df['Volume']
 
     windows = [233, 144, 55, 21, 5]
     for w in windows:
         rolling_VWPrice = df['VWPrice'].rolling(window=w).sum()
-        rolling_volume = df['volume'].rolling(window=w).sum()
+        rolling_volume = df['Volume'].rolling(window=w).sum()
         df[f'vwap{w}'] = rolling_VWPrice / rolling_volume
     # add moving average traces
     fig.add_trace(go.Scatter(x=df.index,
@@ -479,20 +467,20 @@ def plotly_chart(dfin, plot_title, number, width=1800):
                              ), row=3, col=1)
     fig.update_yaxes(title_text="MACD", showgrid=False, row=3, col=1)
 
-    # Set volume color
-    colors = ['red' if row['open'] - row['close'] >= 0
+    # Set Volume color
+    colors = ['red' if row['Open'] - row['Close'] >= 0
               else 'green' for index, row in df.iterrows()]
     # Add volume trace
     fig.add_trace(go.Bar(x=df.index,
-                         y=df['volume'],
-                         marker_color=colors, name="volume"
+                         y=df['Volume'],
+                         marker_color=colors, name="Volume"
                          ), row=2, col=1)
     # 添加 AvgVol 軌跡
     fig.add_trace(
-        go.Scatter(x=df.index, y=df['AvgVol'], name="Average volume"),
+        go.Scatter(x=df.index, y=df['AvgVol'], name="Average Volume"),
         row=2, col=1
     )
-    fig.update_yaxes(title_text="volume", row=2, col=1)
+    fig.update_yaxes(title_text="Volume", row=2, col=1)
 
     # removing white space
     fig.update_layout(margin=go.layout.Margin(
@@ -514,13 +502,13 @@ def plotly_chart(dfin, plot_title, number, width=1800):
 
 def gogogo(tickers_in, df, true_number, category):
     global scenario
-    df['AvgVol'] = df['volume'].rolling(55).mean()  # 55為平均的天數
-    last_close_price = round(df["close"][-1], 2)
+    df['AvgVol'] = df['Volume'].rolling(55).mean()  # 55為平均的天數
+    last_close_price = round(df["Close"][-1], 2)
 
     plot_title = "{} {} {} {}".format(tickers_in, today, last_close_price, scenario)
     # plot_tile = (row + today + last_close_price)
-    volatility_H = df['high'].max() / df['close'].mean()
-    volatility_L = df['low'].min() / df['close'].mean()
+    volatility_H = df['High'].max() / df['Close'].mean()
+    volatility_L = df['Low'].min() / df['Close'].mean()
     volatility = volatility_H - volatility_L
     # print (str(len(df.index)) + " " + str(volatility_H) + " " + str(volatility_L) + " " + str(volatility))
     if (len(df.index) > 144 and volatility > 0.1):  # 過濾資料筆數少於144筆的股票，確保上市時間有半年並且判斷半年內的波動率，像死魚一樣不動的股票就不分析
@@ -532,7 +520,7 @@ def gogogo(tickers_in, df, true_number, category):
             # f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - {info_sector}")
             # lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
             highchart_chart(df, tickers_in, today, url)
-            # plotly_chart(df, plot_title, 0)
+            plotly_chart(df, plot_title, 0)
             # if not OnlyPLOT:
             #    webbrowser.open(url)
         df['VWAP21_Result'] = (df['vwap5'] > df['vwap21'])
@@ -632,10 +620,10 @@ def gogogo(tickers_in, df, true_number, category):
                     # if not OnlyPLOT:
                     #    webbrowser.open(url)
             highchart_chart(df, tickers_in, today, url)
-            # plotly_chart(df, plot_title, 0)
+            plotly_chart(df, plot_title, 0)
         # print("gogogo Finished")
     else:
-        print("volume or volatility not meet, skip analysis!")
+        print("Volume or volatility not meet, skip analysis!")
     # lineNotifyMessage(token, "Finished: " + today + " " + category + "\nScanned " + str(run_number) + " of " + str(
     #    start) + " Stocks in " + category + " Market\n" + str(true_number) + " Meet Criteria")
 
@@ -644,14 +632,12 @@ def remove_ptp_list(ptp_tickers, tickers):
     us_non_ptp_tickers = [x for x in tickers if x not in ptp_tickers]
     us_ptp_tickers = [x for x in tickers if x in ptp_tickers]
     print("PTP US stocks:", us_ptp_tickers)
-    us_ptp_tickers_length = len(us_ptp_tickers)
-    print("Total Removed PTP Tickers:", us_ptp_tickers_length)
-    # print("Non-PTP US stocks:", us_non_ptp_tickers)
+    print("Non-PTP US stocks:", us_non_ptp_tickers)
     return us_non_ptp_tickers
 
 
 def calculate_rsi(data, period):
-    delta = data['close'].diff().dropna()
+    delta = data['Close'].diff().dropna()
     gain = delta.where(delta > 0, 0)
     loss = -delta.where(delta < 0, 0)
 
@@ -664,82 +650,9 @@ def calculate_rsi(data, period):
     return rsi
 
 
-def get_data_all(ticker_list):
-    # print(ticker_list)
-    get_data_start_time = time.time()  # Record start time
-    print("Start getting stock history")
-    ticker = Ticker(ticker_list, asynchronous=True)
-    data_all = ticker.history(period="3y", interval="1d")
-    get_data_end_time = time.time()  # Record end time
-    get_data_elapsed_time = get_data_end_time - get_data_start_time  # Compute elapsed time
-    print(f"Get Data Elapsed time: {get_data_elapsed_time} seconds")
-    # Save DataFrame as CSV
-    # data_all.to_csv('data_all.csv', index=True)
-    # Save DataFrame as Parquet
-    # data_all.to_parquet('data_all.parquet', index=True)
-    return data_all
-
-
-def get_data_all_bk(ticker_list):
-    # print(ticker_list)
-    get_data_start_time = time.time()  # Record start time
-    print("Start getting stock history")
-    # data_org = yf.download(ticker_in, period="3y", progress=False)
-    ticker = Ticker(ticker_list, asynchronous=True)
-    data_all = ticker.history(period="3y", interval="1d")
-    # print(data_all)
-    get_data_end_time = time.time()  # Record end time
-    get_data_elapsed_time = get_data_end_time - get_data_start_time  # Compute elapsed time
-    print(f"Get Data Elapsed time: {get_data_elapsed_time} seconds")
-    # Save DataFrame as CSV
-    # data_all.to_csv('data_all.csv', index=True)
-    # Save DataFrame as Parquet
-    # data_all.to_parquet('data_all.parquet', index=True)
-    return data_all
-
-def get_data(data_all, ticker_in):
-    # print(data_all)
-    # print(ticker_in)
-    # data_org = data_all.reset_index()
-
-    # 確定資料裡面有ticker這個index的資料
-    if ticker_in in data_all.index.get_level_values('symbol'):
-        data_org = data_all.loc[ticker_in]
-    else:
-        print(f'Index not found:{ticker_in}')
-    # data_org = data_all.loc[ticker_in]
-    # Check if the DataFrame has at least two rows
-    # if data_org.shape[0] < 2:
-    #     print("DataFrame must have at least two rows.")
-    #     return 0
-    # else:
-    data_org = calculate_vwap(data_org, 5)
-    data_org = calculate_vwap(data_org, 8)
-    data_org = calculate_vwap(data_org, 13)
-    data_org = calculate_vwap(data_org, 21)
-    data_org = calculate_vwap(data_org, 34)
-    data_org = calculate_vwap(data_org, 55)
-    data_org = calculate_vwap(data_org, 89)
-    data_org = calculate_vwap(data_org, 144)
-    data_org = calculate_vwap(data_org, 233)
-    data_org = calculate_vwap(data_org, 377)
-    data_org = calculate_vwap(data_org, 610)
-    data_org['AvgVol'] = data_org['volume'].rolling(55).mean()  # 55為平均的天數
-    data_org['RSI'] = calculate_rsi(data_org, rsi_period)
-    return data_org
-    print("DataFrame has at least two rows.")
-
-
-
-def get_data_old(ticker_in):
+def get_data(ticker_in):
     try:
-        # data_org = yf.download(ticker_in, period="3y", progress=False)
-        ticker = Ticker(ticker_in)
-        data_org = ticker.history(period="3y")
-        data_org = data_org.reset_index()
-        # 将'date'列设置为新的索引
-        data_org = data_org.set_index('date')
-        # print(temp)
+        data_org = yf.download(ticker_in, period="3y", progress=False)
         data_org = calculate_vwap(data_org, 5)
         data_org = calculate_vwap(data_org, 8)
         data_org = calculate_vwap(data_org, 13)
@@ -751,7 +664,7 @@ def get_data_old(ticker_in):
         data_org = calculate_vwap(data_org, 233)
         data_org = calculate_vwap(data_org, 377)
         data_org = calculate_vwap(data_org, 610)
-        data_org['AvgVol'] = data_org['volume'].rolling(55).mean()  # 55為平均的天數
+        data_org['AvgVol'] = data_org['Volume'].rolling(55).mean()  # 55為平均的天數
         data_org['RSI'] = calculate_rsi(data_org, rsi_period)
     except Exception as e:
         lineNotifyMessage(token, f"{ticker_in} download failed: {str(e)}")
@@ -760,89 +673,18 @@ def get_data_old(ticker_in):
     return data_org
 
 
-def Mark_Screener(tickers_in, df, true_number, category, day, volume_factor):
-    # Check if the dataframe is empty
-    if df.empty:
-        return
-
-    # Calculate rolling averages and other computations
-    df['AvgVol'] = df['volume'].rolling(day).mean()
-    df['VWPrice'] = df['close'] * df['volume']
-    df['VWPrice_day'] = df['VWPrice'].rolling(day).mean()
-
-
-    if len(df) < 2:
-        print("Error: The DataFrame must have at least two rows.")
-    else:
-        # Get the last data points
-        last_turnover_data = df['VWPrice_day'].tail(1).iloc[0] * volume_factor
-        last_vwap144_data = df['vwap144'].tail(1).iloc[0]
-        last_close_price = df["close"].iloc[-1]
-        last2_close_price = df["close"].iloc[-2]
-        change_percentage = ((last_close_price / last2_close_price) - 1) * 100
-        change_percentage = round(change_percentage, 2)
-
-        # Check if the conditions are met for analysis
-        if last_turnover_data > 100000 and last_close_price > last_vwap144_data:
-            # Calculate vwap
-            df[f'vwap{day}'] = df['VWPrice'].rolling(window=day).sum() / df['volume'].rolling(window=day).sum()
-
-            # Get the last data points
-            # last_vwap = df[f'vwap{day}'].iloc[-1]
-            # second_last_vwap = df[f'vwap{day}'].iloc[-2]
-            last_volume = df['volume'].iloc[-1] * volume_factor
-            second_last_avg_volume = df['AvgVol'].iloc[-1]
-
-            # Check if price and volume conditions are met based on the category
-            if (category != "TW"):
-                is_meet_price_and_volume = last2_close_price * 1.06 > last_close_price > last2_close_price * 1.02 and last_volume > second_last_avg_volume * 1.5
-            else:
-                is_meet_price_and_volume = last2_close_price * 1.09 > last_close_price > last2_close_price * 1.02 and last_volume > second_last_avg_volume * 1.5
-
-            # 如果最後一天的vwap大於最後第二天的vwap的1.03倍，並且最後一天的成交量大於5天平均成交量的最後一天的2倍，則畫圖並傳送Line通知
-            if is_meet_price_and_volume:
-                plot_title = f"{tickers_in} {today} {day} {change_percentage}% screener"
-                if category != "TW":
-                    line_message = (
-                        f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol={tickers_in} - screener")
-                    url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + tickers_in)
-                    # if not OnlyPLOT:
-                    #   webbrowser.open(url)
-
-                else:
-                    if (tickers_in[-1] == "W"):
-                        row2 = tickers_in[:4]
-                        line_message = (
-                            f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - screener")
-                        url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
-                        # if not OnlyPLOT:
-                        # webbrowser.open(url)
-
-                    else:
-                        row2 = tickers_in[:4]
-                        line_message = (
-                            f"{true_number} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A{row2} - screener")
-                        url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
-                        # if not OnlyPLOT:
-                        # webbrowser.open(url)
-                highchart_chart(df, tickers_in, today, url)
-                # plotly_chart(df, plot_title, 0)
-                # lineNotifyImage(token, line_message, str(true_number) + ".jpg")
-
-
-
 def vwap_and_volume_screener(tickers_in, df, true_number, category, day, volume_factor):
     # Check if the dataframe is empty
     if df.empty:
         return
 
     # Calculate rolling averages and other computations
-    df['AvgVol'] = df['volume'].rolling(day).mean()
-    df['VWPrice'] = df['close'] * df['volume']
+    df['AvgVol'] = df['Volume'].rolling(day).mean()
+    df['VWPrice'] = df['Close'] * df['Volume']
     df['VWPrice_day'] = df['VWPrice'].rolling(day).mean()
 
     # Calculate vwap and use NaN to avoid divide by zero error
-    # df['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['volume'].replace(0, np.nan).rolling(
+    # df['vwap144'] = df['VWPrice'].rolling(window=144).sum() / df['Volume'].replace(0, np.nan).rolling(
     #    window=144).sum()
 
     if len(df) < 2:
@@ -851,11 +693,11 @@ def vwap_and_volume_screener(tickers_in, df, true_number, category, day, volume_
         # Get the last data points
         last_turnover_data = df['VWPrice_day'].tail(1).iloc[0] * volume_factor
         last_vwap144_data = df['vwap144'].tail(1).iloc[0]
-        last_close_price = df["close"].iloc[-1]
-        last2_close_price = df["close"].iloc[-2]
+        last_close_price = df["Close"].iloc[-1]
+        last2_close_price = df["Close"].iloc[-2]
         change_percentage = ((last_close_price / last2_close_price) - 1) * 100
         change_percentage = round(change_percentage, 2)
-        # print(df["close"])
+        # print(df["Close"])
         # print(f'last_close_price:{last_close_price}')
         # rint(f'last2_close_price:{last2_close_price}')
         # Calculate change percentage
@@ -865,12 +707,12 @@ def vwap_and_volume_screener(tickers_in, df, true_number, category, day, volume_
         # Check if the conditions are met for analysis
         if last_turnover_data > 100000 and last_close_price > last_vwap144_data:
             # Calculate vwap
-            df[f'vwap{day}'] = df['VWPrice'].rolling(window=day).sum() / df['volume'].rolling(window=day).sum()
+            df[f'vwap{day}'] = df['VWPrice'].rolling(window=day).sum() / df['Volume'].rolling(window=day).sum()
 
             # Get the last data points
             # last_vwap = df[f'vwap{day}'].iloc[-1]
             # second_last_vwap = df[f'vwap{day}'].iloc[-2]
-            last_volume = df['volume'].iloc[-1] * volume_factor
+            last_volume = df['Volume'].iloc[-1] * volume_factor
             second_last_avg_volume = df['AvgVol'].iloc[-1]
 
             # Check if price and volume conditions are met based on the category
@@ -906,7 +748,7 @@ def vwap_and_volume_screener(tickers_in, df, true_number, category, day, volume_
                         # if not OnlyPLOT:
                         # webbrowser.open(url)
                 highchart_chart(df, tickers_in, today, url)
-                # plotly_chart(df, plot_title, 0)
+                plotly_chart(df, plot_title, 0)
                 # lineNotifyImage(token, line_message, str(true_number) + ".jpg")
 
 
@@ -925,12 +767,12 @@ def my_vcp_screener(ticker_in, data):
         highchart_chart(data, ticker_in, today, url)
 
         plot_title = "{} {} {} {}".format(ticker_in, today, last_close_price, scenario)
-        # plotly_chart(data, plot_title, 0)
+        plotly_chart(data, plot_title, 0)
 
 
 def calculate_avg_volume(df, n_days):
     hist = df.tail(n_days)
-    avg_volume = hist['volume'].mean()
+    avg_volume = hist['Volume'].mean()
     return avg_volume
 
 
@@ -939,13 +781,13 @@ def calculate_volatility(df, n_days):
     hist = df.tail(n_days)
 
     # 計算最高價格/平均價格和最低價格/平均價格
-    avg_close_price = hist['close'].mean()
-    max_close_price = hist['close'].max()
-    min_close_price = hist['close'].min()
+    avg_close_price = hist['Close'].mean()
+    max_close_price = hist['Close'].max()
+    min_close_price = hist['Close'].min()
     volatility_h = max_close_price / avg_close_price - 1
     volatility_l = avg_close_price / min_close_price - 1
-    # print(f"Volativity high: {n_days} days {volatility_h}")
-    # print(f"Volativity low:  {n_days} days {volatility_l}")
+    # print(f"Volativity High: {n_days} days {volatility_h}")
+    # print(f"Volativity Low:  {n_days} days {volatility_l}")
     volatility = volatility_h + volatility_l
     # print(f"Volativity: {n_days} days {volatility}")
 
@@ -953,27 +795,18 @@ def calculate_volatility(df, n_days):
 
 
 def party(ticker_type, tickers_in, start):
-    run_number = start + 1
+    run_number = start
     lineNotifyMessage(token, "Start: " + str(today) + " " + str(ticker_type))
     # print ("US LOOP")
     new_tickers = remove_ptp_list(ptp_lists, tickers_in)
-    new_tickers_length = len(new_tickers)
-    print("Total US Tickers w/o PTP:", new_tickers_length)
     # new_tickers = remove_ptp_list(ptp_lists, test_tickers)
     # print (new_tickers)
-    # new_tickers = new_tickers[:100]
-    # new_tickers = new_tickers[-1000:]
-    data_all = get_data_all(new_tickers)
-    # get_data_all(new_tickers)
-    # data_all = pd.read_csv('data_all.csv', index_col=[0, 1])
     for ticker in new_tickers[start:]:
         print(ticker_type, run_number, " ", ticker)
-        # print(data)
+        data = get_data(ticker)
         # print (data)
-        data = get_data(data_all, ticker)
-        # print(data)
         run_number += 1
-        last_close_price = round(data["close"][-1], 2)
+        last_close_price = round(data["Close"][-1], 2)
         plot_title = "{} {} {} {}".format(ticker, today, last_close_price, scenario)
 
         # print (ticker)
@@ -989,7 +822,7 @@ def party(ticker_type, tickers_in, start):
             if stocks_in_range.any():
                 url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + ticker)
                 highchart_chart(data, ticker, today, url)
-                # plotly_chart(data, plot_title, 0)
+                plotly_chart(data, plot_title, 0)
 
 
 
@@ -998,8 +831,8 @@ scenario = 55  # 21, 55, 89, 144, 233共5種
 
 rsi_period = 14
 
-# volume Factor
-vol_factor = 15  # volume factor for VWAP_SCREENER
+# Volume Factor
+vol_factor = 1  # volume factor for VWAP_SCREENER
 
 # 設定要執行的種類
 VCP = 0
@@ -1013,7 +846,7 @@ ForcePLOT = 0
 OnlyPLOT = False  # True / False
 
 # Test Tickers
-test_tickers = ['WHLRL', 'TSLA']
+test_tickers = ['1456.TW', '1432.TW']
 
 # 要執行的ticker種類
 TEST = 0
@@ -1048,8 +881,7 @@ url2 = 'https://www.itigerup.com/bulletin/ptp'
 ptp_lists = get_ptp_tickers(url1, url2)
 
 vcp_test_tickers = ['AAPL', 'ICPT']
-
-
+test_tickers = ['UFPT', 'IPVF', 'SCU', 'ICD']
 
 # 將讀取到的資料轉換為 list，並存入 tw_tickers 變數中
 if TW == 1:
@@ -1075,7 +907,6 @@ if FIN == 1:
 
 #############################################################################
 
-start_time = time.time()  # 记录开始时间
 
 if TEST == 1:
     party("TEST", test_tickers, test_start)
@@ -1091,7 +922,3 @@ if FIN == 1:
     #    fin_tickers.remove(item)
     # print(fin_tickers)
     party("FIN", fin_tickers, fin_start)
-
-end_time = time.time()  # 记录结束时间
-elapsed_time = end_time - start_time  # 计算运行时间
-print(f"Elapsed time: {elapsed_time} seconds")
