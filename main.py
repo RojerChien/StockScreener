@@ -131,7 +131,15 @@ def add_vwap_to_chart(chart, dfin, window, color, line_width, yAxis=0, id=None):
                        dataGrouping={'units': [['day', [1]]]})
 
 
-def highchart_chart(dfin, ticker_in, date, url):
+def highchart_chart_v2(tickers_in, category_in="US"):
+    df = get_yq_historical_data(tickers_in)
+    for ticker in tickers_in:
+        df_one = sel_yq_historical_data(df, ticker)
+        url = get_tradingview_url(ticker, category_in)
+        highchart_chart(df_one, ticker, url)
+
+
+def highchart_chart(dfin, ticker_in, url, date=today):
     # 初始化highstock对象
     chart = Highstock(renderTo='container', width=None, height=930)  # 添加宽度和高度
     # chart = highstock(renderTo='container', width=1800, height=900)  # 添加宽度和高度
@@ -327,15 +335,15 @@ def calculate_rsi(data, period):
 def get_yq_financial_data(ticker_list):
     # print(ticker_list)
     get_data_start_time = time.time()  # Record start time
-    print("Start getting stock financial data")
+    print("Start Getting Stock Financial Data")
     # fin_data = Ticker(ticker_list).get_modules(['summaryDetail'])
-    fin_data = Ticker(ticker_list).all_modules
+    fin_data = Ticker(ticker_list, validate=True, progress=True).all_modules
 
     # print(fin_data)
     # fin_data = Ticker(ticker_list).get_modules(['summaryDetail', 'balanceSheetHistory'])
     get_data_end_time = time.time()  # Record end time
     get_data_elapsed_time = get_data_end_time - get_data_start_time  # Compute elapsed time
-    print(f"Get Data Elapsed time: {get_data_elapsed_time} seconds")
+    print(f"Get Financial Data Elapsed time: {get_data_elapsed_time} seconds")
     # Save DataFrame as CSV
     # data_all.to_csv('data_all.csv', index=True)
     # Save DataFrame as Parquet
@@ -351,82 +359,86 @@ def get_financial_data(dictname1, dictname2):
 
 
 def filter_financial_ticker(tickers_in):
-    start_time = time.time()  # 記錄開始時間
+    # start_time = time.time()  # 記錄開始時間
     fin_data = get_yq_financial_data(tickers_in)
-    print(fin_data)
-    end_time = time.time()  # 記錄結束時間
-    elapsed_time = end_time - start_time  # 計算運行時間
-    print(f"Elapsed time: {elapsed_time} seconds")
+    # print(fin_data)
+    # end_time = time.time()  # 記錄結束時間
+    # elapsed_time = end_time - start_time  # 計算運行時間
+    # print(f"Elapsed time: {elapsed_time} seconds")
     filter_tickers = []
     for ticker in tickers_in:
         if 'Quote not found for ticker symbol:' in fin_data[ticker] or 'For input string' in fin_data[ticker]:
             print(f'Quote not found for ticker symbol:{ticker}')
             continue
         else:
-            print(ticker)
+            # print(ticker)
             summary_detail = fin_data[ticker].get('summaryDetail')
             if summary_detail is not None:
                 # ticker_previous_close = get_financial_data("summary_detail", "previousClose")
                 ticker_previous_close = summary_detail.get('previousClose')
                 if ticker_previous_close is not None:
                     ticker_previous_close = fin_data[ticker]['summaryDetail']['previousClose']
-                    print(f'ticker_previous_close {ticker_previous_close}')
+                    # print(f'ticker_previous_close {ticker_previous_close}')
 
-                ticker_forward_pe = summary_detail.get('forwardPE')
+                ticker_forward_pe = summary_detail.get('forwardPE')  # Forward PE是下一個會計年度的每股盈餘來計算
                 if ticker_forward_pe is not None:
                     ticker_forward_pe = fin_data[ticker]['summaryDetail'].get('forwardPE', None)
-                    print(f'ticker_forward_pe {ticker_forward_pe}')
+                    # print(f'ticker_forward_pe {ticker_forward_pe}')
 
-                ticker_trailing_pe = summary_detail.get('trailingPE')
+                ticker_trailing_pe = summary_detail.get('trailingPE')  # Trailing PE是指最近四季的每股盈餘來計算
                 if ticker_trailing_pe is not None:
                     ticker_trailing_pe = fin_data[ticker]['summaryDetail'].get('trailingPE', None)
-                    print(f'ticker_forward_pe {ticker_trailing_pe}')
+                    # print(f'ticker_trailing_pe {ticker_trailing_pe}')
 
                 ticker_average_daily_volume_10day = summary_detail.get('averageDailyVolume10Day')
                 if ticker_average_daily_volume_10day is not None:
                     ticker_average_daily_volume_10day = fin_data[ticker]['summaryDetail'].get('averageDailyVolume10Day', None)
-                    print(f'ticker_average_daily_volume_10day {ticker_average_daily_volume_10day}')
+                    # print(f'ticker_average_daily_volume_10day {ticker_average_daily_volume_10day}')
 
                 ticker_52_week_low = summary_detail.get('fiftyTwoWeekLow')
                 if ticker_52_week_low is not None:
                     ticker_52_week_low = fin_data[ticker]['summaryDetail'].get('fiftyTwoWeekLow', None)
-                    print(f'ticker_52_week_low {ticker_52_week_low}')
+                    # print(f'ticker_52_week_low {ticker_52_week_low}')
 
                 ticker_52_week_high = summary_detail.get('forwardPE')
                 if ticker_52_week_high is not None:
                     ticker_52_week_high = fin_data[ticker]['summaryDetail'].get('fiftyTwoWeekHigh', None)
-                    print(f'ticker_52_week_high {ticker_52_week_high}')
+                    # print(f'ticker_52_week_high {ticker_52_week_high}')
 
                 ticker_50_day_average = summary_detail.get('fiftyDayAverage')
                 if ticker_50_day_average is not None:
                     ticker_50_day_average = fin_data[ticker]['summaryDetail'].get('fiftyDayAverage', None)
-                    print(f'ticker_50_day_average {ticker_50_day_average}')
+                    # print(f'ticker_50_day_average {ticker_50_day_average}')
 
                 ticker_200_day_average = summary_detail.get('twoHundredDayAverage')
                 if ticker_200_day_average is not None:
                     ticker_200_day_average = fin_data[ticker]['summaryDetail'].get('twoHundredDayAverage', None)
-                    print(f'ticker_200_day_average {ticker_200_day_average}')
-
+                    # print(f'ticker_200_day_average {ticker_200_day_average}')
                 if (ticker_forward_pe is not None and ticker_trailing_pe is not None and
                         ticker_forward_pe != "Infinity" and ticker_trailing_pe != "Infinity"):
-                    print("PE is not valid, skip")
+                    # print("PE is not valid, skip")
                     if ((ticker_previous_close / ticker_52_week_low > 1.3) and
-                            (ticker_forward_pe > ticker_trailing_pe) and
+                            (ticker_previous_close / ticker_52_week_high < 1.10) and
+                            ( ticker_trailing_pe > ticker_forward_pe) and
                             (ticker_50_day_average > ticker_200_day_average)):
                         filter_tickers.append(ticker)
 
                 else:
                     continue
-            print(filter_tickers)
+    print(filter_tickers)
+    df = pd.DataFrame(filter_tickers)
+    # 將 DataFrame 寫入名為 'YF' 的工作表
+    df.to_csv('YF_US.csv', index=False, header=None)
+    highchart_chart_v2(filter_tickers, "US")
 
 
 def refresh_financial_data(tickers_in):
     get_fin_start_time = time.time()  # 記錄開始時間
     fin_data = get_yq_financial_data(tickers_in)
     # print(fin_data)
-    get_fin_end_time = time.time()  # 記錄結束時間
-    get_fin_elapsed_time = get_fin_end_time - get_fin_start_time  # 計算運行時間
-    print(f"Elapsed time: {get_fin_elapsed_time} seconds")
+    # get_fin_end_time = time.time()  # 記錄結束時間
+    # get_fin_elapsed_time = get_fin_end_time - get_fin_start_time  # 計算運行時間
+    # print(f"Elapsed time: {get_fin_elapsed_time} seconds")
     # print(data)
     ticker_previous_close = fin_data['AAPL']['summaryDetail']['previousClose']
     print(ticker_previous_close)
@@ -576,6 +588,22 @@ def line_notify_message(msg, token='YuvfgED98JDWMvATPEAnDu3u9Ge0R2B9BkrOvCwHZId'
     return r.status_code
 
 
+def get_tradingview_url(ticker_in, category):
+    #  不是台灣的ticker
+    if (category != "TW"):
+        url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + ticker_in)
+    # 若是台灣的ticker，則會需要分上市及上櫃
+    else:
+        if (ticker_in[-1] == "W"):
+            row2 = ticker_in[:4]
+            url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
+        else:
+            row2 = ticker_in[:4]
+
+            url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
+    return url
+
+
 def vwap_strategy_screener(tickers_in, df, true_number, category):
     global scenario
     df['AvgVol'] = df['volume'].rolling(55).mean()  # 55為平均的天數
@@ -595,7 +623,7 @@ def vwap_strategy_screener(tickers_in, df, true_number, category):
                 f"{true_number} - url - ")
             # f"{start} - https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{row2} - {info_sector}")
             # lineNotifyImage(token, linemessage, str(true_number) + ".jpg")
-            highchart_chart(df, tickers_in, today, url)
+            highchart_chart(df, tickers_in, url)
             # plotly_chart(df, plot_title, 0)
             # if not OnlyPLOT:
             #    webbrowser.open(url)
@@ -695,7 +723,10 @@ def vwap_strategy_screener(tickers_in, df, true_number, category):
                     url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
                     # if not OnlyPLOT:
                     #    webbrowser.open(url)
-            highchart_chart(df, tickers_in, today, url)
+            print(tickers_in)
+            print(today)
+            print(url)
+            highchart_chart(df, tickers_in, url)
             # plotly_chart(df, plot_title, 0)
     else:
         print("volume or volatility not meet, skip analysis!")
@@ -777,7 +808,7 @@ def buy_signal_strategy_screener(tickers_in, df, true_number, category, day, vol
                         url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
                         # if not OnlyPLOT:
                         # webbrowser.open(url)
-                highchart_chart(df, tickers_in, today, url)
+                highchart_chart(df, tickers_in, url)
                 # plotly_chart(df, plot_title, 0)
                 # lineNotifyImage(token, line_message, str(true_number) + ".jpg")
 
@@ -819,7 +850,7 @@ def vcp_screener_strategy(ticker_in, data):
     if volatility_5 < 0.03 < volatility_13 < volatility_21 < volatility_34 and avg_volume_5 < avg_volume_13 < avg_volume_21 < avg_volume_34:
         url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}"
         # webbrowser.open(url)
-        highchart_chart(data, ticker_in, today, url)
+        highchart_chart(data, ticker_in, url)
 
         plot_title = "{} {} {} {}".format(ticker_in, today, last_close_price, scenario)
         # plotly_chart(data, plot_title, 0)
@@ -881,7 +912,7 @@ def party_on(ticker_type, tickers_in, run_number=1):
             stocks_in_range = find_stocks_in_range(data_one_ticker)
             if stocks_in_range.any():
                 url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + ticker)
-                highchart_chart(data_one_ticker, ticker, today, url)
+                highchart_chart(data_one_ticker, ticker, url)
                 # plotly_chart(data, plot_title, 0)
 
 
@@ -900,7 +931,7 @@ else:
     jpg_resolution = 800
 
 # volume Factor
-vol_factor = 15  # volume factor for VWAP_SCREENER
+vol_factor = 1  # volume factor for VWAP_SCREENER
 
 # screener要判斷的平均天數
 screener_day = 8
@@ -913,26 +944,30 @@ OnlyPLOT = False  # True / False
 test_start = 0
 us_start = 0
 tw_start = 0
+yf_start = 0
 etf_start = 0
 fin_start = 0
 
 # 設定要執行的種類
 # VCP_TEST = 0
 run_vcp_screener_strategy = 0
-run_buy_signal_strategy_screener = 1
-run_vwap_strategy_screener = 0
+run_buy_signal_strategy_screener = 0
+run_vwap_strategy_screener = 1
 run_find_stocks_in_range = 0
 
 # 要執行的ticker種類
-TEST = 1
-US = 0
+TEST = 0
+US = 1
 TW = 0
 ETF = 0
 FIN = 0  # Filter tickers from finviz screener
+YF = 0
 
 # 將讀取到的資料轉換為 list，並存入 tickers 變數中
 if TW == 1:
     tw_tickers = get_tickers("TW", tw_start)
+if YF == 1:
+    yf_tickers = get_tickers("YF", yf_start)
 if US == 1:
     us_tickers = get_tickers("US", us_start)
 if ETF == 1:
@@ -940,13 +975,14 @@ if ETF == 1:
 if FIN == 1:
     fin_tickers = get_tickers("FIN", fin_start)
 if TEST == 1:
-    test_tickers = ['RKT', 'ICHR', 'LPG', 'UFPT', 'IMOS', 'ASTL', 'HCCI', 'SXC', 'TGI']
+    test_tickers = ['NVDA', 'V', 'TSM', 'META', 'MA', 'NVO', 'MRK', 'AVGO', 'ASML', 'BABA', 'ORCL', 'AZN', 'CSCO', 'CRM', 'NKE', 'LIN', 'CMCSA', 'TTE', 'ADBE', 'NFLX', 'SAP', 'CAT', 'AMD', 'DE', 'HDB', 'LMT', 'PDD', 'BUD', 'SNY', 'SBUX', 'SONY', 'BLK', 'GILD', 'BKNG', 'SYK', 'GE', 'ADI', 'MDLZ', 'TJX', 'NOW', 'MUFG', 'REGN', 'PGR', 'ISRG', 'ZTS', 'SLB', 'VRTX', 'ABNB', 'ITW', 'HCA', 'BSX', 'UBS', 'AMX', 'EQIX', 'ABB', 'AON', 'MELI', 'RELX', 'TRI', 'PANW', 'NTES', 'SNPS', 'MNST', 'MCO', 'CDNS', 'ORLY', 'FDX', 'BIDU', 'ING', 'RACE', 'TAK', 'VMW', 'AZO', 'FTNT', 'NXPI', 'PH', 'DXCM', 'MSI', 'CTAS', 'MCHP', 'HES', 'TT', 'STM', 'ANET', 'PUK', 'TDG', 'CMG', 'MSCI', 'APO', 'MFG', 'AJG', 'IDXX', 'ODFL', 'ROST', 'AMP', 'GFS', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT', 'URI', 'ON', 'MTD', 'APTV', 'ORAN', 'OKE', 'GOLD', 'TTD', 'ANSS', 'ULTA', 'ACGL', 'IT', 'FNV', 'YUMC', 'CCEP', 'HZNP', 'TSCO', 'EIX', 'EFX', 'TCOM', 'RCI', 'ALGN', 'WST', 'HEI', 'IR', 'MPWR', 'GIB', 'AEM', 'VRSN', 'TDY', 'HPE', 'PODD', 'QSR', 'HOLX', 'PKX', 'CLX', 'ZTO', 'BMRN', 'OMC', 'XYL', 'HWM', 'SEDG', 'SWKS', 'DRI', 'TRGP', 'FICO', 'UAL', 'CHWY', 'PARAA', 'WMG', 'COO', 'SJM', 'TER', 'ZBRA', 'COIN', 'KOF', 'AXON', 'RE', 'TW', 'PTC', 'LW', 'BEN', 'ARES', 'BURL', 'PARA', 'CBOE', 'IPG', 'TME', 'HUBB', 'STX', 'MKTX', 'NICE', 'SNN', 'ACM', 'ERIE', 'DT', 'IHG', 'BSY', 'BWA', 'LSCC', 'TTC', 'FIVE', 'JBL', 'FMS', 'DECK', 'WSC', 'TFX', 'DKS', 'AGCO', 'LSI', 'TPR', 'BRKR', 'FLEX', 'AOS', 'JNPR', 'BJ', 'COTY', 'LECO', 'BZ', 'MASI', 'FND', 'OTEX', 'BSMX', 'UHS', 'CHDN', 'VIPS', 'BBWI', 'MANH', 'IBKR', 'PNR', 'PFGC', 'NOV', 'USFD', 'LOGI', 'WCC', 'WEX', 'PNW', 'ALGM', 'DCI', 'ALV', 'EME', 'MTZ', 'DLB', 'RGLD', 'RL', 'CX', 'ATR', 'CROX', 'IRDM', 'NVT', 'GPK', 'SAIA', 'TPX', 'KNSL', 'CLH', 'AU', 'CIEN', 'CAE', 'ONON', 'FUTU', 'SKX', 'LEVI', 'VMI', 'TXRH', 'PRI', 'RBC', 'SBS', 'CR', 'SGFY', 'CW', 'BYD', 'AXTA', 'PLNT', 'NATI', 'OLED', 'STN', 'NYT', 'STVN', 'CHX', 'FCN', 'TKR', 'WWE', 'HXL', 'MEDP', 'BLCO', 'VVV', 'SIGI', 'IPGP', 'THC', 'GXO', 'SLGN', 'SAIC', 'MNSO', 'NE', 'PVH', 'AQUA', 'BWXT', 'CRUS', 'UNVR', 'SLAB', 'EHC', 'APG', 'HGV', 'COLM', 'AIT', 'SPSC', 'EEFT', 'ATI', 'FLR', 'IGT', 'FIX', 'LANC', 'VAL', 'EXP', 'NOVT', 'EVR', 'WING', 'LNTH', 'ENSG', 'FOXF', 'MMS', 'TNET', 'WFRD', 'AAON', 'BFAM', 'WEN', 'WB', 'PSN', 'VC', 'NSP', 'ASO', 'IART', 'NSIT', 'KGC', 'AJRD', 'FLS', 'JHG', 'DV', 'ALSN', 'FN', 'NVEI', 'UAA', 'IPAR', 'WNS', 'FRHC', 'BRBR', 'DIOD', 'VNT', 'HHC', 'SEAS', 'ACLS', 'ONTO', 'FCFS', 'FL', 'AGI', 'TEX', 'FRO', 'ATHM', 'TDC', 'AIMC', 'GTES', 'AVNT', 'ELF', 'MMSI', 'FOUR', 'UA', 'HAE', 'BTG', 'EURN', 'OMAB', 'ENS', 'SFM', 'CPA', 'ESAB', 'BDC', 'TKC', 'SRAD', 'AZEK', 'LOPE', 'BMI', 'QFIN', 'FHI', 'SANM', 'ALE', 'AEIS', 'KOS', 'FOCS', 'FSS', 'ATAT', 'SEM', 'IBP', 'PR', 'TWNK', 'CERT', 'YETI', 'TIGO', 'SIG', 'SPXC', 'ENIC', 'CCOI', 'BCO', 'NOMD', 'PFSI', 'TR', 'WOR', 'PBH', 'CCU', 'KTB', 'ACIW', 'AAWW', 'INMD', 'SITM', 'SHLS', 'AEO', 'NOG', 'PAGP', 'SSTK', 'CSIQ', 'NVMI', 'FTDR', 'URBN', 'ITGR', 'CBZ', 'PRGS', 'SONO', 'CBRL', 'HAYW', 'ESE', 'BLMN', 'MTRN', 'SIX', 'AMK', 'EXTR', 'YY', 'FORM', 'ODP', 'BOOT', 'SJW', 'ALG', 'NABL', 'EPC', 'CSWI', 'VCTR', 'IDCC', 'OII', 'MWA', 'CRCT', 'B', 'BVN', 'CARG', 'SUPN', 'SAH', 'FA', 'SLVM', 'VGR', 'STRA', 'AGYS', 'MYRG', 'NUS', 'HEES', 'RES', 'DOOR', 'NMIH', 'GVA', 'TBBK', 'AIR', 'GGAL', 'DHT', 'CRTO', 'ENLT', 'OXM', 'ALGT', 'JACK', 'ADUS', 'MOMO', 'COHU', 'XPEL', 'ATGE', 'AMPH', 'CTOS', 'EAT', 'AROC', 'SBH', 'INT', 'TGS', 'VIST', 'HURN', 'IAS', 'CPRX', 'TNK', 'OEC', 'CLS', 'EPAC', 'OSIS', 'ENVA', 'FDP', 'PLYA', 'PERI', 'PRIM', 'TH', 'ROAD', 'HLIT', 'ANF', 'SXI', 'CTS', 'MCRI', 'AVTA', 'CASH', 'HBM', 'RDNT', 'ECVT', 'WNC', 'USPH', 'AVNS', 'MOD', 'PGTI', 'MLNK', 'BMA', 'AVID', 'CARS', 'STRL', 'ERII', 'PRG', 'NOAH', 'DFIN', 'CLB', 'GES', 'NSSC', 'DCBO', 'DRQ', 'SNCY', 'DOLE', 'LMAT', 'GSHD', 'GEO', 'JELD', 'PTLO', 'GOTU', 'CMCO', 'NVGS', 'ASLE', 'OSW', 'ADEA', 'SKYW', 'STGW', 'IMXI', 'DCGO', 'MRC', 'NAT', 'COCO', 'CEPU', 'AMYT', 'PRDO', 'NVTS', 'THR', 'HIBB', 'DSGR', 'UTL', 'EWCZ', 'NEXA', 'THRY', 'ROCC', 'OPRA', 'CRAI', 'SILV', 'CYH', 'RICK', 'HSTM', 'KOP', 'PBI', 'VTRU', 'AMBC', 'BJRI', 'AEHR', 'VSEC', 'HAYN', 'AMOT', 'BLX', 'DCO', 'TRNS', 'CHUY', 'VITL', 'CASS', 'FLWS', 'JOUT', 'BBSI', 'BVH', 'REPX', 'KE', 'TK', 'MCFT', 'ALTG', 'VPG', 'CIR', 'SVM', 'EVC', 'CMBM', 'EXK', 'LX', 'CECO', 'BOOM', 'GTX', 'IBEX', 'ZYME', 'IRMD', 'BELFB', 'SGU', 'NOA', 'CRESY', 'BBCP', 'LOVE', 'LYTS', 'INSE', 'ARCT', 'FANH', 'AVNW', 'PMTS', 'SCPL', 'BWMN', 'BWMX', 'MCBC', 'DSKE', 'WLFC', 'MSB', 'GAMB', 'VMD', 'NINE', 'CZFS', 'GLRE', 'OSG', 'HQI', 'FET', 'BBW', 'CVCY', 'QD', 'MEC', 'JILL', 'STKS', 'CCRD', 'QUAD', 'EEX', 'HNRG', 'THRN', 'UTI', 'HOFT', 'CMCL', 'OCN', 'QIPT', 'PBPB', 'GENC', 'GHL', 'PAYS', 'CLMB', 'ESCA', 'INTT', 'MG', 'SUP', 'CMT', 'STG', 'LMB', 'AE', 'MRAM', 'ARC', 'NTIC', 'PCYG', 'LAKE', 'FLXS', 'LIVE', 'LWAY', 'LTRPA', 'WFCF', 'CODA']
+    # test_tickers = ['NVDA', 'V', 'TSM', 'META', 'MA', 'NVO', 'MRK', 'AVGO', 'ASML', 'BABA', 'ORCL', 'AZN', 'CSCO', 'CRM', 'NKE', 'LIN', 'CMCSA', 'TTE']
 
 start_time = time.time()  # 記錄開始時間
 
 run_refersh_financial_data = 1
 if run_refersh_financial_data == 1:
-    filter_financial_ticker(test_tickers)
+    filter_financial_ticker(us_tickers)
 
 #############################################################################
 
@@ -958,13 +994,21 @@ lets_party = 0
 if lets_party == 1:
     if TEST == 1:
         party_on("TEST", test_tickers)
+        category = "TEST"
     if US == 1:
         party_on("US", us_tickers)
+        category = "US"
     if TW == 1:
         party_on("TW", tw_tickers)
+        category = "TW"
     if ETF == 1:
         party_on("ETF", etf_tickers)
+        category = "ETF"
+    if YF == 1:
+        party_on("YF", yf_tickers)
+        category = "YF"
     if FIN == 1:
+        category = "FIN"
         # remove_list = ['BREZR','DAVEW','DWACW']
         # for item in remove_list:
         #    fin_tickers.remove(item)
