@@ -112,7 +112,7 @@ def get_yq_historical_data(ticker_list):
     ticker = Ticker(ticker_list, asynchronous=True)
     data_all = ticker.history(period="3y", interval="1d")
     get_data_end_time = time.time()  # Record end time
-    get_data_elapsed_time = get_data_end_time - get_data_start_time  # Compute elapsed time
+    get_data_elapsed_time = round(get_data_end_time - get_data_start_time, 2)  # Compute elapsed time
     print(f"Get Data Elapsed time: {get_data_elapsed_time} seconds")
     # Save DataFrame as CSV
     # data_all.to_csv('data_all.csv', index=True)
@@ -135,7 +135,7 @@ def highchart_chart_v2(tickers_in, category_in="US"):
     df = get_yq_historical_data(tickers_in)
     for ticker in tickers_in:
         df_one = sel_yq_historical_data(df, ticker)
-        vcp_result = vcp_screener_strategy_v2(ticker, df_one)
+        vcp_result = vcp_screener_strategy(ticker, df_one)
         if vcp_result == 1:
             url = get_tradingview_url(ticker, category_in)
             highchart_chart(df_one, ticker, url)
@@ -344,7 +344,7 @@ def get_yq_financial_data(ticker_list):
     # print(fin_data)
     # fin_data = Ticker(ticker_list).get_modules(['summaryDetail', 'balanceSheetHistory'])
     get_data_end_time = time.time()  # Record end time
-    get_data_elapsed_time = get_data_end_time - get_data_start_time  # Compute elapsed time
+    get_data_elapsed_time = round(get_data_end_time - get_data_start_time, 2)  # Compute elapsed time
     print(f"Get Financial Data Elapsed time: {get_data_elapsed_time} seconds")
     # Save DataFrame as CSV
     # data_all.to_csv('data_all.csv', index=True)
@@ -360,12 +360,12 @@ def get_financial_data(dictname1, dictname2):
     return varname
 
 
-def filter_financial_ticker(tickers_in):
+def filter_financial_ticker(tickers_in, category_in):
     # start_time = time.time()  # 記錄開始時間
     fin_data = get_yq_financial_data(tickers_in)
     # print(fin_data)
     # end_time = time.time()  # 記錄結束時間
-    # elapsed_time = end_time - start_time  # 計算運行時間
+    # elapsed_time = round(end_time - start_time, 2)  # 計算運行時間
     # print(f"Elapsed time: {elapsed_time} seconds")
     filter_tickers = []
     for ticker in tickers_in:
@@ -397,7 +397,8 @@ def filter_financial_ticker(tickers_in):
 
                 ticker_average_daily_volume_10day = summary_detail.get('averageDailyVolume10Day')
                 if ticker_average_daily_volume_10day is not None:
-                    ticker_average_daily_volume_10day = fin_data[ticker]['summaryDetail'].get('averageDailyVolume10Day', None)
+                    ticker_average_daily_volume_10day = fin_data[ticker]['summaryDetail'].get('averageDailyVolume10Day',
+                                                                                              None)
                     # print(f'ticker_average_daily_volume_10day {ticker_average_daily_volume_10day}')
 
                 ticker_52_week_low = summary_detail.get('fiftyTwoWeekLow')
@@ -421,12 +422,14 @@ def filter_financial_ticker(tickers_in):
                     # print(f'ticker_200_day_average {ticker_200_day_average}')
                 if (ticker_forward_pe is not None and ticker_trailing_pe is not None and
                         ticker_forward_pe != "Infinity" and ticker_trailing_pe != "Infinity"):
+
                     # print("PE is not valid, skip")
-                    if ((ticker_previous_close / ticker_52_week_low > 1.3) and
-                            (ticker_previous_close / ticker_52_week_high < 1.10) and
-                            (ticker_previous_close / ticker_52_week_high > 0.95) and
-                            (ticker_trailing_pe > ticker_forward_pe) and
-                            (ticker_50_day_average > ticker_200_day_average)):
+                    if ticker_trailing_pe > ticker_forward_pe:
+                            # (ticker_previous_close / ticker_52_week_low > 1.3) and
+                            # (ticker_previous_close / ticker_52_week_high < 1.25) and
+                            # (ticker_previous_close / ticker_52_week_high > 0.75) and
+                            # (ticker_trailing_pe > ticker_forward_pe) and
+                            # (ticker_50_day_average > ticker_200_day_average)):
                         filter_tickers.append(ticker)
 
                 else:
@@ -440,7 +443,14 @@ def filter_financial_ticker(tickers_in):
     df = pd.DataFrame(filter_tickers)
     # 將 DataFrame 寫入名為 'YF' 的工作表
     df.to_csv('YF_US.csv', index=False, header=None)
-    highchart_chart_v2(filter_tickers, "US")
+
+    hist_df = get_yq_historical_data(filter_tickers)
+    for ticker in filter_tickers:
+        print(f"Checking VCP Ticker: {ticker}")
+        df_one = sel_yq_historical_data(hist_df, ticker)
+        vcp_screener_strategy(ticker, df_one)
+
+    # highchart_chart_v2(filter_tickers, "US")
 
 
 def refresh_financial_data(tickers_in):
@@ -448,7 +458,7 @@ def refresh_financial_data(tickers_in):
     fin_data = get_yq_financial_data(tickers_in)
     # print(fin_data)
     # get_fin_end_time = time.time()  # 記錄結束時間
-    # get_fin_elapsed_time = get_fin_end_time - get_fin_start_time  # 計算運行時間
+    # get_fin_elapsed_time = round(get_fin_end_time - get_fin_start_time, 2)  # 計算運行時間
     # print(f"Elapsed time: {get_fin_elapsed_time} seconds")
     # print(data)
     ticker_previous_close = fin_data['AAPL']['summaryDetail']['previousClose']
@@ -543,9 +553,23 @@ def get_tickers(category, start):
     return tickers
 
 
-def calculate_vwap(df_in, duration):
+def calculate_sma(data, window):
+    return data['close'].rolling(window=window).mean()
+
+
+def check_continuous_increase(sma, days):
+    continuous_increase = 0
+    for i in range(len(sma) - 1, 0, -1):
+        if sma[i] > sma[i - 1]:
+            continuous_increase += 1
+        else:
+            break
+
+    return continuous_increase >= days
+
+def calculate_vwap(df_in, duration, ochl='close'):
     # data['Typical Price'] = (data['high'] + data['low'] + data['close']) / 3
-    df_in['VWPrice'] = df_in['close'] * df_in['volume']
+    df_in['VWPrice'] = df_in[ochl] * df_in['volume']
     df_in[f'vwap{duration}'] = df_in['VWPrice'].rolling(window=duration).sum() / df_in['volume'].rolling(
         window=duration).sum()
     return df_in
@@ -836,10 +860,35 @@ def calculate_volatility(df, n_days):
     volatility_l = avg_close_price / min_close_price - 1
     # print(f"Volativity high: {n_days} days {volatility_h}")
     # print(f"Volativity low:  {n_days} days {volatility_l}")
-    volatility = volatility_h + volatility_l
+    volatility = round(volatility_h + volatility_l, 2)
     # print(f"Volativity: {n_days} days {volatility}")
 
     return volatility
+
+
+def calculate_volatility_duration(df, end_day, start_day='0'):
+    # 選擇從start_day到end_day之間的數據
+    hist = df.iloc[start_day:end_day+1]
+
+    # 計算最高價格/平均價格和最低價格/平均價格
+    avg_close_price = hist['close'].mean()
+    max_close_price = hist['close'].max()
+    min_close_price = hist['close'].min()
+    volatility_h = max_close_price / avg_close_price - 1
+    volatility_l = avg_close_price / min_close_price - 1
+    # print(f"Volativity high: {start_day} to {end_day} {volatility_h}")
+    # print(f"Volativity low:  {start_day} to {end_day} {volatility_l}")
+    volatility = round(volatility_h + volatility_l, 2)
+    # print(f"Volativity: {start_day} to {end_day} {volatility}")
+
+    return volatility
+
+
+def calculate_avg_volume_duration(df, end_day, start_day=0):
+    # 選擇從start_day到end_day之間的數據
+    hist = df.iloc[start_day:end_day + 1]
+    avg_volume = hist['volume'].mean()
+    return avg_volume
 
 
 def calculate_avg_volume(df, n_days):
@@ -850,35 +899,64 @@ def calculate_avg_volume(df, n_days):
 
 def vcp_screener_strategy(ticker_in, data):
     # print("Running VCP")
-    volatility_5 = calculate_volatility(data, 5)
-    volatility_13 = calculate_volatility(data, 13)
-    volatility_21 = calculate_volatility(data, 21)
-    volatility_34 = calculate_volatility(data, 34)
-    avg_volume_5 = calculate_avg_volume(data, 5)
-    avg_volume_13 = calculate_avg_volume(data, 13)
-    avg_volume_21 = calculate_avg_volume(data, 21)
-    avg_volume_34 = calculate_avg_volume(data, 34)
-    if volatility_5 < 0.03 < volatility_13 < volatility_21 < volatility_34 and avg_volume_5 < avg_volume_13 < avg_volume_21 < avg_volume_34:
+    print(data)
+    volatility_8 = calculate_volatility_duration(data, 8, 0)
+    volatility_21 = calculate_volatility_duration(data, 21, 13)
+    volatility_55 = calculate_volatility_duration(data, 55, 21)
+    avg_volume_8 = calculate_avg_volume_duration(data, 8, 0)
+    #avg_volume_21 = calculate_avg_volume_duration(data, 13, 21)
+    avg_volume_55 = calculate_avg_volume_duration(data, 55, 21)
+    print(f"volatility_8: {volatility_8}")
+    print(f"volatility_21: {volatility_21}")
+    print(f"volatility_55: {volatility_55}")
+    #print(f"avg_volume_8: {avg_volume_8}")
+    #print(f"avg_volume_55: {avg_volume_55}")
+    sma55 = calculate_sma(data, 55)
+    # print(data)
+    vcma55 = calculate_vwap(data, 55)
+    # print(vcma55)
+    last_vcma55 = round(vcma55.iloc[-1], 2)
+    vcma144 = calculate_vwap(data, 144)
+    last_vcma144 = round(vcma144.iloc[-1], 2)
+    vcma233 = calculate_vwap(data, 233)
+    last_vcma233 = round(vcma233.iloc[-1], 2)
+    # print(f"sma55: {sma55}")
+    last_sma55 = round(sma55[-1], 2)
+    # print(f"last_sma55: {last_sma55}")
+    sma144 = calculate_sma(data, 144)
+    last_sma144 = round(sma144[-1], 2)
+    # print(f"last_sma144: {last_sma144}")
+    sma233 = calculate_sma(data, 233)
+    last_sma233 = round(sma233[-1], 2)
+    # print(f"last_sma233: {last_sma233}")
+    is_continuous_increase_sma233 = check_continuous_increase(sma233.dropna(), days=21)
+    # is_continuous_increase_vcma233 = check_continuous_increase(vcma233.dropna(), days=21)
+    #print(f"sma233_rising_21: {is_continuous_increase}")
+
+    if (volatility_8 < volatility_21) and (volatility_21 < volatility_55) \
+            and (avg_volume_8 < avg_volume_55) \
+            and ((avg_volume_8 / avg_volume_55) < 0.7) \
+            and ((volatility_55 / volatility_21) > 1.5) \
+            and ((volatility_21 / volatility_8) > 1.5) \
+            and (volatility_8 < 0.1) \
+            and (last_sma55 > last_sma144) and (last_sma144 > last_sma233) \
+            and (is_continuous_increase_sma233 is True) \
+            and (last_vcma55 > last_vcma144) and (last_vcma144 > last_vcma233):
+        # and is_continuous_increase_vcma233 is True:
+
         url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}"
         # webbrowser.open(url)
         highchart_chart(data, ticker_in, url)
+        print("MATCH VCP!!!")
 
-        plot_title = "{} {} {} {}".format(ticker_in, today, last_close_price, scenario)
+        # return 1
+
+        # plot_title = "{} {} {} {}".format(ticker_in, today, last_close_price, scenario)
         # plotly_chart(data, plot_title, 0)
 
 
-def vcp_screener_strategy_v2(ticker_in, data):
-    # print("Running VCP")
-    volatility_5 = calculate_volatility(data, 5)
-    volatility_13 = calculate_volatility(data, 13)
-    volatility_21 = calculate_volatility(data, 21)
-    volatility_34 = calculate_volatility(data, 34)
-    avg_volume_5 = calculate_avg_volume(data, 5)
-    avg_volume_13 = calculate_avg_volume(data, 13)
-    avg_volume_21 = calculate_avg_volume(data, 21)
-    avg_volume_34 = calculate_avg_volume(data, 34)
-    if volatility_5 < 0.03 < volatility_13 < volatility_21 < volatility_34 and avg_volume_5 < avg_volume_13 < avg_volume_21 < avg_volume_34:
-        return 1
+
+
 
 def find_stocks_in_range(data, days=233, percentage=2):
     # 計算過去 days 天的最高價
@@ -917,18 +995,19 @@ def party_on(ticker_type, tickers_in, run_number=1):
         # print (data)
         # print(ticker)
         data_one_ticker = sel_yq_historical_data(data_all_tickers, ticker)
+        # print(data_one_ticker)
         if data_one_ticker.empty:
             continue
-        # print(data)
         run_number += 1
-        last_close_price = round(data_one_ticker["close"][-1], 2)
-        plot_title = "{} {} {} {}".format(ticker, today, last_close_price, scenario)
+        # last_close_price = round(data_one_ticker["close"][-1], 2)
+        # print(last_close_price)
+        # plot_title = "{} {} {} {}".format(ticker, today, last_close_price, scenario)
 
         # print (ticker)
         if run_vwap_strategy_screener == 1:
             vwap_strategy_screener(ticker, data_one_ticker, run_number, ticker_type)
         if run_vcp_screener_strategy == 1:
-            print("Running VCP")
+            # print("Running VCP")
             vcp_screener_strategy(ticker, data_one_ticker)
         if run_buy_signal_strategy_screener == 1:
             buy_signal_strategy_screener(ticker, data_one_ticker, run_number, ticker_type, screener_day, vol_factor)
@@ -974,13 +1053,13 @@ fin_start = 0
 
 # 設定要執行的種類
 # VCP_TEST = 0
-run_vcp_screener_strategy = 0
-run_buy_signal_strategy_screener = 0
-run_vwap_strategy_screener = 1
-run_find_stocks_in_range = 0
+run_vcp_screener_strategy = 1  # 找VCP型態的股票
+run_buy_signal_strategy_screener = 0  # 找帶量突破的股票
+run_vwap_strategy_screener = 0  # VWAP均線的策略，均線呈多頭排序時買入
+run_find_stocks_in_range = 0  #
 
 # 要執行的ticker種類
-TEST = 1
+TEST = 0
 US = 0
 TW = 0
 ETF = 0
@@ -1003,12 +1082,20 @@ if TEST == 1:
     # test_tickers = ['NVDA', 'V', 'TSM', 'META', 'MA', 'NVO', 'MRK', 'AVGO', 'ASML', 'BABA', 'ORCL', 'AZN', 'CSCO', 'CRM', 'NKE', 'LIN', 'CMCSA', 'TTE']
     # test_tickers = ['NVDA', 'V', 'TSM', 'META', 'MA', 'NVO', 'MRK', 'AVGO', 'ASML', 'BABA', 'ORCL', 'AZN', 'CSCO', 'CRM', 'NKE', 'LIN', 'CMCSA', 'TTE', 'ADBE', 'NFLX', 'SAP', 'CAT', 'AMD', 'DE', 'HDB', 'LMT', 'PDD', 'BUD', 'SNY', 'SBUX', 'SONY', 'BLK', 'GILD', 'BKNG', 'SYK', 'GE', 'ADI', 'MDLZ', 'TJX', 'NOW', 'MUFG', 'REGN', 'PGR', 'ISRG', 'ZTS', 'SLB', 'VRTX', 'ABNB', 'ITW', 'HCA', 'BSX', 'UBS', 'AMX', 'EQIX', 'ABB', 'AON', 'MELI', 'RELX', 'TRI', 'PANW', 'NTES', 'SNPS', 'MNST', 'MCO', 'CDNS', 'ORLY', 'FDX', 'BIDU', 'ING', 'RACE', 'TAK', 'VMW', 'AZO', 'FTNT', 'NXPI', 'PH', 'DXCM', 'MSI', 'CTAS', 'MCHP', 'HES', 'TT', 'STM', 'ANET', 'PUK', 'TDG', 'CMG', 'MSCI', 'APO', 'MFG', 'AJG', 'IDXX', 'ODFL', 'ROST', 'AMP', 'GFS', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT', 'URI', 'ON', 'MTD', 'APTV', 'ORAN', 'OKE', 'GOLD', 'TTD', 'ANSS', 'ULTA', 'ACGL', 'IT', 'FNV', 'YUMC', 'CCEP', 'HZNP', 'TSCO', 'EIX', 'EFX', 'TCOM', 'RCI', 'ALGN', 'WST', 'HEI', 'IR', 'MPWR', 'GIB', 'AEM', 'VRSN', 'TDY', 'HPE', 'PODD', 'QSR', 'HOLX', 'PKX', 'CLX', 'ZTO', 'BMRN', 'OMC', 'XYL', 'HWM', 'SEDG', 'SWKS', 'DRI', 'TRGP', 'FICO', 'UAL', 'CHWY', 'PARAA', 'WMG', 'COO', 'SJM', 'TER', 'ZBRA', 'COIN', 'KOF', 'AXON', 'RE', 'TW', 'PTC', 'LW', 'BEN', 'ARES', 'BURL', 'PARA', 'CBOE', 'IPG', 'TME', 'HUBB', 'STX', 'MKTX', 'NICE', 'SNN', 'ACM', 'ERIE', 'DT', 'IHG', 'BSY', 'BWA', 'LSCC', 'TTC', 'FIVE', 'JBL', 'FMS', 'DECK', 'WSC', 'TFX', 'DKS', 'AGCO', 'LSI', 'TPR', 'BRKR', 'FLEX', 'AOS', 'JNPR', 'BJ', 'COTY', 'LECO', 'BZ', 'MASI', 'FND', 'OTEX', 'BSMX', 'UHS', 'CHDN', 'VIPS', 'BBWI', 'MANH', 'IBKR', 'PNR', 'PFGC', 'NOV', 'USFD', 'LOGI', 'WCC', 'WEX', 'PNW', 'ALGM', 'DCI', 'ALV', 'EME', 'MTZ', 'DLB', 'RGLD', 'RL', 'CX', 'ATR', 'CROX', 'IRDM', 'NVT', 'GPK', 'SAIA', 'TPX', 'KNSL', 'CLH', 'AU', 'CIEN', 'CAE', 'ONON', 'FUTU', 'SKX', 'LEVI', 'VMI', 'TXRH', 'PRI', 'RBC', 'SBS', 'CR', 'SGFY', 'CW', 'BYD', 'AXTA', 'PLNT', 'NATI', 'OLED', 'STN', 'NYT', 'STVN', 'CHX', 'FCN', 'TKR', 'WWE', 'HXL', 'MEDP', 'BLCO', 'VVV', 'SIGI', 'IPGP', 'THC', 'GXO', 'SLGN', 'SAIC', 'MNSO', 'NE', 'PVH', 'AQUA', 'BWXT', 'CRUS', 'UNVR', 'SLAB', 'EHC', 'APG', 'HGV', 'COLM', 'AIT', 'SPSC', 'EEFT', 'ATI', 'FLR', 'IGT', 'FIX', 'LANC', 'VAL', 'EXP', 'NOVT', 'EVR', 'WING', 'LNTH', 'ENSG', 'FOXF', 'MMS', 'TNET', 'WFRD', 'AAON', 'BFAM', 'WEN', 'WB', 'PSN', 'VC', 'NSP', 'ASO', 'IART', 'NSIT', 'KGC', 'AJRD', 'FLS', 'JHG', 'DV', 'ALSN', 'FN', 'NVEI', 'UAA', 'IPAR', 'WNS', 'FRHC', 'BRBR', 'DIOD', 'VNT', 'HHC', 'SEAS', 'ACLS', 'ONTO', 'FCFS', 'FL', 'AGI', 'TEX', 'FRO', 'ATHM', 'TDC', 'AIMC', 'GTES', 'AVNT', 'ELF', 'MMSI', 'FOUR', 'UA', 'HAE', 'BTG', 'EURN', 'OMAB', 'ENS', 'SFM', 'CPA', 'ESAB', 'BDC', 'TKC', 'SRAD', 'AZEK', 'LOPE', 'BMI', 'QFIN', 'FHI', 'SANM', 'ALE', 'AEIS', 'KOS', 'FOCS', 'FSS', 'ATAT', 'SEM', 'IBP', 'PR', 'TWNK', 'CERT', 'YETI', 'TIGO', 'SIG', 'SPXC', 'ENIC', 'CCOI', 'BCO', 'NOMD', 'PFSI', 'TR', 'WOR', 'PBH', 'CCU', 'KTB', 'ACIW', 'AAWW', 'INMD', 'SITM', 'SHLS', 'AEO', 'NOG', 'PAGP', 'SSTK', 'CSIQ', 'NVMI', 'FTDR', 'URBN', 'ITGR', 'CBZ', 'PRGS', 'SONO', 'CBRL', 'HAYW', 'ESE', 'BLMN', 'MTRN', 'SIX', 'AMK', 'EXTR', 'YY', 'FORM', 'ODP', 'BOOT', 'SJW', 'ALG', 'NABL', 'EPC', 'CSWI', 'VCTR', 'IDCC', 'OII', 'MWA', 'CRCT', 'B', 'BVN', 'CARG', 'SUPN', 'SAH', 'FA', 'SLVM', 'VGR', 'STRA', 'AGYS', 'MYRG', 'NUS', 'HEES', 'RES', 'DOOR', 'NMIH', 'GVA', 'TBBK', 'AIR', 'GGAL', 'DHT', 'CRTO', 'ENLT', 'OXM', 'ALGT', 'JACK', 'ADUS', 'MOMO', 'COHU', 'XPEL', 'ATGE', 'AMPH', 'CTOS', 'EAT', 'AROC', 'SBH', 'INT', 'TGS', 'VIST', 'HURN', 'IAS', 'CPRX', 'TNK', 'OEC', 'CLS', 'EPAC', 'OSIS', 'ENVA', 'FDP', 'PLYA', 'PERI', 'PRIM', 'TH', 'ROAD', 'HLIT', 'ANF', 'SXI', 'CTS', 'MCRI', 'AVTA', 'CASH', 'HBM', 'RDNT', 'ECVT', 'WNC', 'USPH', 'AVNS', 'MOD', 'PGTI', 'MLNK', 'BMA', 'AVID', 'CARS', 'STRL', 'ERII', 'PRG', 'NOAH', 'DFIN', 'CLB', 'GES', 'NSSC', 'DCBO', 'DRQ', 'SNCY', 'DOLE', 'LMAT', 'GSHD', 'GEO', 'JELD', 'PTLO', 'GOTU', 'CMCO', 'NVGS', 'ASLE', 'OSW', 'ADEA', 'SKYW', 'STGW', 'IMXI', 'DCGO', 'MRC', 'NAT', 'COCO', 'CEPU', 'AMYT', 'PRDO', 'NVTS', 'THR', 'HIBB', 'DSGR', 'UTL', 'EWCZ', 'NEXA', 'THRY', 'ROCC', 'OPRA', 'CRAI', 'SILV', 'CYH', 'RICK', 'HSTM', 'KOP', 'PBI', 'VTRU', 'AMBC', 'BJRI', 'AEHR', 'VSEC', 'HAYN', 'AMOT', 'BLX', 'DCO', 'TRNS', 'CHUY', 'VITL', 'CASS', 'FLWS', 'JOUT', 'BBSI', 'BVH', 'REPX', 'KE', 'TK', 'MCFT', 'ALTG', 'VPG', 'CIR', 'SVM', 'EVC', 'CMBM', 'EXK', 'LX', 'CECO', 'BOOM', 'GTX', 'IBEX', 'ZYME', 'IRMD', 'BELFB', 'SGU', 'NOA', 'CRESY', 'BBCP', 'LOVE', 'LYTS', 'INSE', 'ARCT', 'FANH', 'AVNW', 'PMTS', 'SCPL', 'BWMN', 'BWMX', 'MCBC', 'DSKE', 'WLFC', 'MSB', 'GAMB', 'VMD', 'NINE', 'CZFS', 'GLRE', 'OSG', 'HQI', 'FET', 'BBW', 'CVCY', 'QD', 'MEC', 'JILL', 'STKS', 'CCRD', 'QUAD', 'EEX', 'HNRG', 'THRN', 'UTI', 'HOFT', 'CMCL', 'OCN', 'QIPT', 'PBPB', 'GENC', 'GHL', 'PAYS', 'CLMB', 'ESCA', 'INTT', 'MG', 'SUP', 'CMT', 'STG', 'LMB', 'AE', 'MRAM', 'ARC', 'NTIC', 'PCYG', 'LAKE', 'FLXS', 'LIVE', 'LWAY', 'LTRPA', 'WFCF', 'CODA']
     test_tickers = ['NVDA', 'V', 'TSM', 'META', 'MA', 'NVO', 'MRK', 'AVGO', 'ASML', 'BABA', 'ORCL', 'AZN', 'CSCO', 'CRM', 'NKE', 'LIN', 'CMCSA', 'TTE', 'ADBE', 'NFLX', 'SAP', 'CAT', 'AMD', 'DE', 'HDB', 'LMT', 'PDD', 'BUD', 'SNY', 'SBUX', 'SONY', 'BLK', 'GILD', 'BKNG', 'SYK', 'GE', 'ADI', 'MDLZ', 'TJX', 'NOW', 'MUFG', 'REGN', 'PGR', 'ISRG', 'ZTS', 'SLB', 'VRTX', 'ABNB', 'ITW', 'HCA', 'BSX', 'UBS', 'AMX', 'EQIX', 'ABB', 'AON', 'MELI', 'RELX', 'TRI', 'PANW', 'NTES', 'SNPS', 'MNST', 'MCO', 'CDNS', 'ORLY', 'FDX', 'BIDU', 'ING', 'RACE', 'TAK', 'VMW', 'AZO', 'FTNT', 'NXPI', 'PH', 'DXCM', 'MSI', 'CTAS', 'MCHP', 'HES', 'TT', 'STM', 'ANET', 'PUK', 'TDG', 'CMG', 'MSCI', 'APO', 'MFG', 'AJG', 'IDXX', 'ODFL', 'ROST', 'AMP', 'GFS', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT', 'URI', 'ON', 'MTD', 'APTV', 'ORAN', 'OKE', 'GOLD', 'TTD', 'ANSS', 'ULTA', 'ACGL', 'IT', 'FNV', 'YUMC', 'CCEP', 'HZNP', 'TSCO', 'EIX', 'EFX', 'TCOM', 'RCI', 'ALGN', 'WST', 'HEI', 'IR', 'MPWR', 'GIB', 'AEM', 'VRSN', 'TDY', 'HPE', 'PODD', 'QSR', 'HOLX', 'PKX', 'CLX', 'ZTO', 'BMRN', 'OMC', 'XYL', 'HWM', 'SEDG', 'SWKS', 'DRI', 'TRGP', 'FICO', 'UAL', 'CHWY', 'PARAA', 'WMG', 'COO', 'SJM', 'TER', 'ZBRA', 'COIN', 'KOF', 'AXON', 'RE', 'TW', 'PTC', 'LW', 'BEN', 'ARES', 'BURL', 'PARA', 'CBOE', 'IPG', 'TME', 'HUBB', 'STX', 'MKTX', 'NICE', 'SNN', 'ACM', 'ERIE', 'DT', 'IHG', 'BSY', 'BWA', 'LSCC', 'TTC', 'FIVE', 'JBL', 'FMS', 'DECK', 'WSC', 'TFX', 'DKS', 'AGCO', 'LSI', 'TPR', 'BRKR', 'FLEX', 'AOS', 'JNPR', 'BJ', 'COTY', 'LECO', 'BZ', 'MASI', 'FND', 'OTEX', 'BSMX', 'UHS', 'CHDN', 'VIPS', 'BBWI', 'MANH', 'IBKR', 'PNR', 'PFGC', 'NOV', 'USFD', 'LOGI', 'WCC', 'WEX', 'PNW', 'ALGM', 'DCI', 'ALV', 'EME', 'MTZ', 'DLB', 'RGLD', 'RL', 'CX', 'ATR', 'CROX', 'IRDM', 'NVT', 'GPK', 'SAIA', 'TPX', 'KNSL', 'CLH', 'AU', 'CIEN', 'CAE', 'ONON', 'FUTU', 'SKX', 'LEVI', 'VMI', 'TXRH', 'PRI', 'RBC', 'SBS', 'CR', 'SGFY', 'CW', 'BYD', 'AXTA', 'PLNT', 'NATI', 'OLED', 'STN', 'NYT', 'STVN', 'CHX', 'FCN', 'TKR', 'WWE', 'HXL', 'MEDP', 'BLCO', 'VVV', 'SIGI', 'IPGP', 'THC', 'GXO', 'SLGN', 'SAIC', 'MNSO', 'NE', 'PVH', 'AQUA', 'BWXT', 'CRUS', 'UNVR', 'SLAB', 'EHC', 'APG', 'HGV', 'COLM', 'AIT', 'SPSC', 'EEFT', 'ATI', 'FLR', 'IGT', 'FIX', 'LANC', 'VAL', 'EXP', 'NOVT', 'EVR', 'WING', 'LNTH', 'ENSG', 'FOXF', 'MMS', 'TNET', 'WFRD', 'AAON', 'BFAM', 'WEN', 'WB', 'PSN', 'VC', 'NSP', 'ASO', 'IART', 'NSIT', 'KGC', 'AJRD', 'FLS', 'JHG', 'DV', 'ALSN', 'FN', 'NVEI', 'UAA', 'IPAR', 'WNS', 'FRHC', 'BRBR', 'DIOD', 'VNT', 'HHC', 'SEAS', 'ACLS', 'ONTO', 'FCFS', 'FL', 'AGI', 'TEX', 'FRO', 'ATHM', 'TDC', 'AIMC', 'GTES', 'AVNT', 'ELF', 'MMSI', 'FOUR', 'UA', 'HAE', 'BTG', 'EURN', 'OMAB', 'ENS', 'SFM', 'CPA', 'ESAB', 'BDC', 'TKC', 'SRAD', 'AZEK', 'LOPE', 'BMI', 'QFIN', 'FHI', 'SANM', 'ALE', 'AEIS', 'KOS', 'FOCS', 'FSS', 'ATAT', 'SEM', 'IBP', 'PR', 'TWNK', 'CERT', 'YETI', 'TIGO', 'SIG', 'SPXC', 'ENIC', 'CCOI', 'BCO', 'NOMD', 'PFSI', 'TR', 'WOR', 'PBH', 'CCU', 'KTB', 'ACIW', 'AAWW', 'INMD', 'SITM', 'SHLS', 'AEO', 'NOG', 'PAGP', 'SSTK', 'CSIQ', 'NVMI', 'FTDR', 'URBN', 'ITGR', 'CBZ', 'PRGS', 'SONO', 'CBRL', 'HAYW', 'ESE', 'BLMN', 'MTRN', 'SIX', 'AMK', 'EXTR', 'YY', 'FORM', 'ODP', 'BOOT', 'SJW', 'ALG', 'NABL', 'EPC', 'CSWI', 'VCTR', 'IDCC', 'OII', 'MWA', 'CRCT', 'B', 'BVN', 'CARG', 'SUPN', 'SAH', 'FA', 'SLVM', 'VGR', 'STRA', 'AGYS', 'MYRG', 'NUS', 'HEES', 'RES', 'DOOR', 'NMIH', 'GVA', 'TBBK', 'AIR', 'GGAL', 'DHT', 'CRTO', 'ENLT', 'OXM', 'ALGT', 'JACK', 'ADUS', 'MOMO', 'COHU', 'XPEL', 'ATGE', 'AMPH', 'CTOS', 'EAT', 'AROC', 'SBH', 'INT', 'TGS', 'VIST', 'HURN', 'IAS', 'CPRX', 'TNK', 'OEC', 'CLS', 'EPAC', 'OSIS', 'ENVA', 'FDP', 'PLYA', 'PERI', 'PRIM', 'TH', 'ROAD', 'HLIT', 'ANF', 'SXI', 'CTS', 'MCRI', 'AVTA', 'CASH', 'HBM', 'RDNT', 'ECVT', 'WNC', 'USPH', 'AVNS', 'MOD', 'PGTI', 'MLNK', 'BMA', 'AVID', 'CARS', 'STRL', 'ERII', 'PRG', 'NOAH', 'DFIN', 'CLB', 'GES', 'NSSC', 'DCBO', 'DRQ', 'SNCY', 'DOLE', 'LMAT', 'GSHD', 'GEO', 'JELD', 'PTLO', 'GOTU', 'CMCO', 'NVGS', 'ASLE', 'OSW', 'ADEA', 'SKYW', 'STGW', 'IMXI', 'DCGO', 'MRC', 'NAT', 'COCO', 'CEPU', 'AMYT', 'PRDO', 'NVTS', 'THR', 'HIBB', 'DSGR', 'UTL', 'EWCZ', 'NEXA', 'THRY', 'ROCC', 'OPRA', 'CRAI', 'SILV', 'CYH', 'RICK', 'HSTM', 'KOP', 'PBI', 'VTRU', 'AMBC', 'BJRI', 'AEHR', 'VSEC', 'HAYN', 'AMOT', 'BLX', 'DCO', 'TRNS', 'CHUY', 'VITL', 'CASS', 'FLWS', 'JOUT', 'BBSI', 'BVH', 'REPX', 'KE', 'TK', 'MCFT', 'ALTG', 'VPG', 'CIR', 'SVM', 'EVC', 'CMBM', 'EXK', 'LX', 'CECO', 'BOOM', 'GTX', 'IBEX', 'ZYME', 'IRMD', 'BELFB', 'SGU', 'NOA', 'CRESY', 'BBCP', 'LOVE', 'LYTS', 'INSE', 'ARCT', 'FANH', 'AVNW', 'PMTS', 'SCPL', 'BWMN', 'BWMX', 'MCBC', 'DSKE', 'WLFC', 'MSB', 'GAMB', 'VMD', 'NINE', 'CZFS', 'GLRE', 'OSG', 'HQI', 'FET', 'BBW', 'CVCY', 'QD', 'MEC', 'JILL', 'STKS', 'CCRD', 'QUAD', 'EEX', 'HNRG', 'THRN', 'UTI', 'HOFT', 'CMCL', 'OCN', 'QIPT', 'PBPB', 'GENC', 'GHL', 'PAYS', 'CLMB', 'ESCA', 'INTT', 'MG', 'SUP', 'CMT', 'STG', 'LMB', 'AE', 'MRAM', 'ARC', 'NTIC', 'PCYG', 'LAKE', 'FLXS', 'LIVE', 'LWAY', 'LTRPA', 'WFCF', 'CODA']
-
+    # test_tickers = ['NVDA', 'MET']
 start_time = time.time()  # 記錄開始時間
 
-run_refersh_financial_data = 1
+weekly_screen = 1
+if weekly_screen == 1:
+    us_tickers = get_tickers("US", us_start)
+    test_tickers = ['NVDA', 'TME', 'TSM']
+    filter_financial_ticker(test_tickers, "US")
+
+run_refersh_financial_data = 0
 if run_refersh_financial_data == 1:
-    filter_financial_ticker(test_tickers)
+    us_tickers = get_tickers("US", us_start)
+    df = filter_financial_ticker(us_tickers)
+
 
 #############################################################################
 
@@ -1042,5 +1129,5 @@ if lets_party == 1:
         party_on("FIN", fin_tickers)
 
 end_time = time.time()  # 記錄結束時間
-elapsed_time = end_time - start_time  # 計算運行時間
+elapsed_time = round(end_time - start_time, 2)  # 計算運行時間
 print(f"Elapsed time: {elapsed_time} seconds")

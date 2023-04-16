@@ -8,10 +8,12 @@ from plotly.subplots import make_subplots
 sp500_url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
 sp500_data = pd.read_html(sp500_url)
 sp500_table = sp500_data[0]
-
+print(sp500_table)
 # 获取每个sector的股票列表
 sectors = sp500_table['GICS Sector'].unique()
+print(sectors)
 stocks_by_sector = {sector: sp500_table[sp500_table['GICS Sector'] == sector]['Symbol'].tolist() for sector in sectors}
+print(stocks_by_sector)
 
 # 获取每个industry group的股票列表
 industry_groups = sp500_table['GICS Sub-Industry'].unique()
@@ -22,6 +24,9 @@ for sector in stocks_by_sector:
     stocks_by_sector[sector] = [stock.replace(".", "-") for stock in stocks_by_sector[sector]]
 for industry_group in stocks_by_industry_group:
     stocks_by_industry_group[industry_group] = [stock.replace(".", "-") for stock in stocks_by_industry_group[industry_group]]
+
+# 在此添加一个频率变量，可选值为'D'（日）、'W'（周）或'M'（月）
+frequency = 'W'
 
 # 计算每周的交易量
 start_date = datetime.datetime(2022, 1, 1)
@@ -38,6 +43,7 @@ all_stock_data = yf.download(all_stocks, start=start_date, end=end_date, group_b
 weekly_total_volume = []
 # 计算每周的sector交易量
 weekly_volume_by_sector = {sector: [] for sector in sectors}
+print(weekly_volume_by_sector)
 
 for start, end in zip(date_range[:-1], date_range[1:]):
     week_total_volume = 0
@@ -46,13 +52,9 @@ for start, end in zip(date_range[:-1], date_range[1:]):
             stock_volume = all_stock_data[stock]['Volume'].loc[start:end].sum()
             week_total_volume += stock_volume
     weekly_total_volume.append(week_total_volume)
-
+print(weekly_total_volume)
 weekly_volume_by_industry_group = {industry_group: [] for industry_group in industry_groups}
-
-# 计算每周的sector和industry group比例
-weekly_percentage_by_sector = {sector: [volume / total for volume, total in zip(week_volumes, weekly_total_volume)] for sector, week_volumes in weekly_volume_by_sector.items()}
-weekly_percentage_by_industry_group = {industry_group: [volume / total for volume, total in zip(week_volumes, weekly_total_volume)] for industry_group, week_volumes in weekly_volume_by_industry_group.items()}
-
+print(weekly_volume_by_industry_group)
 
 for start, end in zip(date_range[:-1], date_range[1:]):
     for sector, stocks in stocks_by_sector.items():
@@ -73,9 +75,16 @@ for start, end in zip(date_range[:-1], date_range[1:]):
 
 
 # 计算每周的sector和industry group比例
-weekly_percentage_by_sector = {sector: [volume / sum(week_volumes) for volume in week_volumes] for sector, week_volumes in weekly_volume_by_sector.items()}
-weekly_percentage_by_industry_group = {industry_group: [volume / sum(week_volumes) for volume in week_volumes] for industry_group, week_volumes in weekly_volume_by_industry_group.items()}
-
+weekly_percentage_by_sector = {
+    sector: [volume / total_volume for volume, total_volume in zip(week_volumes, weekly_total_volume)]
+    for sector, week_volumes in weekly_volume_by_sector.items()
+}
+weekly_percentage_by_industry_group = {
+    industry_group: [volume / total_volume for volume, total_volume in zip(week_volumes, weekly_total_volume)]
+    for industry_group, week_volumes in weekly_volume_by_industry_group.items()
+}
+print(weekly_percentage_by_sector)
+print(weekly_percentage_by_industry_group)
 # 创建交互式热力图
 fig = make_subplots(rows=1, cols=1, subplot_titles=("Sector Weekly Volume Percentage",))
 
@@ -86,7 +95,8 @@ sector_heatmap = go.Heatmap(
     hovertemplate="%{y}: %{z:.2%}<extra></extra>",
     colorscale="Viridis",
     name="sectors",
-    showscale=False
+    showscale=True,
+    
 )
 
 fig.add_trace(sector_heatmap)
