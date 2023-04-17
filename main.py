@@ -901,14 +901,24 @@ def vcp_screener_strategy(ticker_in, data):
     # print("Running VCP")
     print(data)
     volatility_8 = calculate_volatility_duration(data, 8, 0)
+    if isinstance(volatility_8, pd.Series):
+        volatility_8 = volatility_8.iloc[-1]
     volatility_21 = calculate_volatility_duration(data, 21, 13)
+    if isinstance(volatility_21, pd.Series):
+        volatility_21 = volatility_21.iloc[-1]
     volatility_55 = calculate_volatility_duration(data, 55, 21)
+    if isinstance(volatility_55, pd.Series):
+        volatility_55 = volatility_55.iloc[-1]
+
     avg_volume_8 = calculate_avg_volume_duration(data, 8, 0)
     #avg_volume_21 = calculate_avg_volume_duration(data, 13, 21)
     avg_volume_55 = calculate_avg_volume_duration(data, 55, 21)
     print(f"volatility_8: {volatility_8}")
     print(f"volatility_21: {volatility_21}")
     print(f"volatility_55: {volatility_55}")
+    print("volatility_8 is of type:", type(volatility_8))
+    print("volatility_21 is of type:", type(volatility_21))
+    print("volatility_55 is of type:", type(volatility_55))
     #print(f"avg_volume_8: {avg_volume_8}")
     #print(f"avg_volume_55: {avg_volume_55}")
     sma55 = calculate_sma(data, 55)
@@ -932,7 +942,12 @@ def vcp_screener_strategy(ticker_in, data):
     is_continuous_increase_sma233 = check_continuous_increase(sma233.dropna(), days=21)
     # is_continuous_increase_vcma233 = check_continuous_increase(vcma233.dropna(), days=21)
     #print(f"sma233_rising_21: {is_continuous_increase}")
+    print("is_continuous_increase_sma233 is of type:", type(is_continuous_increase_sma233))
+    print("last_sma55 is of type:", type(last_sma55))
+    print("last_sma144 is of type:", type(last_sma144))
+    print("last_sma233 is of type:", type(last_sma233))
 
+    print ("Start if statement...")
     if (volatility_8 < volatility_21) and (volatility_21 < volatility_55) \
             and (avg_volume_8 < avg_volume_55) \
             and ((avg_volume_8 / avg_volume_55) < 0.7) \
@@ -943,7 +958,7 @@ def vcp_screener_strategy(ticker_in, data):
             and (is_continuous_increase_sma233 is True) \
             and (last_vcma55 > last_vcma144) and (last_vcma144 > last_vcma233):
         # and is_continuous_increase_vcma233 is True:
-
+        print("End if statement...")
         url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}"
         # webbrowser.open(url)
         highchart_chart(data, ticker_in, url)
@@ -1089,7 +1104,7 @@ weekly_screen = 1
 if weekly_screen == 1:
     us_tickers = get_tickers("US", us_start)
     test_tickers = ['NVDA', 'TME', 'TSM']
-    filter_financial_ticker(test_tickers, "US")
+    filter_financial_ticker(us_tickers, "US")
 
 run_refersh_financial_data = 0
 if run_refersh_financial_data == 1:
