@@ -425,11 +425,11 @@ def filter_financial_ticker(tickers_in, category_in):
 
                     # print("PE is not valid, skip")
                     if ticker_trailing_pe > ticker_forward_pe:
-                            # (ticker_previous_close / ticker_52_week_low > 1.3) and
-                            # (ticker_previous_close / ticker_52_week_high < 1.25) and
-                            # (ticker_previous_close / ticker_52_week_high > 0.75) and
-                            # (ticker_trailing_pe > ticker_forward_pe) and
-                            # (ticker_50_day_average > ticker_200_day_average)):
+                        # (ticker_previous_close / ticker_52_week_low > 1.3) and
+                        # (ticker_previous_close / ticker_52_week_high < 1.25) and
+                        # (ticker_previous_close / ticker_52_week_high > 0.75) and
+                        # (ticker_trailing_pe > ticker_forward_pe) and
+                        # (ticker_50_day_average > ticker_200_day_average)):
                         filter_tickers.append(ticker)
 
                 else:
@@ -445,6 +445,8 @@ def filter_financial_ticker(tickers_in, category_in):
     df.to_csv('YF_US.csv', index=False, header=None)
 
     hist_df = get_yq_historical_data(filter_tickers)
+    ## filter_tickers = ['GOOG', 'GOOGL', 'AMZN', 'PCAR', 'BRK-B', 'TSLA', 'NVDA', 'V', 'TSM', 'XOM', 'META', 'UNH', 'JPM', 'JNJ', 'WMT', 'MA', 'PG', 'NVO', 'CVX', 'LLY', 'HD', 'ABBV', 'MRK', 'BAC', 'KO', 'AVGO', 'ASML', 'PEP', 'BABA', 'ORCL', 'PFE', 'SHEL', 'COST', 'TMO', 'AZN', 'CSCO', 'MCD', 'CRM', 'TM', 'NKE', 'DHR', 'NVS', 'DIS', 'ABT', 'WFC', 'LIN', 'TMUS', 'ACN', 'BHP', 'VZ', 'MS', 'UPS', 'TXN', 'CMCSA', 'TTE', 'PM', 'ADBE', 'HSBC', 'BMY', 'RTX', 'NEE', 'SCHW', 'NFLX', 'RY', 'QCOM', 'SAP', 'T', 'COP', 'HON', 'AXP', 'CAT', 'UNP', 'UL', 'AMD', 'DE', 'AMGN', 'HDB', 'BA', 'LMT', 'BP', 'PDD', 'BUD', 'RIO', 'TD', 'SNY', 'LOW', 'SBUX', 'GS', 'IBM', 'PLD', 'INTU', 'ELV', 'SPGI', 'MDT', 'INTC', 'CVS', 'SONY', 'BLK', 'GILD', 'BKNG', 'DEO', 'C', 'SYK', 'AMAT', 'EQNR', 'GE', 'ADI', 'ADP', 'AMT', 'MDLZ', 'TJX', 'EL', 'NOW', 'CB', 'CI', 'BTI', 'MUFG', 'REGN', 'PGR', 'PYPL', 'MO', 'MMC', 'ISRG', 'VALE', 'CNI', 'ENB', 'ZTS', 'SLB', 'TGT', 'VRTX', 'INFY', 'CHTR', 'FISV', 'JD', 'ABNB', 'IBN', 'CP', 'DUK', 'ITW', 'NOC', 'USB', 'PBR', 'EOG', 'GSK', 'ETN', 'SO', 'HCA', 'BSX', 'AMOV', 'BN', 'UBS', 'BMO', 'AMX', 'CME', 'BX', 'BDX', 'CNQ', 'UBER', 'LRCX', 'SAN', 'APD', 'CSX', 'GD', 'EQIX', 'ABB', 'HUM', 'AON', 'WM', 'CL', 'PNC', 'FCX', 'MELI', 'MU', 'TFC', 'ATVI', 'MMM', 'BNS', 'MPC', 'SMFG', 'STLA', 'RELX', 'TRI', 'SCCO', 'SHW', 'PANW', 'ICE', 'NTES', 'CCI', 'SNPS', 'OXY', 'MET', 'GM', 'VLO', 'MNST', 'MRNA', 'MCO', 'CDNS', 'ORLY', 'MAR', 'AIG', 'PSA', 'KLAC', 'FDX', 'NSC', 'BIDU', 'SHOP', 'ING', 'F', 'PSX', 'PXD', 'KDP', 'HSY', 'EW', 'RACE', 'MCK', 'TAK', 'DG', 'EMR', 'KHC', 'KKR', 'WDS', 'E', 'WDAY', 'VMW', 'GIS', 'AZO', 'FTNT', 'SRE', 'APH', 'BBVA', 'ITUB', 'SU', 'NXPI', 'SQ', 'D', 'PH', 'NGG', 'ECL', 'DXCM', 'LVS', 'ROP', 'CTVA', 'AEP', 'ADM', 'MSI', 'CTAS', 'HMC', 'MCHP', 'NUE', 'ADSK', 'JCI', 'SNOW', 'HES', 'KMB', 'TRV', 'TT', 'STM', 'O', 'TEAM', 'ANET', 'PUK', 'AFL', 'A', 'TDG', 'CM', 'LYG', 'DOW', 'COF', 'CMG', 'MSCI', 'APO', 'STZ', 'RSG', 'NTR', 'TEL', 'BK', 'TRP', 'LHX', 'BCE', 'LNG', 'PAYX', 'ABEV', 'SPG', 'EXC', 'MFG', 'LULU', 'BSBR', 'AJG', 'IQV', 'IDXX', 'BIIB', 'KMI', 'HLT', 'MRVL', 'SYY', 'ODFL', 'ROST', 'CARR', 'CRH', 'CNC', 'FIS', 'MFC', 'WBD', 'WMB', 'WELL', 'CVE', 'DVN', 'PRU', 'AMP', 'YUM', 'OTIS', 'CMI', 'SE', 'GFS', 'XEL', 'HLN', 'VICI', 'NEM', 'WCN', 'NWG', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT', 'ALL', 'ALC', 'SGEN', 'BCS', 'AME', 'KR', 'VOD', 'URI', 'DLTR', 'ON', 'MTD', 'ILMN', 'BKR', 'CTSH', 'LYB', 'ABC', 'PPG', 'RMD', 'MBLY', 'ED', 'APTV', 'DHI', 'BNTX', 'EA', 'ORAN', 'STT', 'WBA', 'DFS', 'FERG', 'FAST', 'IMO', 'PEG', 'CHT', 'OKE', 'ALB', 'DLR', 'GPN', 'GLW', 'CSGP', 'SLF', 'TU', 'ENPH', 'GOLD', 'DELL', 'CRWD', 'HPQ', 'KEYS', 'VRSK', 'SBAC', 'WEC', 'NDAQ', 'LEN', 'VEEV', 'TTD', 'CDW', 'ANSS', 'BBD', 'ULTA', 'CBRE', 'ACGL', 'FANG', 'NOK', 'IT', 'WIT', 'FNV', 'ZBH', 'ES', 'MTB', 'YUMC', 'TLK', 'AWK', 'CCEP', 'HZNP', 'MT', 'TSCO', 'CPNG', 'WTW', 'BGNE', 'EBAY', 'ARE', 'TROW', 'DB', 'CEG', 'EIX', 'EFX', 'DAL', 'FITB', 'HIG', 'LI', 'GMAB', 'TCOM', 'BEKE', 'GPC', 'BBDO', 'SQM', 'VMC', 'RCI', 'ALNY', 'TEF', 'ALGN', 'FTV', 'WST', 'DDOG', 'HEI', 'AVB', 'EC', 'IR', 'IFF', 'EQR', 'WY', 'HRL', 'PWR', 'STLD', 'RJF', 'MPWR', 'SPOT', 'K', 'NU', 'RBLX', 'MLM', 'CNHI', 'FE', 'EXR', 'FRC', 'CAJ', 'ETR', 'HBAN', 'GIB', 'RF', 'RYAAY', 'AEM', 'AEE', 'TECK', 'DOV', 'DASH', 'LH', 'TSN', 'DTE', 'FSLR', 'ZM', 'CHD', 'IX', 'VRSN', 'UMC', 'PFG', 'LPLA', 'TS', 'TDY', 'HPE', 'CTRA', 'LUV', 'PPL', 'BAX', 'PODD', 'CFG', 'QSR', 'NET', 'HOLX', 'MKC', 'PKX', 'CLX', 'NTRS', 'CAH', 'VTR', 'ARGX', 'ZTO', 'WAB', 'MOS', 'FTS', 'JBHT', 'ZS', 'TTWO', 'HUBS', 'WPM', 'CINF', 'FOXA', 'GRMN', 'PBA', 'BMRN', 'WAT', 'STE', 'INVH', 'ICLR', 'OMC', 'BBY', 'ERIC', 'MAA', 'XYL', 'RCL', 'ELP', 'MKL', 'WRB', 'HWM', 'SEDG', 'EPAM', 'SWKS', 'DRI', 'CNP', 'SUI', 'TRGP', 'INCY', 'PAYC', 'FOX', 'ROL', 'FICO', 'CAG', 'BALL', 'WPC', 'PINS', 'EXPD', 'CMS', 'UAL', 'CHWY', 'MGM', 'IEX', 'CF', 'NVR', 'KEY', 'BR', 'SPLK', 'AMCR', 'AVTR', 'SIRI', 'AES', 'LYV', 'MRO', 'PARAA', 'SIVB', 'EXPE', 'FWONK', 'WMG', 'PLTR', 'HTHT', 'FMC', 'UI', 'MGA', 'MOH', 'COO', 'ATO', 'FDS', 'AER', 'SJM', 'SNAP', 'BRO', 'RPRX', 'PKI', 'ASX', 'FLT', 'TER', 'CPB', 'CHKP', 'ZBRA', 'COIN', 'RTO', 'WLK', 'SYF', 'DGX', 'LKQ', 'KOF', 'AXON', 'LCID', 'IRM', 'J', 'RE', 'TXT', 'ETSY', 'RS', 'KB', 'TW', 'EBR', 'AGR', 'SSNC', 'PTC', 'LW', 'RIVN', 'AVY', 'BG', 'NIO', 'FWONA', 'SHG', 'BEN', 'SJR', 'ESS', 'L', 'ARES', 'PHG', 'BURL', 'PARA', 'BIO', 'CBOE', 'AZPN', 'MDB', 'GLPI', 'TPL', 'BAM', 'NTAP', 'UDR', 'IPG', 'POOL', 'TME', 'CCL', 'VTRS', 'EVRG', 'HUBB', 'LDOS', 'TYL', 'CE', 'STX', 'CSL', 'MKTX', 'WPP', 'CRBG', 'SNA', 'NICE', 'IP', 'SRPT', 'PEAK', 'PKG', 'APA', 'TRMB', 'WYNN', 'LNT', 'BAH', 'OKTA', 'BLDR', 'KIM', 'CTLT', 'H', 'TWLO', 'NDSN', 'SNN', 'TRU', 'LBRDA', 'UHAL', 'CG', 'LBRDK', 'ELS', 'ENTG', 'SWK', 'GEN', 'VIV', 'CUK', 'ACM', 'CPT', 'ERIE', 'DT', 'DOCU', 'PHM', 'NMR', 'HST', 'WDC', 'JKHY', 'CCJ', 'FHN', 'EQT', 'IHG', 'TECH']
+
     for ticker in filter_tickers:
         print(f"Checking VCP Ticker: {ticker}")
         df_one = sel_yq_historical_data(hist_df, ticker)
@@ -566,6 +568,7 @@ def check_continuous_increase(sma, days):
             break
 
     return continuous_increase >= days
+
 
 def calculate_vwap(df_in, duration, ochl='close'):
     # data['Typical Price'] = (data['high'] + data['low'] + data['close']) / 3
@@ -868,7 +871,7 @@ def calculate_volatility(df, n_days):
 
 def calculate_volatility_duration(df, end_day, start_day='0'):
     # 選擇從start_day到end_day之間的數據
-    hist = df.iloc[start_day:end_day+1]
+    hist = df.iloc[start_day:end_day + 1]
 
     # 計算最高價格/平均價格和最低價格/平均價格
     avg_close_price = hist['close'].mean()
@@ -899,7 +902,9 @@ def calculate_avg_volume(df, n_days):
 
 def vcp_screener_strategy(ticker_in, data):
     # print("Running VCP")
-    print(data)
+    # print(data)
+    # with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+    #    print(data)
     volatility_8 = calculate_volatility_duration(data, 8, 0)
     if isinstance(volatility_8, pd.Series):
         volatility_8 = volatility_8.iloc[-1]
@@ -911,7 +916,7 @@ def vcp_screener_strategy(ticker_in, data):
         volatility_55 = volatility_55.iloc[-1]
 
     avg_volume_8 = calculate_avg_volume_duration(data, 8, 0)
-    #avg_volume_21 = calculate_avg_volume_duration(data, 13, 21)
+    # avg_volume_21 = calculate_avg_volume_duration(data, 13, 21)
     avg_volume_55 = calculate_avg_volume_duration(data, 55, 21)
     print(f"volatility_8: {volatility_8}")
     print(f"volatility_21: {volatility_21}")
@@ -919,13 +924,98 @@ def vcp_screener_strategy(ticker_in, data):
     print("volatility_8 is of type:", type(volatility_8))
     print("volatility_21 is of type:", type(volatility_21))
     print("volatility_55 is of type:", type(volatility_55))
-    #print(f"avg_volume_8: {avg_volume_8}")
-    #print(f"avg_volume_55: {avg_volume_55}")
+    # print(f"avg_volume_8: {avg_volume_8}")
+    # print(f"avg_volume_55: {avg_volume_55}")
     sma55 = calculate_sma(data, 55)
     # print(data)
     vcma55 = calculate_vwap(data, 55)
     # print(vcma55)
     last_vcma55 = round(vcma55.iloc[-1], 2)
+    vcma144 = calculate_vwap(data, 144)
+    last_vcma144 = round(vcma144.iloc[-1], 2)
+    vcma233 = calculate_vwap(data, 233)
+    last_vcma233 = round(vcma233.iloc[-1], 2)
+    #print(f"last_vcma55: {last_vcma55}")
+    #print(f"last_vcma144: {last_vcma144}")
+    print(f"last_vcma233: {last_vcma233}")
+    #print("last_vcma55 is of type:", type(last_vcma55))
+    #print("last_vcma144 is of type:", type(last_vcma144))
+    print("last_vcma233 is of type:", type(last_vcma233))
+    # print(f"sma55: {sma55}")
+    last_sma55 = round(sma55[-1], 2)
+    # print(f"last_sma55: {last_sma55}")
+    sma144 = calculate_sma(data, 144)
+    last_sma144 = round(sma144[-1], 2)
+    # print(f"last_sma144: {last_sma144}")
+    sma233 = calculate_sma(data, 233)
+    last_sma233 = round(sma233[-1], 2)
+    print(f"last_sma233: {last_sma233}")
+    print("last_sma233 is of type:", type(last_sma233))
+    is_continuous_increase_sma233 = check_continuous_increase(sma233.dropna(), days=21)
+    # is_continuous_increase_vcma233 = check_continuous_increase(vcma233.dropna(), days=21)
+    # print(f"sma233_rising_21: {is_continuous_increase}")
+    print(f"is_continuous_increase_sma233: {is_continuous_increase_sma233}")
+    print("is_continuous_increase_sma233:", type(is_continuous_increase_sma233))
+    #print("last_sma55 is of type:", type(last_sma55))
+    #print("last_sma144 is of type:", type(last_sma144))
+    print("last_sma233 is of type:", type(last_sma233))
+    # if (volatility_8 < volatility_21) and (volatility_21 < volatility_55) \
+    print("Start if statement...")
+
+    if (volatility_8 < volatility_21) & (volatility_21 < volatility_55) \
+            and (avg_volume_8 < avg_volume_55) \
+            and ((avg_volume_8 / avg_volume_55) < 0.7) \
+            and ((volatility_55 / volatility_21) > 1.5) \
+            and ((volatility_21 / volatility_8) > 1.5) \
+            and (volatility_8 < 0.1) \
+            and (last_sma55 > last_sma144) and (last_sma144 > last_sma233) \
+            and (is_continuous_increase_sma233 is True):
+            # and (last_vcma55 > last_vcma144) & (last_vcma144 > last_vcma233):
+        # and is_continuous_increase_vcma233 is True:
+        print("End if statement...")
+        url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}"
+        # webbrowser.open(url)
+        highchart_chart(data, ticker_in, url)
+        print("MATCH VCP!!!")
+
+        # return 1
+
+        # plot_title = "{} {} {} {}".format(ticker_in, today, last_close_price, scenario)
+        # plotly_chart(data, plot_title, 0)
+
+
+def vcp_screener_strategy_bak(ticker_in, data):
+    # print("Running VCP")
+    # print(data)
+    # with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+    #    print(data)
+    volatility_8 = calculate_volatility_duration(data, 8, 0)
+    if isinstance(volatility_8, pd.Series):
+        volatility_8 = volatility_8.iloc[-1]
+    volatility_21 = calculate_volatility_duration(data, 21, 13)
+    if isinstance(volatility_21, pd.Series):
+        volatility_21 = volatility_21.iloc[-1]
+    volatility_55 = calculate_volatility_duration(data, 55, 21)
+    if isinstance(volatility_55, pd.Series):
+        volatility_55 = volatility_55.iloc[-1]
+
+    avg_volume_8 = calculate_avg_volume_duration(data, 8, 0)
+    # avg_volume_21 = calculate_avg_volume_duration(data, 13, 21)
+    avg_volume_55 = calculate_avg_volume_duration(data, 55, 21)
+    print(f"volatility_8: {volatility_8}")
+    print(f"volatility_21: {volatility_21}")
+    print(f"volatility_55: {volatility_55}")
+    print("volatility_8 is of type:", type(volatility_8))
+    print("volatility_21 is of type:", type(volatility_21))
+    print("volatility_55 is of type:", type(volatility_55))
+    # print(f"avg_volume_8: {avg_volume_8}")
+    # print(f"avg_volume_55: {avg_volume_55}")
+    sma55 = calculate_sma(data, 55)
+    # print(data)
+    vcma55 = calculate_vwap(data, 55)
+    # print(vcma55)
+    last_vcma55 = round(vcma55.iloc[-1], 2)
+
     vcma144 = calculate_vwap(data, 144)
     last_vcma144 = round(vcma144.iloc[-1], 2)
     vcma233 = calculate_vwap(data, 233)
@@ -941,14 +1031,16 @@ def vcp_screener_strategy(ticker_in, data):
     # print(f"last_sma233: {last_sma233}")
     is_continuous_increase_sma233 = check_continuous_increase(sma233.dropna(), days=21)
     # is_continuous_increase_vcma233 = check_continuous_increase(vcma233.dropna(), days=21)
-    #print(f"sma233_rising_21: {is_continuous_increase}")
-    print("is_continuous_increase_sma233 is of type:", type(is_continuous_increase_sma233))
+    # print(f"sma233_rising_21: {is_continuous_increase}")
+    print(f"is_continuous_increase_sma233: {is_continuous_increase_sma233}")
+    print("is_continuous_increase_sma233:", type(is_continuous_increase_sma233))
     print("last_sma55 is of type:", type(last_sma55))
     print("last_sma144 is of type:", type(last_sma144))
     print("last_sma233 is of type:", type(last_sma233))
+    # if (volatility_8 < volatility_21) and (volatility_21 < volatility_55) \
+    print("Start if statement...")
 
-    print ("Start if statement...")
-    if (volatility_8 < volatility_21) and (volatility_21 < volatility_55) \
+    if (volatility_8 < volatility_21) & (volatility_21 < volatility_55) \
             and (avg_volume_8 < avg_volume_55) \
             and ((avg_volume_8 / avg_volume_55) < 0.7) \
             and ((volatility_55 / volatility_21) > 1.5) \
@@ -956,7 +1048,7 @@ def vcp_screener_strategy(ticker_in, data):
             and (volatility_8 < 0.1) \
             and (last_sma55 > last_sma144) and (last_sma144 > last_sma233) \
             and (is_continuous_increase_sma233 is True) \
-            and (last_vcma55 > last_vcma144) and (last_vcma144 > last_vcma233):
+            and (last_vcma55 > last_vcma144) & (last_vcma144 > last_vcma233):
         # and is_continuous_increase_vcma233 is True:
         print("End if statement...")
         url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}"
@@ -968,8 +1060,6 @@ def vcp_screener_strategy(ticker_in, data):
 
         # plot_title = "{} {} {} {}".format(ticker_in, today, last_close_price, scenario)
         # plotly_chart(data, plot_title, 0)
-
-
 
 
 
@@ -1094,16 +1184,13 @@ if FIN == 1:
     fin_tickers = get_tickers("FIN", fin_start)
 if TEST == 1:
     # test_tickers = ['AMD', 'AMOV', 'V', 'ROJER']
-    # test_tickers = ['NVDA', 'V', 'TSM', 'META', 'MA', 'NVO', 'MRK', 'AVGO', 'ASML', 'BABA', 'ORCL', 'AZN', 'CSCO', 'CRM', 'NKE', 'LIN', 'CMCSA', 'TTE']
-    # test_tickers = ['NVDA', 'V', 'TSM', 'META', 'MA', 'NVO', 'MRK', 'AVGO', 'ASML', 'BABA', 'ORCL', 'AZN', 'CSCO', 'CRM', 'NKE', 'LIN', 'CMCSA', 'TTE', 'ADBE', 'NFLX', 'SAP', 'CAT', 'AMD', 'DE', 'HDB', 'LMT', 'PDD', 'BUD', 'SNY', 'SBUX', 'SONY', 'BLK', 'GILD', 'BKNG', 'SYK', 'GE', 'ADI', 'MDLZ', 'TJX', 'NOW', 'MUFG', 'REGN', 'PGR', 'ISRG', 'ZTS', 'SLB', 'VRTX', 'ABNB', 'ITW', 'HCA', 'BSX', 'UBS', 'AMX', 'EQIX', 'ABB', 'AON', 'MELI', 'RELX', 'TRI', 'PANW', 'NTES', 'SNPS', 'MNST', 'MCO', 'CDNS', 'ORLY', 'FDX', 'BIDU', 'ING', 'RACE', 'TAK', 'VMW', 'AZO', 'FTNT', 'NXPI', 'PH', 'DXCM', 'MSI', 'CTAS', 'MCHP', 'HES', 'TT', 'STM', 'ANET', 'PUK', 'TDG', 'CMG', 'MSCI', 'APO', 'MFG', 'AJG', 'IDXX', 'ODFL', 'ROST', 'AMP', 'GFS', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT', 'URI', 'ON', 'MTD', 'APTV', 'ORAN', 'OKE', 'GOLD', 'TTD', 'ANSS', 'ULTA', 'ACGL', 'IT', 'FNV', 'YUMC', 'CCEP', 'HZNP', 'TSCO', 'EIX', 'EFX', 'TCOM', 'RCI', 'ALGN', 'WST', 'HEI', 'IR', 'MPWR', 'GIB', 'AEM', 'VRSN', 'TDY', 'HPE', 'PODD', 'QSR', 'HOLX', 'PKX', 'CLX', 'ZTO', 'BMRN', 'OMC', 'XYL', 'HWM', 'SEDG', 'SWKS', 'DRI', 'TRGP', 'FICO', 'UAL', 'CHWY', 'PARAA', 'WMG', 'COO', 'SJM', 'TER', 'ZBRA', 'COIN', 'KOF', 'AXON', 'RE', 'TW', 'PTC', 'LW', 'BEN', 'ARES', 'BURL', 'PARA', 'CBOE', 'IPG', 'TME', 'HUBB', 'STX', 'MKTX', 'NICE', 'SNN', 'ACM', 'ERIE', 'DT', 'IHG', 'BSY', 'BWA', 'LSCC', 'TTC', 'FIVE', 'JBL', 'FMS', 'DECK', 'WSC', 'TFX', 'DKS', 'AGCO', 'LSI', 'TPR', 'BRKR', 'FLEX', 'AOS', 'JNPR', 'BJ', 'COTY', 'LECO', 'BZ', 'MASI', 'FND', 'OTEX', 'BSMX', 'UHS', 'CHDN', 'VIPS', 'BBWI', 'MANH', 'IBKR', 'PNR', 'PFGC', 'NOV', 'USFD', 'LOGI', 'WCC', 'WEX', 'PNW', 'ALGM', 'DCI', 'ALV', 'EME', 'MTZ', 'DLB', 'RGLD', 'RL', 'CX', 'ATR', 'CROX', 'IRDM', 'NVT', 'GPK', 'SAIA', 'TPX', 'KNSL', 'CLH', 'AU', 'CIEN', 'CAE', 'ONON', 'FUTU', 'SKX', 'LEVI', 'VMI', 'TXRH', 'PRI', 'RBC', 'SBS', 'CR', 'SGFY', 'CW', 'BYD', 'AXTA', 'PLNT', 'NATI', 'OLED', 'STN', 'NYT', 'STVN', 'CHX', 'FCN', 'TKR', 'WWE', 'HXL', 'MEDP', 'BLCO', 'VVV', 'SIGI', 'IPGP', 'THC', 'GXO', 'SLGN', 'SAIC', 'MNSO', 'NE', 'PVH', 'AQUA', 'BWXT', 'CRUS', 'UNVR', 'SLAB', 'EHC', 'APG', 'HGV', 'COLM', 'AIT', 'SPSC', 'EEFT', 'ATI', 'FLR', 'IGT', 'FIX', 'LANC', 'VAL', 'EXP', 'NOVT', 'EVR', 'WING', 'LNTH', 'ENSG', 'FOXF', 'MMS', 'TNET', 'WFRD', 'AAON', 'BFAM', 'WEN', 'WB', 'PSN', 'VC', 'NSP', 'ASO', 'IART', 'NSIT', 'KGC', 'AJRD', 'FLS', 'JHG', 'DV', 'ALSN', 'FN', 'NVEI', 'UAA', 'IPAR', 'WNS', 'FRHC', 'BRBR', 'DIOD', 'VNT', 'HHC', 'SEAS', 'ACLS', 'ONTO', 'FCFS', 'FL', 'AGI', 'TEX', 'FRO', 'ATHM', 'TDC', 'AIMC', 'GTES', 'AVNT', 'ELF', 'MMSI', 'FOUR', 'UA', 'HAE', 'BTG', 'EURN', 'OMAB', 'ENS', 'SFM', 'CPA', 'ESAB', 'BDC', 'TKC', 'SRAD', 'AZEK', 'LOPE', 'BMI', 'QFIN', 'FHI', 'SANM', 'ALE', 'AEIS', 'KOS', 'FOCS', 'FSS', 'ATAT', 'SEM', 'IBP', 'PR', 'TWNK', 'CERT', 'YETI', 'TIGO', 'SIG', 'SPXC', 'ENIC', 'CCOI', 'BCO', 'NOMD', 'PFSI', 'TR', 'WOR', 'PBH', 'CCU', 'KTB', 'ACIW', 'AAWW', 'INMD', 'SITM', 'SHLS', 'AEO', 'NOG', 'PAGP', 'SSTK', 'CSIQ', 'NVMI', 'FTDR', 'URBN', 'ITGR', 'CBZ', 'PRGS', 'SONO', 'CBRL', 'HAYW', 'ESE', 'BLMN', 'MTRN', 'SIX', 'AMK', 'EXTR', 'YY', 'FORM', 'ODP', 'BOOT', 'SJW', 'ALG', 'NABL', 'EPC', 'CSWI', 'VCTR', 'IDCC', 'OII', 'MWA', 'CRCT', 'B', 'BVN', 'CARG', 'SUPN', 'SAH', 'FA', 'SLVM', 'VGR', 'STRA', 'AGYS', 'MYRG', 'NUS', 'HEES', 'RES', 'DOOR', 'NMIH', 'GVA', 'TBBK', 'AIR', 'GGAL', 'DHT', 'CRTO', 'ENLT', 'OXM', 'ALGT', 'JACK', 'ADUS', 'MOMO', 'COHU', 'XPEL', 'ATGE', 'AMPH', 'CTOS', 'EAT', 'AROC', 'SBH', 'INT', 'TGS', 'VIST', 'HURN', 'IAS', 'CPRX', 'TNK', 'OEC', 'CLS', 'EPAC', 'OSIS', 'ENVA', 'FDP', 'PLYA', 'PERI', 'PRIM', 'TH', 'ROAD', 'HLIT', 'ANF', 'SXI', 'CTS', 'MCRI', 'AVTA', 'CASH', 'HBM', 'RDNT', 'ECVT', 'WNC', 'USPH', 'AVNS', 'MOD', 'PGTI', 'MLNK', 'BMA', 'AVID', 'CARS', 'STRL', 'ERII', 'PRG', 'NOAH', 'DFIN', 'CLB', 'GES', 'NSSC', 'DCBO', 'DRQ', 'SNCY', 'DOLE', 'LMAT', 'GSHD', 'GEO', 'JELD', 'PTLO', 'GOTU', 'CMCO', 'NVGS', 'ASLE', 'OSW', 'ADEA', 'SKYW', 'STGW', 'IMXI', 'DCGO', 'MRC', 'NAT', 'COCO', 'CEPU', 'AMYT', 'PRDO', 'NVTS', 'THR', 'HIBB', 'DSGR', 'UTL', 'EWCZ', 'NEXA', 'THRY', 'ROCC', 'OPRA', 'CRAI', 'SILV', 'CYH', 'RICK', 'HSTM', 'KOP', 'PBI', 'VTRU', 'AMBC', 'BJRI', 'AEHR', 'VSEC', 'HAYN', 'AMOT', 'BLX', 'DCO', 'TRNS', 'CHUY', 'VITL', 'CASS', 'FLWS', 'JOUT', 'BBSI', 'BVH', 'REPX', 'KE', 'TK', 'MCFT', 'ALTG', 'VPG', 'CIR', 'SVM', 'EVC', 'CMBM', 'EXK', 'LX', 'CECO', 'BOOM', 'GTX', 'IBEX', 'ZYME', 'IRMD', 'BELFB', 'SGU', 'NOA', 'CRESY', 'BBCP', 'LOVE', 'LYTS', 'INSE', 'ARCT', 'FANH', 'AVNW', 'PMTS', 'SCPL', 'BWMN', 'BWMX', 'MCBC', 'DSKE', 'WLFC', 'MSB', 'GAMB', 'VMD', 'NINE', 'CZFS', 'GLRE', 'OSG', 'HQI', 'FET', 'BBW', 'CVCY', 'QD', 'MEC', 'JILL', 'STKS', 'CCRD', 'QUAD', 'EEX', 'HNRG', 'THRN', 'UTI', 'HOFT', 'CMCL', 'OCN', 'QIPT', 'PBPB', 'GENC', 'GHL', 'PAYS', 'CLMB', 'ESCA', 'INTT', 'MG', 'SUP', 'CMT', 'STG', 'LMB', 'AE', 'MRAM', 'ARC', 'NTIC', 'PCYG', 'LAKE', 'FLXS', 'LIVE', 'LWAY', 'LTRPA', 'WFCF', 'CODA']
-    test_tickers = ['NVDA', 'V', 'TSM', 'META', 'MA', 'NVO', 'MRK', 'AVGO', 'ASML', 'BABA', 'ORCL', 'AZN', 'CSCO', 'CRM', 'NKE', 'LIN', 'CMCSA', 'TTE', 'ADBE', 'NFLX', 'SAP', 'CAT', 'AMD', 'DE', 'HDB', 'LMT', 'PDD', 'BUD', 'SNY', 'SBUX', 'SONY', 'BLK', 'GILD', 'BKNG', 'SYK', 'GE', 'ADI', 'MDLZ', 'TJX', 'NOW', 'MUFG', 'REGN', 'PGR', 'ISRG', 'ZTS', 'SLB', 'VRTX', 'ABNB', 'ITW', 'HCA', 'BSX', 'UBS', 'AMX', 'EQIX', 'ABB', 'AON', 'MELI', 'RELX', 'TRI', 'PANW', 'NTES', 'SNPS', 'MNST', 'MCO', 'CDNS', 'ORLY', 'FDX', 'BIDU', 'ING', 'RACE', 'TAK', 'VMW', 'AZO', 'FTNT', 'NXPI', 'PH', 'DXCM', 'MSI', 'CTAS', 'MCHP', 'HES', 'TT', 'STM', 'ANET', 'PUK', 'TDG', 'CMG', 'MSCI', 'APO', 'MFG', 'AJG', 'IDXX', 'ODFL', 'ROST', 'AMP', 'GFS', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT', 'URI', 'ON', 'MTD', 'APTV', 'ORAN', 'OKE', 'GOLD', 'TTD', 'ANSS', 'ULTA', 'ACGL', 'IT', 'FNV', 'YUMC', 'CCEP', 'HZNP', 'TSCO', 'EIX', 'EFX', 'TCOM', 'RCI', 'ALGN', 'WST', 'HEI', 'IR', 'MPWR', 'GIB', 'AEM', 'VRSN', 'TDY', 'HPE', 'PODD', 'QSR', 'HOLX', 'PKX', 'CLX', 'ZTO', 'BMRN', 'OMC', 'XYL', 'HWM', 'SEDG', 'SWKS', 'DRI', 'TRGP', 'FICO', 'UAL', 'CHWY', 'PARAA', 'WMG', 'COO', 'SJM', 'TER', 'ZBRA', 'COIN', 'KOF', 'AXON', 'RE', 'TW', 'PTC', 'LW', 'BEN', 'ARES', 'BURL', 'PARA', 'CBOE', 'IPG', 'TME', 'HUBB', 'STX', 'MKTX', 'NICE', 'SNN', 'ACM', 'ERIE', 'DT', 'IHG', 'BSY', 'BWA', 'LSCC', 'TTC', 'FIVE', 'JBL', 'FMS', 'DECK', 'WSC', 'TFX', 'DKS', 'AGCO', 'LSI', 'TPR', 'BRKR', 'FLEX', 'AOS', 'JNPR', 'BJ', 'COTY', 'LECO', 'BZ', 'MASI', 'FND', 'OTEX', 'BSMX', 'UHS', 'CHDN', 'VIPS', 'BBWI', 'MANH', 'IBKR', 'PNR', 'PFGC', 'NOV', 'USFD', 'LOGI', 'WCC', 'WEX', 'PNW', 'ALGM', 'DCI', 'ALV', 'EME', 'MTZ', 'DLB', 'RGLD', 'RL', 'CX', 'ATR', 'CROX', 'IRDM', 'NVT', 'GPK', 'SAIA', 'TPX', 'KNSL', 'CLH', 'AU', 'CIEN', 'CAE', 'ONON', 'FUTU', 'SKX', 'LEVI', 'VMI', 'TXRH', 'PRI', 'RBC', 'SBS', 'CR', 'SGFY', 'CW', 'BYD', 'AXTA', 'PLNT', 'NATI', 'OLED', 'STN', 'NYT', 'STVN', 'CHX', 'FCN', 'TKR', 'WWE', 'HXL', 'MEDP', 'BLCO', 'VVV', 'SIGI', 'IPGP', 'THC', 'GXO', 'SLGN', 'SAIC', 'MNSO', 'NE', 'PVH', 'AQUA', 'BWXT', 'CRUS', 'UNVR', 'SLAB', 'EHC', 'APG', 'HGV', 'COLM', 'AIT', 'SPSC', 'EEFT', 'ATI', 'FLR', 'IGT', 'FIX', 'LANC', 'VAL', 'EXP', 'NOVT', 'EVR', 'WING', 'LNTH', 'ENSG', 'FOXF', 'MMS', 'TNET', 'WFRD', 'AAON', 'BFAM', 'WEN', 'WB', 'PSN', 'VC', 'NSP', 'ASO', 'IART', 'NSIT', 'KGC', 'AJRD', 'FLS', 'JHG', 'DV', 'ALSN', 'FN', 'NVEI', 'UAA', 'IPAR', 'WNS', 'FRHC', 'BRBR', 'DIOD', 'VNT', 'HHC', 'SEAS', 'ACLS', 'ONTO', 'FCFS', 'FL', 'AGI', 'TEX', 'FRO', 'ATHM', 'TDC', 'AIMC', 'GTES', 'AVNT', 'ELF', 'MMSI', 'FOUR', 'UA', 'HAE', 'BTG', 'EURN', 'OMAB', 'ENS', 'SFM', 'CPA', 'ESAB', 'BDC', 'TKC', 'SRAD', 'AZEK', 'LOPE', 'BMI', 'QFIN', 'FHI', 'SANM', 'ALE', 'AEIS', 'KOS', 'FOCS', 'FSS', 'ATAT', 'SEM', 'IBP', 'PR', 'TWNK', 'CERT', 'YETI', 'TIGO', 'SIG', 'SPXC', 'ENIC', 'CCOI', 'BCO', 'NOMD', 'PFSI', 'TR', 'WOR', 'PBH', 'CCU', 'KTB', 'ACIW', 'AAWW', 'INMD', 'SITM', 'SHLS', 'AEO', 'NOG', 'PAGP', 'SSTK', 'CSIQ', 'NVMI', 'FTDR', 'URBN', 'ITGR', 'CBZ', 'PRGS', 'SONO', 'CBRL', 'HAYW', 'ESE', 'BLMN', 'MTRN', 'SIX', 'AMK', 'EXTR', 'YY', 'FORM', 'ODP', 'BOOT', 'SJW', 'ALG', 'NABL', 'EPC', 'CSWI', 'VCTR', 'IDCC', 'OII', 'MWA', 'CRCT', 'B', 'BVN', 'CARG', 'SUPN', 'SAH', 'FA', 'SLVM', 'VGR', 'STRA', 'AGYS', 'MYRG', 'NUS', 'HEES', 'RES', 'DOOR', 'NMIH', 'GVA', 'TBBK', 'AIR', 'GGAL', 'DHT', 'CRTO', 'ENLT', 'OXM', 'ALGT', 'JACK', 'ADUS', 'MOMO', 'COHU', 'XPEL', 'ATGE', 'AMPH', 'CTOS', 'EAT', 'AROC', 'SBH', 'INT', 'TGS', 'VIST', 'HURN', 'IAS', 'CPRX', 'TNK', 'OEC', 'CLS', 'EPAC', 'OSIS', 'ENVA', 'FDP', 'PLYA', 'PERI', 'PRIM', 'TH', 'ROAD', 'HLIT', 'ANF', 'SXI', 'CTS', 'MCRI', 'AVTA', 'CASH', 'HBM', 'RDNT', 'ECVT', 'WNC', 'USPH', 'AVNS', 'MOD', 'PGTI', 'MLNK', 'BMA', 'AVID', 'CARS', 'STRL', 'ERII', 'PRG', 'NOAH', 'DFIN', 'CLB', 'GES', 'NSSC', 'DCBO', 'DRQ', 'SNCY', 'DOLE', 'LMAT', 'GSHD', 'GEO', 'JELD', 'PTLO', 'GOTU', 'CMCO', 'NVGS', 'ASLE', 'OSW', 'ADEA', 'SKYW', 'STGW', 'IMXI', 'DCGO', 'MRC', 'NAT', 'COCO', 'CEPU', 'AMYT', 'PRDO', 'NVTS', 'THR', 'HIBB', 'DSGR', 'UTL', 'EWCZ', 'NEXA', 'THRY', 'ROCC', 'OPRA', 'CRAI', 'SILV', 'CYH', 'RICK', 'HSTM', 'KOP', 'PBI', 'VTRU', 'AMBC', 'BJRI', 'AEHR', 'VSEC', 'HAYN', 'AMOT', 'BLX', 'DCO', 'TRNS', 'CHUY', 'VITL', 'CASS', 'FLWS', 'JOUT', 'BBSI', 'BVH', 'REPX', 'KE', 'TK', 'MCFT', 'ALTG', 'VPG', 'CIR', 'SVM', 'EVC', 'CMBM', 'EXK', 'LX', 'CECO', 'BOOM', 'GTX', 'IBEX', 'ZYME', 'IRMD', 'BELFB', 'SGU', 'NOA', 'CRESY', 'BBCP', 'LOVE', 'LYTS', 'INSE', 'ARCT', 'FANH', 'AVNW', 'PMTS', 'SCPL', 'BWMN', 'BWMX', 'MCBC', 'DSKE', 'WLFC', 'MSB', 'GAMB', 'VMD', 'NINE', 'CZFS', 'GLRE', 'OSG', 'HQI', 'FET', 'BBW', 'CVCY', 'QD', 'MEC', 'JILL', 'STKS', 'CCRD', 'QUAD', 'EEX', 'HNRG', 'THRN', 'UTI', 'HOFT', 'CMCL', 'OCN', 'QIPT', 'PBPB', 'GENC', 'GHL', 'PAYS', 'CLMB', 'ESCA', 'INTT', 'MG', 'SUP', 'CMT', 'STG', 'LMB', 'AE', 'MRAM', 'ARC', 'NTIC', 'PCYG', 'LAKE', 'FLXS', 'LIVE', 'LWAY', 'LTRPA', 'WFCF', 'CODA']
+    test_tickers = ['GOOG', 'GOOGL', 'AMZN', 'PCAR']
     # test_tickers = ['NVDA', 'MET']
 start_time = time.time()  # 記錄開始時間
 
 weekly_screen = 1
 if weekly_screen == 1:
     us_tickers = get_tickers("US", us_start)
-    test_tickers = ['NVDA', 'TME', 'TSM']
     filter_financial_ticker(us_tickers, "US")
 
 run_refersh_financial_data = 0
@@ -1111,6 +1198,19 @@ if run_refersh_financial_data == 1:
     us_tickers = get_tickers("US", us_start)
     df = filter_financial_ticker(us_tickers)
 
+
+### TEST ###
+# filter_tickers = ['GOOG', 'GOOGL', 'AMZN', 'PCAR', 'BRK-B', 'TSLA', 'NVDA', 'V', 'TSM', 'XOM', 'META', 'UNH', 'JPM', 'JNJ', 'WMT', 'MA', 'PG', 'NVO', 'CVX', 'LLY', 'HD', 'ABBV', 'MRK', 'BAC', 'KO', 'AVGO', 'ASML', 'PEP', 'BABA', 'ORCL', 'PFE', 'SHEL', 'COST', 'TMO', 'AZN', 'CSCO', 'MCD', 'CRM', 'TM', 'NKE', 'DHR', 'NVS', 'DIS', 'ABT', 'WFC', 'LIN', 'TMUS', 'ACN', 'BHP', 'VZ', 'MS', 'UPS', 'TXN', 'CMCSA', 'TTE', 'PM', 'ADBE', 'HSBC', 'BMY', 'RTX', 'NEE', 'SCHW', 'NFLX', 'RY', 'QCOM', 'SAP', 'T', 'COP', 'HON', 'AXP', 'CAT', 'UNP', 'UL', 'AMD', 'DE', 'AMGN', 'HDB', 'BA', 'LMT', 'BP', 'PDD', 'BUD', 'RIO', 'TD', 'SNY', 'LOW', 'SBUX', 'GS', 'IBM', 'PLD', 'INTU', 'ELV', 'SPGI', 'MDT', 'INTC', 'CVS', 'SONY', 'BLK', 'GILD', 'BKNG', 'DEO', 'C', 'SYK', 'AMAT', 'EQNR', 'GE', 'ADI', 'ADP', 'AMT', 'MDLZ', 'TJX', 'EL', 'NOW', 'CB', 'CI', 'BTI', 'MUFG', 'REGN', 'PGR', 'PYPL', 'MO', 'MMC', 'ISRG', 'VALE', 'CNI', 'ENB', 'ZTS', 'SLB', 'TGT', 'VRTX', 'INFY', 'CHTR', 'FISV', 'JD', 'ABNB', 'IBN', 'CP', 'DUK', 'ITW', 'NOC', 'USB', 'PBR', 'EOG', 'GSK', 'ETN', 'SO', 'HCA', 'BSX', 'AMOV', 'BN', 'UBS', 'BMO', 'AMX', 'CME', 'BX', 'BDX', 'CNQ', 'UBER', 'LRCX', 'SAN', 'APD', 'CSX', 'GD', 'EQIX', 'ABB', 'HUM', 'AON', 'WM', 'CL', 'PNC', 'FCX', 'MELI', 'MU', 'TFC', 'ATVI', 'MMM', 'BNS', 'MPC', 'SMFG', 'STLA', 'RELX', 'TRI', 'SCCO', 'SHW', 'PANW', 'ICE', 'NTES', 'CCI', 'SNPS', 'OXY', 'MET', 'GM', 'VLO', 'MNST', 'MRNA', 'MCO', 'CDNS', 'ORLY', 'MAR', 'AIG', 'PSA', 'KLAC', 'FDX', 'NSC', 'BIDU', 'SHOP', 'ING', 'F', 'PSX', 'PXD', 'KDP', 'HSY', 'EW', 'RACE', 'MCK', 'TAK', 'DG', 'EMR', 'KHC', 'KKR', 'WDS', 'E', 'WDAY', 'VMW', 'GIS', 'AZO', 'FTNT', 'SRE', 'APH', 'BBVA', 'ITUB', 'SU', 'NXPI', 'SQ', 'D', 'PH', 'NGG', 'ECL', 'DXCM', 'LVS', 'ROP', 'CTVA', 'AEP', 'ADM', 'MSI', 'CTAS', 'HMC', 'MCHP', 'NUE', 'ADSK', 'JCI', 'SNOW', 'HES', 'KMB', 'TRV', 'TT', 'STM', 'O', 'TEAM', 'ANET', 'PUK', 'AFL', 'A', 'TDG', 'CM', 'LYG', 'DOW', 'COF', 'CMG', 'MSCI', 'APO', 'STZ', 'RSG', 'NTR', 'TEL', 'BK', 'TRP', 'LHX', 'BCE', 'LNG', 'PAYX', 'ABEV', 'SPG', 'EXC', 'MFG', 'LULU', 'BSBR', 'AJG', 'IQV', 'IDXX', 'BIIB', 'KMI', 'HLT', 'MRVL', 'SYY', 'ODFL', 'ROST', 'CARR', 'CRH', 'CNC', 'FIS', 'MFC', 'WBD', 'WMB', 'WELL', 'CVE', 'DVN', 'PRU', 'AMP', 'YUM', 'OTIS', 'CMI', 'SE', 'GFS', 'XEL', 'HLN', 'VICI', 'NEM', 'WCN', 'NWG', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT', 'ALL', 'ALC', 'SGEN', 'BCS', 'AME', 'KR', 'VOD', 'URI', 'DLTR', 'ON', 'MTD', 'ILMN', 'BKR', 'CTSH', 'LYB', 'ABC', 'PPG', 'RMD', 'MBLY', 'ED', 'APTV', 'DHI', 'BNTX', 'EA', 'ORAN', 'STT', 'WBA', 'DFS', 'FERG', 'FAST', 'IMO', 'PEG', 'CHT', 'OKE', 'ALB', 'DLR', 'GPN', 'GLW', 'CSGP', 'SLF', 'TU', 'ENPH', 'GOLD', 'DELL', 'CRWD', 'HPQ', 'KEYS', 'VRSK', 'SBAC', 'WEC', 'NDAQ', 'LEN', 'VEEV', 'TTD', 'CDW', 'ANSS', 'BBD', 'ULTA', 'CBRE', 'ACGL', 'FANG', 'NOK', 'IT', 'WIT', 'FNV', 'ZBH', 'ES', 'MTB', 'YUMC', 'TLK', 'AWK', 'CCEP', 'HZNP', 'MT', 'TSCO', 'CPNG', 'WTW', 'BGNE', 'EBAY', 'ARE', 'TROW', 'DB', 'CEG', 'EIX', 'EFX', 'DAL', 'FITB', 'HIG', 'LI', 'GMAB', 'TCOM', 'BEKE', 'GPC', 'BBDO', 'SQM', 'VMC', 'RCI', 'ALNY', 'TEF', 'ALGN', 'FTV', 'WST', 'DDOG', 'HEI', 'AVB', 'EC', 'IR', 'IFF', 'EQR', 'WY', 'HRL', 'PWR', 'STLD', 'RJF', 'MPWR', 'SPOT', 'K', 'NU', 'RBLX', 'MLM', 'CNHI', 'FE', 'EXR', 'FRC', 'CAJ', 'ETR', 'HBAN', 'GIB', 'RF', 'RYAAY', 'AEM', 'AEE', 'TECK', 'DOV', 'DASH', 'LH', 'TSN', 'DTE', 'FSLR', 'ZM', 'CHD', 'IX', 'VRSN', 'UMC', 'PFG', 'LPLA', 'TS', 'TDY', 'HPE', 'CTRA', 'LUV', 'PPL', 'BAX', 'PODD', 'CFG', 'QSR', 'NET', 'HOLX', 'MKC', 'PKX', 'CLX', 'NTRS', 'CAH', 'VTR', 'ARGX', 'ZTO', 'WAB', 'MOS', 'FTS', 'JBHT', 'ZS', 'TTWO', 'HUBS', 'WPM', 'CINF', 'FOXA', 'GRMN', 'PBA', 'BMRN', 'WAT', 'STE', 'INVH', 'ICLR', 'OMC', 'BBY', 'ERIC', 'MAA', 'XYL', 'RCL', 'ELP', 'MKL', 'WRB', 'HWM', 'SEDG', 'EPAM', 'SWKS', 'DRI', 'CNP', 'SUI', 'TRGP', 'INCY', 'PAYC', 'FOX', 'ROL', 'FICO', 'CAG', 'BALL', 'WPC', 'PINS', 'EXPD', 'CMS', 'UAL', 'CHWY', 'MGM', 'IEX', 'CF', 'NVR', 'KEY', 'BR', 'SPLK', 'AMCR', 'AVTR', 'SIRI', 'AES', 'LYV', 'MRO', 'PARAA', 'SIVB', 'EXPE', 'FWONK', 'WMG', 'PLTR', 'HTHT', 'FMC', 'UI', 'MGA', 'MOH', 'COO', 'ATO', 'FDS', 'AER', 'SJM', 'SNAP', 'BRO', 'RPRX', 'PKI', 'ASX', 'FLT', 'TER', 'CPB', 'CHKP', 'ZBRA', 'COIN', 'RTO', 'WLK', 'SYF', 'DGX', 'LKQ', 'KOF', 'AXON', 'LCID', 'IRM', 'J', 'RE', 'TXT', 'ETSY', 'RS', 'KB', 'TW', 'EBR', 'AGR', 'SSNC', 'PTC', 'LW', 'RIVN', 'AVY', 'BG', 'NIO', 'FWONA', 'SHG', 'BEN', 'SJR', 'ESS', 'L', 'ARES', 'PHG', 'BURL', 'PARA', 'BIO', 'CBOE', 'AZPN', 'MDB', 'GLPI', 'TPL', 'BAM', 'NTAP', 'UDR', 'IPG', 'POOL', 'TME', 'CCL', 'VTRS', 'EVRG', 'HUBB', 'LDOS', 'TYL', 'CE', 'STX', 'CSL', 'MKTX', 'WPP', 'CRBG', 'SNA', 'NICE', 'IP', 'SRPT', 'PEAK', 'PKG', 'APA', 'TRMB', 'WYNN', 'LNT', 'BAH', 'OKTA', 'BLDR', 'KIM', 'CTLT', 'H', 'TWLO', 'NDSN', 'SNN', 'TRU', 'LBRDA', 'UHAL', 'CG', 'LBRDK', 'ELS', 'ENTG', 'SWK', 'GEN', 'VIV', 'CUK', 'ACM', 'CPT', 'ERIE', 'DT', 'DOCU', 'PHM', 'NMR', 'HST', 'WDC', 'JKHY', 'CCJ', 'FHN', 'EQT', 'IHG', 'TECH']
+"""
+filter_tickers = ['NVDA', 'TME', 'GOOG', 'GOOGL', 'AMZN', 'PCAR', 'BRK-B', 'TSLA', 'NVDA', 'V', 'TSM', 'XOM', 'META',
+                  'UNH', 'JPM']
+hist_df = get_yq_historical_data(filter_tickers)
+for ticker in filter_tickers:
+    print(f"Checking VCP Ticker: {ticker}")
+    df_one = sel_yq_historical_data(hist_df, ticker)
+    vcp_screener_strategy(ticker, df_one)
+"""
+### END TEST ###
 
 #############################################################################
 
