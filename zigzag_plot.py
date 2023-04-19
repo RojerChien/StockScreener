@@ -20,6 +20,16 @@ def filter_org(values, percentage):
     mask.append(True)
     return mask
 
+def calculate_atr(data, atr_period=14):
+    high_low = data['High'] - data['Low']
+    high_close = np.abs(data['High'] - data['Close'].shift())
+    low_close = np.abs(data['Low'] - data['Close'].shift())
+
+    true_range = pd.DataFrame({'hl': high_low, 'hc': high_close, 'lc': low_close}).max(axis=1)
+    atr = true_range.rolling(window=atr_period).mean()
+
+    return atr
+
 
 def filter(values, percentage):
     filtered_values = []
@@ -31,7 +41,7 @@ def filter(values, percentage):
     return pd.Series(filtered_values, index=values.index[values.isin(filtered_values)])
 
 
-ticker = "TSLA"
+ticker = "AAPL"
 end_date = datetime.today()
 start_date = end_date - timedelta(days=700)
 
@@ -41,14 +51,27 @@ with pd.option_context('display.max_rows', None, 'display.max_columns', None):  
 data_low = data['Low']
 data_high = data['High']
 
-peak_indexes = signal.argrelextrema(data_high.values, np.greater)[0]
-valley_indexes = signal.argrelextrema(data_low.values, np.less)[0]
+atr = calculate_atr(data)
 
-df_peaks = pd.DataFrame({'date': data_high.index[peak_indexes], 'price': data_high.iloc[peak_indexes]})
-df_valleys = pd.DataFrame({'date': data_low.index[valley_indexes], 'price': data_low.iloc[valley_indexes]})
+atr_multiplier = 2.5  # 調整這個常數因子以獲得所需的波峰和波谷精度
+window_size = int(np.ceil(atr.mean() * atr_multiplier))
+print(f"window_size: {window_size}")
+
+# window_size = 15  # 調整窗口大小以獲得所需的波峰和波谷精度
+p = 0.08
+# 找到波峰
+data_high_rolling_max = data['High'].rolling(window=window_size, center=True).max()
+peak_indexes = (data_high == data_high_rolling_max)
+
+# 找到波谷
+data_low_rolling_min = data['Low'].rolling(window=window_size, center=True).min()
+valley_indexes = (data_low == data_low_rolling_min)
+
+df_peaks = pd.DataFrame({'date': data_high.index[peak_indexes], 'price': data_high[peak_indexes]})
+df_valleys = pd.DataFrame({'date': data_low.index[valley_indexes], 'price': data_low[valley_indexes]})
 df_peaks_valleys = pd.concat([df_peaks, df_valleys], axis=0, ignore_index=True, sort=True).sort_values(by=['date'])
 
-p = 0.05
+
 
 
 def filter_and_order(values, percentage):
