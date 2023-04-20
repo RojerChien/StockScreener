@@ -1139,7 +1139,7 @@ else:
     jpg_resolution = 800
 
 # volume Factor
-vol_factor = 1  # volume factor for VWAP_SCREENER
+vol_factor = 4  # volume factor for VWAP_SCREENER
 
 # screener要判斷的平均天數
 screener_day = 8
@@ -1158,8 +1158,8 @@ fin_start = 0
 
 # 設定要執行的種類
 # VCP_TEST = 0
-run_vcp_screener_strategy = 1  # 找VCP型態的股票
-run_buy_signal_strategy_screener = 0  # 找帶量突破的股票
+run_vcp_screener_strategy = 0  # 找VCP型態的股票
+run_buy_signal_strategy_screener = 1  # 找帶量突破的股票
 run_vwap_strategy_screener = 0  # VWAP均線的策略，均線呈多頭排序時買入
 run_find_stocks_in_range = 0  #
 
@@ -1168,8 +1168,8 @@ TEST = 0
 US = 0
 TW = 0
 ETF = 0
-FIN = 0  # Filter tickers from finviz screener
-YF = 0
+FIN = 1  # Filter tickers from finviz screener
+YF = 1
 
 # 將讀取到的資料轉換為 list，並存入 tickers 變數中
 if TW == 1:
@@ -1188,7 +1188,7 @@ if TEST == 1:
     # test_tickers = ['NVDA', 'MET']
 start_time = time.time()  # 記錄開始時間
 
-weekly_screen = 1
+weekly_screen = 0
 if weekly_screen == 1:
     us_tickers = get_tickers("US", us_start)
     filter_financial_ticker(us_tickers, "US")
@@ -1217,7 +1217,7 @@ for ticker in filter_tickers:
 # debug mode => 寫出較多的資料
 # debugmode = 1
 # 決定是否要執行screener
-lets_party = 0
+lets_party = 1
 
 if lets_party == 1:
     if TEST == 1:
