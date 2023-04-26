@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#resultsTable').DataTable({
+        "pageLength": -1,
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+      });
+    });
+  </script>
+</head>
+<body>
+<table border="1" class="dataframe sortable" id="resultsTable">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ticker</th>
+      <th>winning_percentage</th>
+      <th>initial_balance</th>
+      <th>final_balance</th>
+      <th>total_return</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>AAPL</td>
+      <td>60.606061</td>
+      <td>200000</td>
+      <td>2.175255e+06</td>
+      <td>987.627548</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>TSLA</td>
+      <td>50.000000</td>
+      <td>200000</td>
+      <td>1.559102e+06</td>
+      <td>679.551189</td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>
