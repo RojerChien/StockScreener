@@ -5,6 +5,216 @@ import webbrowser
 from yahooquery import Ticker
 
 
+def backtest_strategy_old2(stock_data, stock_symbol):
+    stock_data = stock_data.copy()
+    stock_data['SMA21'] = stock_data['close'].rolling(window=21).mean()
+    stock_data['SMA55'] = stock_data['close'].rolling(window=55).mean()
+    stock_data['SMA155'] = stock_data['close'].rolling(window=155).mean()
+
+    buy_signals = []
+    sell_signals = []
+    position = False
+
+    for i in range(1, len(stock_data)):
+        sma21_cross_sma55 = stock_data['SMA21'].iloc[i - 1] < stock_data['SMA55'].iloc[i - 1] and stock_data['SMA21'].iloc[i] > \
+                            stock_data['SMA55'].iloc[i]
+        sma_conditions = stock_data['close'].iloc[i] > stock_data['SMA21'].iloc[i] > stock_data['SMA55'].iloc[i] > \
+                         stock_data['SMA155'].iloc[i]
+        sma_increasing = stock_data['SMA21'].iloc[i] > stock_data['SMA21'].iloc[i - 1] and stock_data['SMA55'].iloc[i] > \
+                         stock_data['SMA55'].iloc[i - 1] and stock_data['SMA155'].iloc[i] > stock_data['SMA155'].iloc[i - 1]
+
+        if sma21_cross_sma55 and sma_conditions and sma_increasing and not position:
+            buy_signals.append(stock_data.index[i])
+            position = True
+        elif stock_data['close'].iloc[i] < stock_data['SMA21'].iloc[i] and position:
+            sell_signals.append(stock_data.index[i])
+            position = False
+
+    if len(buy_signals) > len(sell_signals):
+        buy_signals.pop()
+
+    initial_balance = 200000
+    balance = initial_balance
+    shares = 0
+    profit_count = 0
+    total_trades = len(buy_signals)
+
+    investment_ratios = [0.1, 0.50, 1]
+    investment_thresholds = [0, 0.03, 0.06]
+
+    trade_records = []
+
+    for buy_date, sell_date in zip(buy_signals, sell_signals):
+        buy_price = stock_data.loc[buy_date]['close']
+        sell_price = stock_data.loc[sell_date]['close']
+
+        total_investment = 0
+        total_shares = 0
+        investment_count = 0
+        for idx, (ratio, threshold) in enumerate(zip(investment_ratios, investment_thresholds)):
+            current_profit = (sell_price - buy_price) / buy_price
+            if current_profit >= threshold:
+                investment_amount = balance * ratio
+                shares_to_buy = investment_amount // buy_price
+                total_shares += shares_to_buy
+                balance -= shares_to_buy * buy_price
+                total_investment += shares_to_buy * buy_price
+                investment_count += 1
+
+        balance += total_shares * sell_price
+        profit = total_shares * (sell_price - buy_price)
+        if profit > 0:
+            profit_count += 1
+        total_shares = 0
+
+        trade_record = {
+            'buy_date': buy_date,
+            'buy_price': buy_price,
+            'sell_date': sell_date,
+            'sell_price': sell_price,
+            'exposure days': sell_date - buy_date,
+            'investment_amount': total_investment,
+            'investment percentage': total_investment / (balance - profit),
+            'total_investments': investment_count,
+            'profit': profit,
+            'balance': balance,
+            'cumulative_profit': balance - initial_balance
+        }
+        trade_records.append(trade_record)
+        if total_trades > 0:
+            winning_percentage = profit_count / total_trades * 100
+        else:
+            winning_percentage = 0
+
+        final_balance = balance + shares * stock_data['close'][-1]
+        total_return = (final_balance - initial_balance) / initial_balance * 100
+
+        return {
+            'ticker': stock_symbol,
+            'winning_percentage': winning_percentage,
+            'initial_balance': initial_balance,
+            'final_balance': final_balance,
+            'total_return': total_return,
+            'trade_records': trade_records,
+            'total_investments': investment_count
+        }
+
+
+def backtest_strategy_single(stock_data, stock_symbol):
+    stock_data = stock_data.copy()
+    stock_data['SMA21'] = stock_data['close'].rolling(window=21).mean()
+    stock_data['SMA55'] = stock_data['close'].rolling(window=55).mean()
+    stock_data['SMA155'] = stock_data['close'].rolling(window=155).mean()
+
+    buy_signals = []
+    sell_signals = []
+    position = False
+
+    for i in range(1, len(stock_data)):
+        sma21_cross_sma55 = stock_data['SMA21'].iloc[i - 1] < stock_data['SMA55'].iloc[i - 1] and stock_data['SMA21'].iloc[i] > \
+                            stock_data['SMA55'].iloc[i]
+        sma_conditions = stock_data['close'].iloc[i] > stock_data['SMA21'].iloc[i] > stock_data['SMA55'].iloc[i] > \
+                         stock_data['SMA155'].iloc[i]
+        sma_increasing = stock_data['SMA21'].iloc[i] > stock_data['SMA21'].iloc[i - 1] and stock_data['SMA55'].iloc[i] > \
+                         stock_data['SMA55'].iloc[i - 1] and stock_data['SMA155'].iloc[i] > stock_data['SMA155'].iloc[i - 1]
+
+        if sma21_cross_sma55 and sma_conditions and sma_increasing and not position:
+            buy_signals.append(stock_data.index[i])
+            position = True
+        elif stock_data['close'].iloc[i] < stock_data['SMA21'].iloc[i] and position:
+            sell_signals.append(stock_data.index[i])
+            position = False
+
+    if len(buy_signals) > len(sell_signals):
+        buy_signals.pop()
+
+    initial_balance = 200000
+    balance = initial_balance
+    shares = 0
+    profit_count = 0
+    total_trades = len(buy_signals)
+
+    investment_ratios = [0.1, 0.50, 1]
+    investment_thresholds = [0, 0.03, 0.06]
+
+    trade_records = []
+
+    for buy_date, sell_date in zip(buy_signals, sell_signals):
+        buy_price = stock_data.loc[buy_date]['close']
+        sell_price = stock_data.loc[sell_date]['close']
+
+        total_investment = 0
+        total_shares = 0
+        second_investment_made = False
+        investment_count = 0  # Reset investment_count at the beginning of each trade
+
+        for idx, (ratio, threshold) in enumerate(zip(investment_ratios, investment_thresholds)):
+            current_profit = (sell_price - buy_price) / buy_price
+            if current_profit >= threshold:
+                # If the third investment is made before the second investment, skip
+                if idx == 2 and not second_investment_made:
+                    continue
+
+                investment_amount = balance * ratio
+                shares_to_buy = investment_amount // buy_price
+                total_shares += shares_to_buy
+                balance -= shares_to_buy * buy_price
+                total_investment += shares_to_buy * buy_price
+
+                if idx == 1:
+                    second_investment_made = True
+
+                investment_count += 1  # Increment investment_count when buying shares
+
+            if investment_count == 0:
+                investment_amount = balance * investment_ratios[0]
+                shares_to_buy = investment_amount // buy_price
+                total_shares += shares_to_buy
+                balance -= shares_to_buy * buy_price
+                total_investment += shares_to_buy * buy_price
+                investment_count = 1
+
+            balance += total_shares * sell_price
+            profit = total_shares * (sell_price - buy_price)
+            if profit > 0:
+                profit_count += 1
+            total_shares = 0
+
+            trade_record = {
+                'buy_date': buy_date,
+                'buy_price': buy_price,
+                'sell_date': sell_date,
+                'sell_price': sell_price,
+                'exposure days': sell_date - buy_date,
+                'investment_amount': total_investment,
+                'investment percentage': total_investment / (balance - profit),
+                'total_investments': investment_count,
+                'profit': profit,
+                'balance': balance,
+                'cumulative_profit': balance - initial_balance
+            }
+            trade_records.append(trade_record)
+
+        if total_trades > 0:
+            winning_percentage = profit_count / total_trades * 100
+        else:
+            winning_percentage = 0
+
+        final_balance = balance + shares * stock_data['close'][-1]
+        total_return = (final_balance - initial_balance) / initial_balance * 100
+
+        return {
+            'ticker': stock_symbol,
+            'winning_percentage': winning_percentage,
+            'initial_balance': initial_balance,
+            'final_balance': final_balance,
+            'total_return': total_return,
+            'trade_records': trade_records,
+            'total_investments': investment_count
+        }
+
+
+
 def backtest_strategy(stock_data, stock_symbol):
     stock_data = stock_data.copy()
     stock_data['SMA21'] = stock_data['close'].rolling(window=21).mean()
