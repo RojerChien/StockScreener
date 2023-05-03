@@ -425,12 +425,11 @@ def filter_financial_ticker(tickers_in, category_in):
                         ticker_forward_pe != "Infinity" and ticker_trailing_pe != "Infinity"):
 
                     # print("PE is not valid, skip")
-                    if ticker_trailing_pe > ticker_forward_pe:
-                        # (ticker_previous_close / ticker_52_week_low > 1.3) and
-                        # (ticker_previous_close / ticker_52_week_high < 1.25) and
-                        # (ticker_previous_close / ticker_52_week_high > 0.75) and
-                        # (ticker_trailing_pe > ticker_forward_pe) and
-                        # (ticker_50_day_average > ticker_200_day_average)):
+                    if  (ticker_trailing_pe > ticker_forward_pe) and \
+                        (ticker_previous_close / ticker_52_week_low > 1.3) and \
+                        (ticker_previous_close / ticker_52_week_high < 1.25) and \
+                        (ticker_previous_close / ticker_52_week_high > 0.75) and \
+                        (ticker_50_day_average > ticker_200_day_average):
                         filter_tickers.append(ticker)
 
                 else:
@@ -773,6 +772,8 @@ def vwap_strategy_screener(tickers_in, df, true_number, category):
     #    start) + " Stocks in " + category + " Market\n" + str(true_number) + " Meet Criteria")
 
 
+    #連續2季EPS成長20%
+
 def buy_signal_strategy_screener(tickers_in, df, true_number, category, day, volume_factor):
     # Check if the dataframe is empty
     if df.empty:
@@ -1062,8 +1063,6 @@ def vcp_screener_strategy_bak(ticker_in, data):
         # plot_title = "{} {} {} {}".format(ticker_in, today, last_close_price, scenario)
         # plotly_chart(data, plot_title, 0)
 
-
-
 def find_stocks_in_range(data, days=233, percentage=2):
     # 計算過去 days 天的最高價
     highest_price = data['close'].rolling(window=days).max().iloc[-1]
@@ -1125,6 +1124,10 @@ def party_on(ticker_type, tickers_in, run_number=1):
                 # plotly_chart(data, plot_title, 0)
 
 
+#stockscreener.condition1_enabled = False
+#stockscreener.condition2_enabled = False
+#stockscreener.condition3_enabled = False
+
 # VWAP Scenario
 scenario = 144  # 21, 55, 89, 144, 233共5種
 
@@ -1170,7 +1173,7 @@ US = 0
 TW = 0
 ETF = 0
 FIN = 0  # Filter tickers from finviz screener
-YF = 1
+YF = 0
 
 # 將讀取到的資料轉換為 list，並存入 tickers 變數中
 if TW == 1:
@@ -1189,8 +1192,8 @@ if TEST == 1:
     # test_tickers = ['NVDA', 'MET']
 start_time = time.time()  # 記錄開始時間
 
-weekly_screen = 0
-if weekly_screen == 1:
+update_financial_tickers = 1
+if update_financial_tickers == 1:
     us_tickers = get_tickers("US", us_start)
     filter_financial_ticker(us_tickers, "US")
 
@@ -1218,7 +1221,7 @@ for ticker in filter_tickers:
 # debug mode => 寫出較多的資料
 # debugmode = 1
 # 決定是否要執行screener
-lets_party = 1
+lets_party = 0
 
 if lets_party == 1:
     if TEST == 1:
