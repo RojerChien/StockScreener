@@ -335,7 +335,53 @@ def calculate_rsi(data, period):
     return rsi
 
 
+def get_yq_financial_data_single(ticker_list):
+    get_data_start_time = time.time()  # Record start time
+    print("Start Getting Stock Financial Data by Single Mode")
+    print("Getting asset_profile")
+    asset_profile = Ticker(ticker_list).asset_profile
+    income_statement_q = Ticker(ticker_list).income_statement(frequency='q')
+    fund_ownership = Ticker(ticker_list).fund_ownership
+    summary_detail = Ticker(ticker_list).summary_detail
+    summary_profile = Ticker(ticker_list).summary_profile
+    get_data_end_time = time.time()  # Record end time
+    get_data_elapsed_time = round(get_data_end_time - get_data_start_time, 2)  # Compute elapsed time
+    print(f"Get Financial Data Elapsed time: {get_data_elapsed_time} seconds")
+    return asset_profile, income_statement_q, fund_ownership, summary_detail, summary_profile
+
+
+def get_income_statement_q_single(ticker_list):
+    get_data_start_time = time.time()  # Record start time
+    print("Start Getting Income Statement Quarterly")
+    income_statement_q = Ticker(ticker_list).income_statement(frequency='q')
+    get_data_end_time = time.time()  # Record end time
+    get_data_elapsed_time = round(get_data_end_time - get_data_start_time, 2)  # Compute elapsed time
+    print(f"Get Income Statement Quarterly Elapsed time: {get_data_elapsed_time} seconds")
+    return income_statement_q
+
+
 def get_yq_financial_data(ticker_list):
+    # print(ticker_list)
+    get_data_start_time = time.time()  # Record start time
+    print("Start Getting Stock Financial Data")
+    # fin_data = Ticker(ticker_list).get_modules(['summaryDetail'])
+    fin_data = Ticker(ticker_list, validate=True, progress=True).all_modules
+    # fin_data = Ticker(ticker_list).get_modules(['incomeStatementHistoryQuarterly',
+    # 'fundOwnership', 'summaryDetail', 'summaryProfile'])
+
+    # print(fin_data)
+    # fin_data = Ticker(ticker_list).get_modules(['summaryDetail', 'balanceSheetHistory'])
+    get_data_end_time = time.time()  # Record end time
+    get_data_elapsed_time = round(get_data_end_time - get_data_start_time, 2)  # Compute elapsed time
+    print(f"Get Financial Data Elapsed time: {get_data_elapsed_time} seconds")
+    # Save DataFrame as CSV
+    # data_all.to_csv('data_all.csv', index=True)
+    # Save DataFrame as Parquet
+    # data_all.to_parquet('data_all.parquet', index=True)
+    return fin_data
+
+
+def get_yq_financial_data_all(ticker_list):
     # print(ticker_list)
     get_data_start_time = time.time()  # Record start time
     print("Start Getting Stock Financial Data")
@@ -361,7 +407,185 @@ def get_financial_data(dictname1, dictname2):
     return varname
 
 
+def get_income_statement_q_eps(ticker, income_statement_q_data):
+    # 如果索引尚未被重置，則重置索引，将 symbol 转换为列
+    if 'symbol' not in income_statement_q_data.columns:
+        income_statement_q_data.reset_index(inplace=True)
+    # 筛选 symbol 为 'ticker' 的行
+    filtered_data = income_statement_q_data[income_statement_q_data['symbol'] == ticker]
+
+    # 筛选 periodType = 3M 的行
+    filtered_data = filtered_data[filtered_data['periodType'] == '3M']
+
+    # 仅选择 asOfDate, BasicEPS 和 DilutedEPS 列
+    selected_columns = filtered_data[['asOfDate', 'BasicEPS', 'DilutedEPS']]
+
+    # 按 asOfDate 降序排列
+    sorted_data = selected_columns.sort_values(by='asOfDate', ascending=False)
+
+    # 重置索引
+    sorted_data.reset_index(drop=True, inplace=True)
+    if len(sorted_data) == 5:
+        basic_eps_0 = sorted_data.iloc[0]['BasicEPS']
+        basic_eps_4 = sorted_data.iloc[4]['BasicEPS']
+    else:
+        basic_eps_0 = 0
+        basic_eps_4 = 0
+    return basic_eps_0, basic_eps_4
+
+
+def get_fund_ownership_number(ticker, fund_ownership_data):
+    # if 'symbol' not in fund_ownership_data.columns:
+    #     fund_ownership_data.reset_index(inplace=True)
+    # fund_ownership_data.reset_index(inplace=True)  # 重置索引，将 symbol 转换为列
+    # 筛选 symbol 为 'ticker' 的行
+    # filtered_data = fund_ownership_data[fund_ownership_data['symbol'] == ticker]
+    # print(filtered_data)
+    print(fund_ownership_data)
+    fund_ownership_no = len(fund_ownership_data)
+    return fund_ownership_no
+
+
+def get_financial_info(fin_data, ticker, level1, level2):
+    get_level1 = fin_data[ticker].get(level1)
+    get_level2 = get_level1.get(level2)
+    return get_level2
+
+
 def filter_financial_ticker(tickers_in, category_in):
+    # start_time = time.time()  # 記錄開始時間
+    fin_data = get_yq_financial_data(tickers_in)
+    # asset_profile, income_statement_q, fund_ownership, summary_detail_source, summary_profile = \
+    # get_yq_financial_data_single(tickers_in)
+    income_statement_q = get_income_statement_q_single(tickers_in)
+    # print(income_statement_q)
+    # print(fin_data)
+    # end_time = time.time()  # 記錄結束時間
+    # elapsed_time = round(end_time - start_time, 2)  # 計算運行時間
+    # print(f"Elapsed time: {elapsed_time} seconds")
+
+    # 建立一個新的list，用來放符合條件的ticker
+    filter_tickers = []
+    for ticker in tickers_in:
+        if ticker not in fin_data:
+            print(f'Quote not found for ticker symbol: {ticker}')
+            continue
+        elif 'Quote not found for ticker symbol:' in fin_data[ticker] or 'For input string' in fin_data[ticker]:
+            print(f'Quote not found for ticker symbol:{ticker}')
+            continue
+        else:
+            # print(ticker)
+            # 得到的資料格式，若是dict的話，可以用以下的方式去查詢
+            summary_detail = fin_data[ticker].get('summaryDetail')
+            # print(f'summary_detail:{summary_detail}')
+            # sector = fin_data[ticker]['summaryProfile']['sector']
+            # industry = fin_data[ticker]['summaryProfile']['industry']
+            # website = fin_data[ticker]['summaryProfile']['website']
+            eps_0, eps_4 = get_income_statement_q_eps(ticker, income_statement_q)
+            if eps_0 != 0 and eps_4 != 0:
+                eps_growth = eps_0 / eps_4
+            else:
+                eps_growth = 0
+
+            # fund_ownership = fin_data[ticker].get('fundOwnership')
+            fund_ownership = fin_data[ticker].get('fundOwnership', {'ownershipList': []})['ownershipList']
+            # fund_ownership = fin_data[ticker]['fundOwnership']['ownershipList']
+            if fund_ownership:
+                fund_ownership_number = get_fund_ownership_number(ticker, fund_ownership)
+            else:
+                fund_ownership_number = 0  # 或設置為其他適當的預設值
+            print(f'ticker:{ticker}')
+            # print(f'sector:{sector}')
+            # print(f'industry:{industry}')
+            # print(f'website:{website}')
+            print(f'eps_0:{eps_0}')
+            print(f'eps_4:{eps_4}')
+            print(f'eps_growth:{eps_growth}')
+            print(f'fund_ownership_number:{fund_ownership_number}')
+
+            summary_detail = fin_data[ticker].get('summaryDetail')
+            # summary_detail = summary_detail_source[ticker]
+            # if summary_detail is not None:
+            if summary_detail is not None:
+                # ticker_previous_close = get_financial_data("summary_detail", "previousClose")
+                ticker_previous_close = summary_detail.get('previousClose')
+                if ticker_previous_close is not None:  # 上次收盤價
+                    ticker_previous_close = fin_data[ticker]['summaryDetail']['previousClose']
+                    # print(f'ticker_previous_close {ticker_previous_close}')
+
+                ticker_forward_pe = summary_detail.get('forwardPE')  # Forward PE是下一個會計年度的每股盈餘來計算
+                if ticker_forward_pe is not None:
+                    ticker_forward_pe = fin_data[ticker]['summaryDetail'].get('forwardPE', None)
+                    # print(f'ticker_forward_pe {ticker_forward_pe}')
+
+                ticker_trailing_pe = summary_detail.get('trailingPE')  # Trailing PE是指最近四季的每股盈餘來計算
+                if ticker_trailing_pe is not None:
+                    ticker_trailing_pe = fin_data[ticker]['summaryDetail'].get('trailingPE', None)
+                    # print(f'ticker_trailing_pe {ticker_trailing_pe}')
+
+                ticker_average_daily_volume_10day = summary_detail.get('averageDailyVolume10Day')  # 10天的平均成交量
+                if ticker_average_daily_volume_10day is not None:
+                    ticker_average_daily_volume_10day = fin_data[ticker]['summaryDetail'].get('averageDailyVolume10Day',
+                                                                                              None)
+                    # print(f'ticker_average_daily_volume_10day {ticker_average_daily_volume_10day}')
+
+                ticker_52_week_low = summary_detail.get('fiftyTwoWeekLow')  # 52週的低點
+                if ticker_52_week_low is not None:
+                    ticker_52_week_low = fin_data[ticker]['summaryDetail'].get('fiftyTwoWeekLow', None)
+                    # print(f'ticker_52_week_low {ticker_52_week_low}')
+
+                ticker_52_week_high = summary_detail.get('fiftyTwoWeekLow')  # 52週的高點
+                if ticker_52_week_high is not None:
+                    ticker_52_week_high = fin_data[ticker]['summaryDetail'].get('fiftyTwoWeekHigh', None)
+                    # print(f'ticker_52_week_high {ticker_52_week_high}')
+
+                ticker_50_day_average = summary_detail.get('fiftyDayAverage')  # 50天的平均成交價(sma50)
+                if ticker_50_day_average is not None:
+                    ticker_50_day_average = fin_data[ticker]['summaryDetail'].get('fiftyDayAverage', None)
+                    # print(f'ticker_50_day_average {ticker_50_day_average}')
+
+                ticker_200_day_average = summary_detail.get('twoHundredDayAverage')  # 200天的平均成交價(sma200)
+                if ticker_200_day_average is not None:
+                    ticker_200_day_average = fin_data[ticker]['summaryDetail'].get('twoHundredDayAverage', None)
+                    # print(f'ticker_200_day_average {ticker_200_day_average}')
+                if (ticker_forward_pe is not None and ticker_trailing_pe is not None and
+                        ticker_forward_pe != "Infinity" and ticker_trailing_pe != "Infinity"):
+
+                    # print("PE is not valid, skip")
+                    if (ticker_trailing_pe > ticker_forward_pe) and \
+                            eps_growth >= 1.2 and \
+                            fund_ownership_number >= 1 and \
+                            (ticker_previous_close / ticker_52_week_low > 1.3) and \
+                            (ticker_previous_close / ticker_52_week_high < 1.25) and \
+                            (ticker_previous_close / ticker_52_week_high > 0.75) and \
+                            (ticker_50_day_average > ticker_200_day_average):
+                        filter_tickers.append(ticker)
+                        url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker}"
+                        webbrowser.open(url)
+                else:
+                    continue
+    # 顯示過濾後的所有ticker，並計算數量
+    print(filter_tickers)
+    tickers_length = len(filter_tickers)
+    print(f'Total Filtered Tickers:', tickers_length)
+
+    # 將過濾過的ticker，寫入YF_US這個csv中
+    df_filter_ticker = pd.DataFrame(filter_tickers)
+    # 將 DataFrame 寫入名為 'YF' 的工作表
+    df_filter_ticker.to_csv('YF_US.csv', index=False, header=None)
+
+    hist_df = get_yq_historical_data(filter_tickers)
+    ## filter_tickers = ['GOOG', 'GOOGL', 'AMZN', 'PCAR', 'BRK-B', 'TSLA', 'NVDA', 'V', 'TSM', 'XOM', 'META', 'UNH', 'JPM', 'JNJ', 'WMT', 'MA', 'PG', 'NVO', 'CVX', 'LLY', 'HD', 'ABBV', 'MRK', 'BAC', 'KO', 'AVGO', 'ASML', 'PEP', 'BABA', 'ORCL', 'PFE', 'SHEL', 'COST', 'TMO', 'AZN', 'CSCO', 'MCD', 'CRM', 'TM', 'NKE', 'DHR', 'NVS', 'DIS', 'ABT', 'WFC', 'LIN', 'TMUS', 'ACN', 'BHP', 'VZ', 'MS', 'UPS', 'TXN', 'CMCSA', 'TTE', 'PM', 'ADBE', 'HSBC', 'BMY', 'RTX', 'NEE', 'SCHW', 'NFLX', 'RY', 'QCOM', 'SAP', 'T', 'COP', 'HON', 'AXP', 'CAT', 'UNP', 'UL', 'AMD', 'DE', 'AMGN', 'HDB', 'BA', 'LMT', 'BP', 'PDD', 'BUD', 'RIO', 'TD', 'SNY', 'LOW', 'SBUX', 'GS', 'IBM', 'PLD', 'INTU', 'ELV', 'SPGI', 'MDT', 'INTC', 'CVS', 'SONY', 'BLK', 'GILD', 'BKNG', 'DEO', 'C', 'SYK', 'AMAT', 'EQNR', 'GE', 'ADI', 'ADP', 'AMT', 'MDLZ', 'TJX', 'EL', 'NOW', 'CB', 'CI', 'BTI', 'MUFG', 'REGN', 'PGR', 'PYPL', 'MO', 'MMC', 'ISRG', 'VALE', 'CNI', 'ENB', 'ZTS', 'SLB', 'TGT', 'VRTX', 'INFY', 'CHTR', 'FISV', 'JD', 'ABNB', 'IBN', 'CP', 'DUK', 'ITW', 'NOC', 'USB', 'PBR', 'EOG', 'GSK', 'ETN', 'SO', 'HCA', 'BSX', 'AMOV', 'BN', 'UBS', 'BMO', 'AMX', 'CME', 'BX', 'BDX', 'CNQ', 'UBER', 'LRCX', 'SAN', 'APD', 'CSX', 'GD', 'EQIX', 'ABB', 'HUM', 'AON', 'WM', 'CL', 'PNC', 'FCX', 'MELI', 'MU', 'TFC', 'ATVI', 'MMM', 'BNS', 'MPC', 'SMFG', 'STLA', 'RELX', 'TRI', 'SCCO', 'SHW', 'PANW', 'ICE', 'NTES', 'CCI', 'SNPS', 'OXY', 'MET', 'GM', 'VLO', 'MNST', 'MRNA', 'MCO', 'CDNS', 'ORLY', 'MAR', 'AIG', 'PSA', 'KLAC', 'FDX', 'NSC', 'BIDU', 'SHOP', 'ING', 'F', 'PSX', 'PXD', 'KDP', 'HSY', 'EW', 'RACE', 'MCK', 'TAK', 'DG', 'EMR', 'KHC', 'KKR', 'WDS', 'E', 'WDAY', 'VMW', 'GIS', 'AZO', 'FTNT', 'SRE', 'APH', 'BBVA', 'ITUB', 'SU', 'NXPI', 'SQ', 'D', 'PH', 'NGG', 'ECL', 'DXCM', 'LVS', 'ROP', 'CTVA', 'AEP', 'ADM', 'MSI', 'CTAS', 'HMC', 'MCHP', 'NUE', 'ADSK', 'JCI', 'SNOW', 'HES', 'KMB', 'TRV', 'TT', 'STM', 'O', 'TEAM', 'ANET', 'PUK', 'AFL', 'A', 'TDG', 'CM', 'LYG', 'DOW', 'COF', 'CMG', 'MSCI', 'APO', 'STZ', 'RSG', 'NTR', 'TEL', 'BK', 'TRP', 'LHX', 'BCE', 'LNG', 'PAYX', 'ABEV', 'SPG', 'EXC', 'MFG', 'LULU', 'BSBR', 'AJG', 'IQV', 'IDXX', 'BIIB', 'KMI', 'HLT', 'MRVL', 'SYY', 'ODFL', 'ROST', 'CARR', 'CRH', 'CNC', 'FIS', 'MFC', 'WBD', 'WMB', 'WELL', 'CVE', 'DVN', 'PRU', 'AMP', 'YUM', 'OTIS', 'CMI', 'SE', 'GFS', 'XEL', 'HLN', 'VICI', 'NEM', 'WCN', 'NWG', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT', 'ALL', 'ALC', 'SGEN', 'BCS', 'AME', 'KR', 'VOD', 'URI', 'DLTR', 'ON', 'MTD', 'ILMN', 'BKR', 'CTSH', 'LYB', 'ABC', 'PPG', 'RMD', 'MBLY', 'ED', 'APTV', 'DHI', 'BNTX', 'EA', 'ORAN', 'STT', 'WBA', 'DFS', 'FERG', 'FAST', 'IMO', 'PEG', 'CHT', 'OKE', 'ALB', 'DLR', 'GPN', 'GLW', 'CSGP', 'SLF', 'TU', 'ENPH', 'GOLD', 'DELL', 'CRWD', 'HPQ', 'KEYS', 'VRSK', 'SBAC', 'WEC', 'NDAQ', 'LEN', 'VEEV', 'TTD', 'CDW', 'ANSS', 'BBD', 'ULTA', 'CBRE', 'ACGL', 'FANG', 'NOK', 'IT', 'WIT', 'FNV', 'ZBH', 'ES', 'MTB', 'YUMC', 'TLK', 'AWK', 'CCEP', 'HZNP', 'MT', 'TSCO', 'CPNG', 'WTW', 'BGNE', 'EBAY', 'ARE', 'TROW', 'DB', 'CEG', 'EIX', 'EFX', 'DAL', 'FITB', 'HIG', 'LI', 'GMAB', 'TCOM', 'BEKE', 'GPC', 'BBDO', 'SQM', 'VMC', 'RCI', 'ALNY', 'TEF', 'ALGN', 'FTV', 'WST', 'DDOG', 'HEI', 'AVB', 'EC', 'IR', 'IFF', 'EQR', 'WY', 'HRL', 'PWR', 'STLD', 'RJF', 'MPWR', 'SPOT', 'K', 'NU', 'RBLX', 'MLM', 'CNHI', 'FE', 'EXR', 'FRC', 'CAJ', 'ETR', 'HBAN', 'GIB', 'RF', 'RYAAY', 'AEM', 'AEE', 'TECK', 'DOV', 'DASH', 'LH', 'TSN', 'DTE', 'FSLR', 'ZM', 'CHD', 'IX', 'VRSN', 'UMC', 'PFG', 'LPLA', 'TS', 'TDY', 'HPE', 'CTRA', 'LUV', 'PPL', 'BAX', 'PODD', 'CFG', 'QSR', 'NET', 'HOLX', 'MKC', 'PKX', 'CLX', 'NTRS', 'CAH', 'VTR', 'ARGX', 'ZTO', 'WAB', 'MOS', 'FTS', 'JBHT', 'ZS', 'TTWO', 'HUBS', 'WPM', 'CINF', 'FOXA', 'GRMN', 'PBA', 'BMRN', 'WAT', 'STE', 'INVH', 'ICLR', 'OMC', 'BBY', 'ERIC', 'MAA', 'XYL', 'RCL', 'ELP', 'MKL', 'WRB', 'HWM', 'SEDG', 'EPAM', 'SWKS', 'DRI', 'CNP', 'SUI', 'TRGP', 'INCY', 'PAYC', 'FOX', 'ROL', 'FICO', 'CAG', 'BALL', 'WPC', 'PINS', 'EXPD', 'CMS', 'UAL', 'CHWY', 'MGM', 'IEX', 'CF', 'NVR', 'KEY', 'BR', 'SPLK', 'AMCR', 'AVTR', 'SIRI', 'AES', 'LYV', 'MRO', 'PARAA', 'SIVB', 'EXPE', 'FWONK', 'WMG', 'PLTR', 'HTHT', 'FMC', 'UI', 'MGA', 'MOH', 'COO', 'ATO', 'FDS', 'AER', 'SJM', 'SNAP', 'BRO', 'RPRX', 'PKI', 'ASX', 'FLT', 'TER', 'CPB', 'CHKP', 'ZBRA', 'COIN', 'RTO', 'WLK', 'SYF', 'DGX', 'LKQ', 'KOF', 'AXON', 'LCID', 'IRM', 'J', 'RE', 'TXT', 'ETSY', 'RS', 'KB', 'TW', 'EBR', 'AGR', 'SSNC', 'PTC', 'LW', 'RIVN', 'AVY', 'BG', 'NIO', 'FWONA', 'SHG', 'BEN', 'SJR', 'ESS', 'L', 'ARES', 'PHG', 'BURL', 'PARA', 'BIO', 'CBOE', 'AZPN', 'MDB', 'GLPI', 'TPL', 'BAM', 'NTAP', 'UDR', 'IPG', 'POOL', 'TME', 'CCL', 'VTRS', 'EVRG', 'HUBB', 'LDOS', 'TYL', 'CE', 'STX', 'CSL', 'MKTX', 'WPP', 'CRBG', 'SNA', 'NICE', 'IP', 'SRPT', 'PEAK', 'PKG', 'APA', 'TRMB', 'WYNN', 'LNT', 'BAH', 'OKTA', 'BLDR', 'KIM', 'CTLT', 'H', 'TWLO', 'NDSN', 'SNN', 'TRU', 'LBRDA', 'UHAL', 'CG', 'LBRDK', 'ELS', 'ENTG', 'SWK', 'GEN', 'VIV', 'CUK', 'ACM', 'CPT', 'ERIE', 'DT', 'DOCU', 'PHM', 'NMR', 'HST', 'WDC', 'JKHY', 'CCJ', 'FHN', 'EQT', 'IHG', 'TECH']
+
+    for ticker in filter_tickers:
+        print(f"Checking VCP Ticker: {ticker}")
+        df_one = sel_yq_historical_data(hist_df, ticker)
+        vcp_screener_strategy(ticker, df_one)
+
+    # highchart_chart_v2(filter_tickers, "US")
+
+
+def filter_financial_ticker_backup(tickers_in, category_in):
     # start_time = time.time()  # 記錄開始時間
     fin_data = get_yq_financial_data(tickers_in)
     # print(fin_data)
@@ -382,7 +606,7 @@ def filter_financial_ticker(tickers_in, category_in):
             if summary_detail is not None:
                 # ticker_previous_close = get_financial_data("summary_detail", "previousClose")
                 ticker_previous_close = summary_detail.get('previousClose')
-                if ticker_previous_close is not None:
+                if ticker_previous_close is not None:  # 上次收盤價
                     ticker_previous_close = fin_data[ticker]['summaryDetail']['previousClose']
                     # print(f'ticker_previous_close {ticker_previous_close}')
 
@@ -396,28 +620,28 @@ def filter_financial_ticker(tickers_in, category_in):
                     ticker_trailing_pe = fin_data[ticker]['summaryDetail'].get('trailingPE', None)
                     # print(f'ticker_trailing_pe {ticker_trailing_pe}')
 
-                ticker_average_daily_volume_10day = summary_detail.get('averageDailyVolume10Day')
+                ticker_average_daily_volume_10day = summary_detail.get('averageDailyVolume10Day')  # 10天的平均成交量
                 if ticker_average_daily_volume_10day is not None:
                     ticker_average_daily_volume_10day = fin_data[ticker]['summaryDetail'].get('averageDailyVolume10Day',
                                                                                               None)
                     # print(f'ticker_average_daily_volume_10day {ticker_average_daily_volume_10day}')
 
-                ticker_52_week_low = summary_detail.get('fiftyTwoWeekLow')
+                ticker_52_week_low = summary_detail.get('fiftyTwoWeekLow')  # 52週的低點
                 if ticker_52_week_low is not None:
                     ticker_52_week_low = fin_data[ticker]['summaryDetail'].get('fiftyTwoWeekLow', None)
                     # print(f'ticker_52_week_low {ticker_52_week_low}')
 
-                ticker_52_week_high = summary_detail.get('forwardPE')
+                ticker_52_week_high = summary_detail.get('fiftyTwoWeekLow')  # 52週的高點
                 if ticker_52_week_high is not None:
                     ticker_52_week_high = fin_data[ticker]['summaryDetail'].get('fiftyTwoWeekHigh', None)
                     # print(f'ticker_52_week_high {ticker_52_week_high}')
 
-                ticker_50_day_average = summary_detail.get('fiftyDayAverage')
+                ticker_50_day_average = summary_detail.get('fiftyDayAverage')  # 50天的平均成交價(sma50)
                 if ticker_50_day_average is not None:
                     ticker_50_day_average = fin_data[ticker]['summaryDetail'].get('fiftyDayAverage', None)
                     # print(f'ticker_50_day_average {ticker_50_day_average}')
 
-                ticker_200_day_average = summary_detail.get('twoHundredDayAverage')
+                ticker_200_day_average = summary_detail.get('twoHundredDayAverage')  # 200天的平均成交價(sma200)
                 if ticker_200_day_average is not None:
                     ticker_200_day_average = fin_data[ticker]['summaryDetail'].get('twoHundredDayAverage', None)
                     # print(f'ticker_200_day_average {ticker_200_day_average}')
@@ -425,12 +649,11 @@ def filter_financial_ticker(tickers_in, category_in):
                         ticker_forward_pe != "Infinity" and ticker_trailing_pe != "Infinity"):
 
                     # print("PE is not valid, skip")
-                    if ticker_trailing_pe > ticker_forward_pe:
-                        # (ticker_previous_close / ticker_52_week_low > 1.3) and
-                        # (ticker_previous_close / ticker_52_week_high < 1.25) and
-                        # (ticker_previous_close / ticker_52_week_high > 0.75) and
-                        # (ticker_trailing_pe > ticker_forward_pe) and
-                        # (ticker_50_day_average > ticker_200_day_average)):
+                    if (ticker_trailing_pe > ticker_forward_pe) and \
+                            (ticker_previous_close / ticker_52_week_low > 1.3) and \
+                            (ticker_previous_close / ticker_52_week_high < 1.25) and \
+                            (ticker_previous_close / ticker_52_week_high > 0.75) and \
+                            (ticker_50_day_average > ticker_200_day_average):
                         filter_tickers.append(ticker)
 
                 else:
@@ -441,9 +664,9 @@ def filter_financial_ticker(tickers_in, category_in):
     print(f'Total Filtered Tickers:', tickers_length)
 
     # 將過濾過的ticker，寫入YF_US這個csv中
-    df = pd.DataFrame(filter_tickers)
+    df_filter_ticker = pd.DataFrame(filter_tickers)
     # 將 DataFrame 寫入名為 'YF' 的工作表
-    df.to_csv('YF_US.csv', index=False, header=None)
+    df_filter_ticker.to_csv('YF_US.csv', index=False, header=None)
 
     hist_df = get_yq_historical_data(filter_tickers)
     ## filter_tickers = ['GOOG', 'GOOGL', 'AMZN', 'PCAR', 'BRK-B', 'TSLA', 'NVDA', 'V', 'TSM', 'XOM', 'META', 'UNH', 'JPM', 'JNJ', 'WMT', 'MA', 'PG', 'NVO', 'CVX', 'LLY', 'HD', 'ABBV', 'MRK', 'BAC', 'KO', 'AVGO', 'ASML', 'PEP', 'BABA', 'ORCL', 'PFE', 'SHEL', 'COST', 'TMO', 'AZN', 'CSCO', 'MCD', 'CRM', 'TM', 'NKE', 'DHR', 'NVS', 'DIS', 'ABT', 'WFC', 'LIN', 'TMUS', 'ACN', 'BHP', 'VZ', 'MS', 'UPS', 'TXN', 'CMCSA', 'TTE', 'PM', 'ADBE', 'HSBC', 'BMY', 'RTX', 'NEE', 'SCHW', 'NFLX', 'RY', 'QCOM', 'SAP', 'T', 'COP', 'HON', 'AXP', 'CAT', 'UNP', 'UL', 'AMD', 'DE', 'AMGN', 'HDB', 'BA', 'LMT', 'BP', 'PDD', 'BUD', 'RIO', 'TD', 'SNY', 'LOW', 'SBUX', 'GS', 'IBM', 'PLD', 'INTU', 'ELV', 'SPGI', 'MDT', 'INTC', 'CVS', 'SONY', 'BLK', 'GILD', 'BKNG', 'DEO', 'C', 'SYK', 'AMAT', 'EQNR', 'GE', 'ADI', 'ADP', 'AMT', 'MDLZ', 'TJX', 'EL', 'NOW', 'CB', 'CI', 'BTI', 'MUFG', 'REGN', 'PGR', 'PYPL', 'MO', 'MMC', 'ISRG', 'VALE', 'CNI', 'ENB', 'ZTS', 'SLB', 'TGT', 'VRTX', 'INFY', 'CHTR', 'FISV', 'JD', 'ABNB', 'IBN', 'CP', 'DUK', 'ITW', 'NOC', 'USB', 'PBR', 'EOG', 'GSK', 'ETN', 'SO', 'HCA', 'BSX', 'AMOV', 'BN', 'UBS', 'BMO', 'AMX', 'CME', 'BX', 'BDX', 'CNQ', 'UBER', 'LRCX', 'SAN', 'APD', 'CSX', 'GD', 'EQIX', 'ABB', 'HUM', 'AON', 'WM', 'CL', 'PNC', 'FCX', 'MELI', 'MU', 'TFC', 'ATVI', 'MMM', 'BNS', 'MPC', 'SMFG', 'STLA', 'RELX', 'TRI', 'SCCO', 'SHW', 'PANW', 'ICE', 'NTES', 'CCI', 'SNPS', 'OXY', 'MET', 'GM', 'VLO', 'MNST', 'MRNA', 'MCO', 'CDNS', 'ORLY', 'MAR', 'AIG', 'PSA', 'KLAC', 'FDX', 'NSC', 'BIDU', 'SHOP', 'ING', 'F', 'PSX', 'PXD', 'KDP', 'HSY', 'EW', 'RACE', 'MCK', 'TAK', 'DG', 'EMR', 'KHC', 'KKR', 'WDS', 'E', 'WDAY', 'VMW', 'GIS', 'AZO', 'FTNT', 'SRE', 'APH', 'BBVA', 'ITUB', 'SU', 'NXPI', 'SQ', 'D', 'PH', 'NGG', 'ECL', 'DXCM', 'LVS', 'ROP', 'CTVA', 'AEP', 'ADM', 'MSI', 'CTAS', 'HMC', 'MCHP', 'NUE', 'ADSK', 'JCI', 'SNOW', 'HES', 'KMB', 'TRV', 'TT', 'STM', 'O', 'TEAM', 'ANET', 'PUK', 'AFL', 'A', 'TDG', 'CM', 'LYG', 'DOW', 'COF', 'CMG', 'MSCI', 'APO', 'STZ', 'RSG', 'NTR', 'TEL', 'BK', 'TRP', 'LHX', 'BCE', 'LNG', 'PAYX', 'ABEV', 'SPG', 'EXC', 'MFG', 'LULU', 'BSBR', 'AJG', 'IQV', 'IDXX', 'BIIB', 'KMI', 'HLT', 'MRVL', 'SYY', 'ODFL', 'ROST', 'CARR', 'CRH', 'CNC', 'FIS', 'MFC', 'WBD', 'WMB', 'WELL', 'CVE', 'DVN', 'PRU', 'AMP', 'YUM', 'OTIS', 'CMI', 'SE', 'GFS', 'XEL', 'HLN', 'VICI', 'NEM', 'WCN', 'NWG', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT', 'ALL', 'ALC', 'SGEN', 'BCS', 'AME', 'KR', 'VOD', 'URI', 'DLTR', 'ON', 'MTD', 'ILMN', 'BKR', 'CTSH', 'LYB', 'ABC', 'PPG', 'RMD', 'MBLY', 'ED', 'APTV', 'DHI', 'BNTX', 'EA', 'ORAN', 'STT', 'WBA', 'DFS', 'FERG', 'FAST', 'IMO', 'PEG', 'CHT', 'OKE', 'ALB', 'DLR', 'GPN', 'GLW', 'CSGP', 'SLF', 'TU', 'ENPH', 'GOLD', 'DELL', 'CRWD', 'HPQ', 'KEYS', 'VRSK', 'SBAC', 'WEC', 'NDAQ', 'LEN', 'VEEV', 'TTD', 'CDW', 'ANSS', 'BBD', 'ULTA', 'CBRE', 'ACGL', 'FANG', 'NOK', 'IT', 'WIT', 'FNV', 'ZBH', 'ES', 'MTB', 'YUMC', 'TLK', 'AWK', 'CCEP', 'HZNP', 'MT', 'TSCO', 'CPNG', 'WTW', 'BGNE', 'EBAY', 'ARE', 'TROW', 'DB', 'CEG', 'EIX', 'EFX', 'DAL', 'FITB', 'HIG', 'LI', 'GMAB', 'TCOM', 'BEKE', 'GPC', 'BBDO', 'SQM', 'VMC', 'RCI', 'ALNY', 'TEF', 'ALGN', 'FTV', 'WST', 'DDOG', 'HEI', 'AVB', 'EC', 'IR', 'IFF', 'EQR', 'WY', 'HRL', 'PWR', 'STLD', 'RJF', 'MPWR', 'SPOT', 'K', 'NU', 'RBLX', 'MLM', 'CNHI', 'FE', 'EXR', 'FRC', 'CAJ', 'ETR', 'HBAN', 'GIB', 'RF', 'RYAAY', 'AEM', 'AEE', 'TECK', 'DOV', 'DASH', 'LH', 'TSN', 'DTE', 'FSLR', 'ZM', 'CHD', 'IX', 'VRSN', 'UMC', 'PFG', 'LPLA', 'TS', 'TDY', 'HPE', 'CTRA', 'LUV', 'PPL', 'BAX', 'PODD', 'CFG', 'QSR', 'NET', 'HOLX', 'MKC', 'PKX', 'CLX', 'NTRS', 'CAH', 'VTR', 'ARGX', 'ZTO', 'WAB', 'MOS', 'FTS', 'JBHT', 'ZS', 'TTWO', 'HUBS', 'WPM', 'CINF', 'FOXA', 'GRMN', 'PBA', 'BMRN', 'WAT', 'STE', 'INVH', 'ICLR', 'OMC', 'BBY', 'ERIC', 'MAA', 'XYL', 'RCL', 'ELP', 'MKL', 'WRB', 'HWM', 'SEDG', 'EPAM', 'SWKS', 'DRI', 'CNP', 'SUI', 'TRGP', 'INCY', 'PAYC', 'FOX', 'ROL', 'FICO', 'CAG', 'BALL', 'WPC', 'PINS', 'EXPD', 'CMS', 'UAL', 'CHWY', 'MGM', 'IEX', 'CF', 'NVR', 'KEY', 'BR', 'SPLK', 'AMCR', 'AVTR', 'SIRI', 'AES', 'LYV', 'MRO', 'PARAA', 'SIVB', 'EXPE', 'FWONK', 'WMG', 'PLTR', 'HTHT', 'FMC', 'UI', 'MGA', 'MOH', 'COO', 'ATO', 'FDS', 'AER', 'SJM', 'SNAP', 'BRO', 'RPRX', 'PKI', 'ASX', 'FLT', 'TER', 'CPB', 'CHKP', 'ZBRA', 'COIN', 'RTO', 'WLK', 'SYF', 'DGX', 'LKQ', 'KOF', 'AXON', 'LCID', 'IRM', 'J', 'RE', 'TXT', 'ETSY', 'RS', 'KB', 'TW', 'EBR', 'AGR', 'SSNC', 'PTC', 'LW', 'RIVN', 'AVY', 'BG', 'NIO', 'FWONA', 'SHG', 'BEN', 'SJR', 'ESS', 'L', 'ARES', 'PHG', 'BURL', 'PARA', 'BIO', 'CBOE', 'AZPN', 'MDB', 'GLPI', 'TPL', 'BAM', 'NTAP', 'UDR', 'IPG', 'POOL', 'TME', 'CCL', 'VTRS', 'EVRG', 'HUBB', 'LDOS', 'TYL', 'CE', 'STX', 'CSL', 'MKTX', 'WPP', 'CRBG', 'SNA', 'NICE', 'IP', 'SRPT', 'PEAK', 'PKG', 'APA', 'TRMB', 'WYNN', 'LNT', 'BAH', 'OKTA', 'BLDR', 'KIM', 'CTLT', 'H', 'TWLO', 'NDSN', 'SNN', 'TRU', 'LBRDA', 'UHAL', 'CG', 'LBRDK', 'ELS', 'ENTG', 'SWK', 'GEN', 'VIV', 'CUK', 'ACM', 'CPT', 'ERIE', 'DT', 'DOCU', 'PHM', 'NMR', 'HST', 'WDC', 'JKHY', 'CCJ', 'FHN', 'EQT', 'IHG', 'TECH']
@@ -772,6 +995,8 @@ def vwap_strategy_screener(tickers_in, df, true_number, category):
     # lineNotifyMessage(token, "Finished: " + today + " " + category + "\nScanned " + str(run_number) + " of " + str(
     #    start) + " Stocks in " + category + " Market\n" + str(true_number) + " Meet Criteria")
 
+    # 連續2季EPS成長20%
+
 
 def buy_signal_strategy_screener(tickers_in, df, true_number, category, day, volume_factor):
     # Check if the dataframe is empty
@@ -936,11 +1161,11 @@ def vcp_screener_strategy(ticker_in, data):
     last_vcma144 = round(vcma144.iloc[-1], 2)
     vcma233 = calculate_vwap(data, 233)
     last_vcma233 = round(vcma233.iloc[-1], 2)
-    #print(f"last_vcma55: {last_vcma55}")
-    #print(f"last_vcma144: {last_vcma144}")
+    # print(f"last_vcma55: {last_vcma55}")
+    # print(f"last_vcma144: {last_vcma144}")
     print(f"last_vcma233: {last_vcma233}")
-    #print("last_vcma55 is of type:", type(last_vcma55))
-    #print("last_vcma144 is of type:", type(last_vcma144))
+    # print("last_vcma55 is of type:", type(last_vcma55))
+    # print("last_vcma144 is of type:", type(last_vcma144))
     print("last_vcma233 is of type:", type(last_vcma233))
     # print(f"sma55: {sma55}")
     last_sma55 = round(sma55[-1], 2)
@@ -957,8 +1182,8 @@ def vcp_screener_strategy(ticker_in, data):
     # print(f"sma233_rising_21: {is_continuous_increase}")
     print(f"is_continuous_increase_sma233: {is_continuous_increase_sma233}")
     print("is_continuous_increase_sma233:", type(is_continuous_increase_sma233))
-    #print("last_sma55 is of type:", type(last_sma55))
-    #print("last_sma144 is of type:", type(last_sma144))
+    # print("last_sma55 is of type:", type(last_sma55))
+    # print("last_sma144 is of type:", type(last_sma144))
     print("last_sma233 is of type:", type(last_sma233))
     # if (volatility_8 < volatility_21) and (volatility_21 < volatility_55) \
     print("Start if statement...")
@@ -971,11 +1196,11 @@ def vcp_screener_strategy(ticker_in, data):
             and (volatility_8 < 0.1) \
             and (last_sma55 > last_sma144) and (last_sma144 > last_sma233) \
             and (is_continuous_increase_sma233 is True):
-            # and (last_vcma55 > last_vcma144) & (last_vcma144 > last_vcma233):
+        # and (last_vcma55 > last_vcma144) & (last_vcma144 > last_vcma233):
         # and is_continuous_increase_vcma233 is True:
         print("End if statement...")
         url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}"
-        # webbrowser.open(url)
+        webbrowser.open(url)
         highchart_chart(data, ticker_in, url)
         print("MATCH VCP!!!")
 
@@ -1063,7 +1288,6 @@ def vcp_screener_strategy_bak(ticker_in, data):
         # plotly_chart(data, plot_title, 0)
 
 
-
 def find_stocks_in_range(data, days=233, percentage=2):
     # 計算過去 days 天的最高價
     highest_price = data['close'].rolling(window=days).max().iloc[-1]
@@ -1125,6 +1349,10 @@ def party_on(ticker_type, tickers_in, run_number=1):
                 # plotly_chart(data, plot_title, 0)
 
 
+# stockscreener.condition1_enabled = False
+# stockscreener.condition2_enabled = False
+# stockscreener.condition3_enabled = False
+
 # VWAP Scenario
 scenario = 144  # 21, 55, 89, 144, 233共5種
 
@@ -1165,12 +1393,12 @@ run_vwap_strategy_screener = 0  # VWAP均線的策略，均線呈多頭排序時
 run_find_stocks_in_range = 0  #
 
 # 要執行的ticker種類
-TEST = 0
+TEST = 1
 US = 0
 TW = 0
 ETF = 0
 FIN = 0  # Filter tickers from finviz screener
-YF = 1
+YF = 0
 
 # 將讀取到的資料轉換為 list，並存入 tickers 變數中
 if TW == 1:
@@ -1185,20 +1413,21 @@ if FIN == 1:
     fin_tickers = get_tickers("FIN", fin_start)
 if TEST == 1:
     # test_tickers = ['AMD', 'AMOV', 'V', 'ROJER']
-    test_tickers = ['GOOG', 'GOOGL', 'AMZN', 'PCAR']
+    test_tickers = ['CCS', 'FLNG', 'ENLT', 'PCAR']
     # test_tickers = ['NVDA', 'MET']
 start_time = time.time()  # 記錄開始時間
 
-weekly_screen = 0
-if weekly_screen == 1:
-    us_tickers = get_tickers("US", us_start)
-    filter_financial_ticker(us_tickers, "US")
+update_financial_tickers = 1
+if update_financial_tickers == 1:
+    # us_tickers = get_tickers("US", us_start)
+    yf_tickers = get_tickers("YF", yf_start)
+    # test_tickers = ['CCS', 'FLNG', 'ENLT', 'PCAR']
+    filter_financial_ticker(yf_tickers, "US")
 
 run_refersh_financial_data = 0
 if run_refersh_financial_data == 1:
     us_tickers = get_tickers("US", us_start)
     df = filter_financial_ticker(us_tickers)
-
 
 ### TEST ###
 # filter_tickers = ['GOOG', 'GOOGL', 'AMZN', 'PCAR', 'BRK-B', 'TSLA', 'NVDA', 'V', 'TSM', 'XOM', 'META', 'UNH', 'JPM', 'JNJ', 'WMT', 'MA', 'PG', 'NVO', 'CVX', 'LLY', 'HD', 'ABBV', 'MRK', 'BAC', 'KO', 'AVGO', 'ASML', 'PEP', 'BABA', 'ORCL', 'PFE', 'SHEL', 'COST', 'TMO', 'AZN', 'CSCO', 'MCD', 'CRM', 'TM', 'NKE', 'DHR', 'NVS', 'DIS', 'ABT', 'WFC', 'LIN', 'TMUS', 'ACN', 'BHP', 'VZ', 'MS', 'UPS', 'TXN', 'CMCSA', 'TTE', 'PM', 'ADBE', 'HSBC', 'BMY', 'RTX', 'NEE', 'SCHW', 'NFLX', 'RY', 'QCOM', 'SAP', 'T', 'COP', 'HON', 'AXP', 'CAT', 'UNP', 'UL', 'AMD', 'DE', 'AMGN', 'HDB', 'BA', 'LMT', 'BP', 'PDD', 'BUD', 'RIO', 'TD', 'SNY', 'LOW', 'SBUX', 'GS', 'IBM', 'PLD', 'INTU', 'ELV', 'SPGI', 'MDT', 'INTC', 'CVS', 'SONY', 'BLK', 'GILD', 'BKNG', 'DEO', 'C', 'SYK', 'AMAT', 'EQNR', 'GE', 'ADI', 'ADP', 'AMT', 'MDLZ', 'TJX', 'EL', 'NOW', 'CB', 'CI', 'BTI', 'MUFG', 'REGN', 'PGR', 'PYPL', 'MO', 'MMC', 'ISRG', 'VALE', 'CNI', 'ENB', 'ZTS', 'SLB', 'TGT', 'VRTX', 'INFY', 'CHTR', 'FISV', 'JD', 'ABNB', 'IBN', 'CP', 'DUK', 'ITW', 'NOC', 'USB', 'PBR', 'EOG', 'GSK', 'ETN', 'SO', 'HCA', 'BSX', 'AMOV', 'BN', 'UBS', 'BMO', 'AMX', 'CME', 'BX', 'BDX', 'CNQ', 'UBER', 'LRCX', 'SAN', 'APD', 'CSX', 'GD', 'EQIX', 'ABB', 'HUM', 'AON', 'WM', 'CL', 'PNC', 'FCX', 'MELI', 'MU', 'TFC', 'ATVI', 'MMM', 'BNS', 'MPC', 'SMFG', 'STLA', 'RELX', 'TRI', 'SCCO', 'SHW', 'PANW', 'ICE', 'NTES', 'CCI', 'SNPS', 'OXY', 'MET', 'GM', 'VLO', 'MNST', 'MRNA', 'MCO', 'CDNS', 'ORLY', 'MAR', 'AIG', 'PSA', 'KLAC', 'FDX', 'NSC', 'BIDU', 'SHOP', 'ING', 'F', 'PSX', 'PXD', 'KDP', 'HSY', 'EW', 'RACE', 'MCK', 'TAK', 'DG', 'EMR', 'KHC', 'KKR', 'WDS', 'E', 'WDAY', 'VMW', 'GIS', 'AZO', 'FTNT', 'SRE', 'APH', 'BBVA', 'ITUB', 'SU', 'NXPI', 'SQ', 'D', 'PH', 'NGG', 'ECL', 'DXCM', 'LVS', 'ROP', 'CTVA', 'AEP', 'ADM', 'MSI', 'CTAS', 'HMC', 'MCHP', 'NUE', 'ADSK', 'JCI', 'SNOW', 'HES', 'KMB', 'TRV', 'TT', 'STM', 'O', 'TEAM', 'ANET', 'PUK', 'AFL', 'A', 'TDG', 'CM', 'LYG', 'DOW', 'COF', 'CMG', 'MSCI', 'APO', 'STZ', 'RSG', 'NTR', 'TEL', 'BK', 'TRP', 'LHX', 'BCE', 'LNG', 'PAYX', 'ABEV', 'SPG', 'EXC', 'MFG', 'LULU', 'BSBR', 'AJG', 'IQV', 'IDXX', 'BIIB', 'KMI', 'HLT', 'MRVL', 'SYY', 'ODFL', 'ROST', 'CARR', 'CRH', 'CNC', 'FIS', 'MFC', 'WBD', 'WMB', 'WELL', 'CVE', 'DVN', 'PRU', 'AMP', 'YUM', 'OTIS', 'CMI', 'SE', 'GFS', 'XEL', 'HLN', 'VICI', 'NEM', 'WCN', 'NWG', 'GWW', 'GEHC', 'HAL', 'DD', 'ROK', 'FMX', 'PCG', 'CPRT', 'ALL', 'ALC', 'SGEN', 'BCS', 'AME', 'KR', 'VOD', 'URI', 'DLTR', 'ON', 'MTD', 'ILMN', 'BKR', 'CTSH', 'LYB', 'ABC', 'PPG', 'RMD', 'MBLY', 'ED', 'APTV', 'DHI', 'BNTX', 'EA', 'ORAN', 'STT', 'WBA', 'DFS', 'FERG', 'FAST', 'IMO', 'PEG', 'CHT', 'OKE', 'ALB', 'DLR', 'GPN', 'GLW', 'CSGP', 'SLF', 'TU', 'ENPH', 'GOLD', 'DELL', 'CRWD', 'HPQ', 'KEYS', 'VRSK', 'SBAC', 'WEC', 'NDAQ', 'LEN', 'VEEV', 'TTD', 'CDW', 'ANSS', 'BBD', 'ULTA', 'CBRE', 'ACGL', 'FANG', 'NOK', 'IT', 'WIT', 'FNV', 'ZBH', 'ES', 'MTB', 'YUMC', 'TLK', 'AWK', 'CCEP', 'HZNP', 'MT', 'TSCO', 'CPNG', 'WTW', 'BGNE', 'EBAY', 'ARE', 'TROW', 'DB', 'CEG', 'EIX', 'EFX', 'DAL', 'FITB', 'HIG', 'LI', 'GMAB', 'TCOM', 'BEKE', 'GPC', 'BBDO', 'SQM', 'VMC', 'RCI', 'ALNY', 'TEF', 'ALGN', 'FTV', 'WST', 'DDOG', 'HEI', 'AVB', 'EC', 'IR', 'IFF', 'EQR', 'WY', 'HRL', 'PWR', 'STLD', 'RJF', 'MPWR', 'SPOT', 'K', 'NU', 'RBLX', 'MLM', 'CNHI', 'FE', 'EXR', 'FRC', 'CAJ', 'ETR', 'HBAN', 'GIB', 'RF', 'RYAAY', 'AEM', 'AEE', 'TECK', 'DOV', 'DASH', 'LH', 'TSN', 'DTE', 'FSLR', 'ZM', 'CHD', 'IX', 'VRSN', 'UMC', 'PFG', 'LPLA', 'TS', 'TDY', 'HPE', 'CTRA', 'LUV', 'PPL', 'BAX', 'PODD', 'CFG', 'QSR', 'NET', 'HOLX', 'MKC', 'PKX', 'CLX', 'NTRS', 'CAH', 'VTR', 'ARGX', 'ZTO', 'WAB', 'MOS', 'FTS', 'JBHT', 'ZS', 'TTWO', 'HUBS', 'WPM', 'CINF', 'FOXA', 'GRMN', 'PBA', 'BMRN', 'WAT', 'STE', 'INVH', 'ICLR', 'OMC', 'BBY', 'ERIC', 'MAA', 'XYL', 'RCL', 'ELP', 'MKL', 'WRB', 'HWM', 'SEDG', 'EPAM', 'SWKS', 'DRI', 'CNP', 'SUI', 'TRGP', 'INCY', 'PAYC', 'FOX', 'ROL', 'FICO', 'CAG', 'BALL', 'WPC', 'PINS', 'EXPD', 'CMS', 'UAL', 'CHWY', 'MGM', 'IEX', 'CF', 'NVR', 'KEY', 'BR', 'SPLK', 'AMCR', 'AVTR', 'SIRI', 'AES', 'LYV', 'MRO', 'PARAA', 'SIVB', 'EXPE', 'FWONK', 'WMG', 'PLTR', 'HTHT', 'FMC', 'UI', 'MGA', 'MOH', 'COO', 'ATO', 'FDS', 'AER', 'SJM', 'SNAP', 'BRO', 'RPRX', 'PKI', 'ASX', 'FLT', 'TER', 'CPB', 'CHKP', 'ZBRA', 'COIN', 'RTO', 'WLK', 'SYF', 'DGX', 'LKQ', 'KOF', 'AXON', 'LCID', 'IRM', 'J', 'RE', 'TXT', 'ETSY', 'RS', 'KB', 'TW', 'EBR', 'AGR', 'SSNC', 'PTC', 'LW', 'RIVN', 'AVY', 'BG', 'NIO', 'FWONA', 'SHG', 'BEN', 'SJR', 'ESS', 'L', 'ARES', 'PHG', 'BURL', 'PARA', 'BIO', 'CBOE', 'AZPN', 'MDB', 'GLPI', 'TPL', 'BAM', 'NTAP', 'UDR', 'IPG', 'POOL', 'TME', 'CCL', 'VTRS', 'EVRG', 'HUBB', 'LDOS', 'TYL', 'CE', 'STX', 'CSL', 'MKTX', 'WPP', 'CRBG', 'SNA', 'NICE', 'IP', 'SRPT', 'PEAK', 'PKG', 'APA', 'TRMB', 'WYNN', 'LNT', 'BAH', 'OKTA', 'BLDR', 'KIM', 'CTLT', 'H', 'TWLO', 'NDSN', 'SNN', 'TRU', 'LBRDA', 'UHAL', 'CG', 'LBRDK', 'ELS', 'ENTG', 'SWK', 'GEN', 'VIV', 'CUK', 'ACM', 'CPT', 'ERIE', 'DT', 'DOCU', 'PHM', 'NMR', 'HST', 'WDC', 'JKHY', 'CCJ', 'FHN', 'EQT', 'IHG', 'TECH']
@@ -1218,7 +1447,7 @@ for ticker in filter_tickers:
 # debug mode => 寫出較多的資料
 # debugmode = 1
 # 決定是否要執行screener
-lets_party = 1
+lets_party = 0
 
 if lets_party == 1:
     if TEST == 1:
