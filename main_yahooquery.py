@@ -425,13 +425,21 @@ def get_income_statement_q_eps(ticker, income_statement_q_data):
 
     # 重置索引
     sorted_data.reset_index(drop=True, inplace=True)
-    if len(sorted_data) == 5:
-        basic_eps_0 = sorted_data.iloc[0]['BasicEPS']
-        basic_eps_4 = sorted_data.iloc[4]['BasicEPS']
+    if len(sorted_data) >= 5:
+        basic_eps_now = sorted_data.iloc[0]['BasicEPS']
+        basic_eps_old = sorted_data.iloc[4]['BasicEPS']
+        eps_compare_method = "yearly"
+
+    elif len(sorted_data) == 4 or len(sorted_data) == 3:
+        basic_eps_now = sorted_data.iloc[0]['BasicEPS']
+        basic_eps_old = sorted_data.iloc[1]['BasicEPS']
+        eps_compare_method = "quarterly"
+
     else:
-        basic_eps_0 = 0
-        basic_eps_4 = 0
-    return basic_eps_0, basic_eps_4
+        basic_eps_now = 0
+        basic_eps_old = 0
+        eps_compare_method = "NA"
+    return basic_eps_now, basic_eps_old, eps_compare_method
 
 
 def get_fund_ownership_number(ticker, fund_ownership_data):
@@ -452,12 +460,61 @@ def get_financial_info(fin_data, ticker, level1, level2):
     return get_level2
 
 
+def update_income_statement(tickers_in, reload='1'):
+    csv_file = 'income_statement.csv'
+    if os.path.exists(csv_file):
+        # Read the CSV file
+        # income_statement_q_csv = pd.read_csv(csv_file, index_col=0)
+        income_statement_q_csv = pd.read_csv(csv_file, index_col=0, parse_dates=['asOfDate'])
+
+        print("CSV file has been read.")
+        print(income_statement_q_csv)
+    else:
+        print("Can't find CSV file.")
+        income_statement_q_csv = pd.DataFrame()
+
+    if reload == "1":
+        income_statement_q = get_income_statement_q_single(tickers_in)
+        # print(income_statement_q)
+
+        # Reset the index of both DataFrames, and apply the changes in-place
+        income_statement_q_csv.reset_index(inplace=True)
+        income_statement_q.reset_index(inplace=True)
+
+        # 合併兩個 DataFrame
+        income_statement_q_all = pd.concat([income_statement_q_csv, income_statement_q])
+
+        # Remove duplicates based on all columns
+        income_statement_q_all.drop_duplicates(inplace=True)
+
+        # Set 'symbol' as the index again, and apply the changes in-place
+        income_statement_q_all.set_index('symbol', inplace=True)
+
+        print("income_statement_q_all")
+        print(income_statement_q_all)
+
+        # 在寫入 CSV 文件之前，刪除 'index' 列（如果存在）
+        if 'index' in income_statement_q_all.columns:
+            income_statement_q_all.drop(columns=['index'], inplace=True)
+
+        # 寫入csv檔
+        income_statement_q_all['asOfDate'] = income_statement_q_all['asOfDate'].dt.strftime('%Y-%m-%d')
+        income_statement_q_all.to_csv('income_statement.csv', index=True)
+    else:
+        income_statement_q_all = income_statement_q_csv
+
+    return income_statement_q_all
+
+
 def filter_financial_ticker(tickers_in, category_in):
     # start_time = time.time()  # 記錄開始時間
     fin_data = get_yq_financial_data(tickers_in)
+
     # asset_profile, income_statement_q, fund_ownership, summary_detail_source, summary_profile = \
     # get_yq_financial_data_single(tickers_in)
-    income_statement_q = get_income_statement_q_single(tickers_in)
+    income_statement_q = update_income_statement(tickers_in, 0)
+
+    # df.to_csv('example.csv', index=False)
     # print(income_statement_q)
     # print(fin_data)
     # end_time = time.time()  # 記錄結束時間
@@ -469,7 +526,9 @@ def filter_financial_ticker(tickers_in, category_in):
     ticker_wi_eps = 0
     ticker_wo_eps = 0
     ticker_no = 0
-
+    method_yearly = 0
+    method_quarterly = 0
+    method_na = 0
     for ticker in tickers_in:
         if ticker not in fin_data:
             print(f'Quote not found for ticker symbol: {ticker}')
@@ -486,10 +545,17 @@ def filter_financial_ticker(tickers_in, category_in):
             # industry = fin_data[ticker]['summaryProfile']['industry']
             # website = fin_data[ticker]['summaryProfile']['website']
             ticker_no += 1
-            eps_0, eps_4 = get_income_statement_q_eps(ticker, income_statement_q)
-            if eps_0 != 0 and eps_4 != 0:
-                eps_growth = round(eps_4 / eps_0, 2)
+            eps_new, eps_old, method = get_income_statement_q_eps(ticker, income_statement_q)
+
+            if eps_new != 0 and eps_old != 0:
+                eps_growth = round(eps_new / eps_old, 2)
                 ticker_wi_eps += 1
+                if method == "yearly":
+                    method_yearly += 1
+                elif method == "quarterly":
+                    method_quarterly += 1
+                elif method == "NA":
+                    method_na += 1
             else:
                 eps_growth = 0
                 ticker_wo_eps += 1
@@ -506,8 +572,8 @@ def filter_financial_ticker(tickers_in, category_in):
             # print(f'sector:{sector}')
             # print(f'industry:{industry}')
             # print(f'website:{website}')
-            print(f'eps_0:{eps_0}')
-            print(f'eps_4:{eps_4}')
+            print(f'eps_new:{eps_new}')
+            print(f'eps_old:{eps_old}')
             print(f'eps_growth:{eps_growth}')
             print(f'fund_ownership_number:{fund_ownership_number}')
 
@@ -576,6 +642,10 @@ def filter_financial_ticker(tickers_in, category_in):
     print(f'total_ticker_no:{ticker_no}')
     print(f'ticker_wi_eps:{ticker_wi_eps}')
     print(f'ticker_wo_eps:{ticker_wo_eps}')
+    print(f'Method yearly:{method_yearly}')
+    print(f'Method quarterly:{method_quarterly}')
+    print(f'Method quarterly:{method_na}')
+
     print("============================================================================")
     # 顯示過濾後的所有ticker，並計算數量
     print(filter_tickers)
@@ -1157,12 +1227,12 @@ def vcp_screener_strategy(ticker_in, data):
     avg_volume_8 = calculate_avg_volume_duration(data, 8, 0)
     # avg_volume_21 = calculate_avg_volume_duration(data, 13, 21)
     avg_volume_55 = calculate_avg_volume_duration(data, 55, 21)
-    print(f"volatility_8: {volatility_8}")
-    print(f"volatility_21: {volatility_21}")
-    print(f"volatility_55: {volatility_55}")
-    print("volatility_8 is of type:", type(volatility_8))
-    print("volatility_21 is of type:", type(volatility_21))
-    print("volatility_55 is of type:", type(volatility_55))
+    # print(f"volatility_8: {volatility_8}")
+    # print(f"volatility_21: {volatility_21}")
+    # print(f"volatility_55: {volatility_55}")
+    # print("volatility_8 is of type:", type(volatility_8))
+    # print("volatility_21 is of type:", type(volatility_21))
+    # print("volatility_55 is of type:", type(volatility_55))
     # print(f"avg_volume_8: {avg_volume_8}")
     # print(f"avg_volume_55: {avg_volume_55}")
     sma55 = calculate_sma(data, 55)
@@ -1179,7 +1249,7 @@ def vcp_screener_strategy(ticker_in, data):
     # print(f"last_vcma233: {last_vcma233}")
     # print("last_vcma55 is of type:", type(last_vcma55))
     # print("last_vcma144 is of type:", type(last_vcma144))
-    print("last_vcma233 is of type:", type(last_vcma233))
+    # print("last_vcma233 is of type:", type(last_vcma233))
     # print(f"sma55: {sma55}")
     last_sma55 = round(sma55[-1], 2)
     # print(f"last_sma55: {last_sma55}")
@@ -1188,34 +1258,38 @@ def vcp_screener_strategy(ticker_in, data):
     # print(f"last_sma144: {last_sma144}")
     sma233 = calculate_sma(data, 233)
     last_sma233 = round(sma233[-1], 2)
-    print(f"last_sma233: {last_sma233}")
-    print("last_sma233 is of type:", type(last_sma233))
+    # print(f"last_sma233: {last_sma233}")
+    # print("last_sma233 is of type:", type(last_sma233))
     is_continuous_increase_sma233 = check_continuous_increase(sma233.dropna(), days=21)
     # is_continuous_increase_vcma233 = check_continuous_increase(vcma233.dropna(), days=21)
     # print(f"sma233_rising_21: {is_continuous_increase}")
-    print(f"is_continuous_increase_sma233: {is_continuous_increase_sma233}")
-    print("is_continuous_increase_sma233:", type(is_continuous_increase_sma233))
+    # print(f"is_continuous_increase_sma233: {is_continuous_increase_sma233}")
+    # print("is_continuous_increase_sma233:", type(is_continuous_increase_sma233))
     # print("last_sma55 is of type:", type(last_sma55))
     # print("last_sma144 is of type:", type(last_sma144))
-    print("last_sma233 is of type:", type(last_sma233))
+    # print("last_sma233 is of type:", type(last_sma233))
     # if (volatility_8 < volatility_21) and (volatility_21 < volatility_55) \
-    print("Start if statement...")
+    # print("Start if statement...")
+    print(f"volatility_8: {volatility_8}")
+    print(f"volatility_21: {volatility_21}")
+    print(f"volatility_55: {volatility_55}")
 
-    if (volatility_8 < volatility_21) & (volatility_21 < volatility_55) \
-            and (avg_volume_8 < avg_volume_55) \
-            and ((avg_volume_8 / avg_volume_55) < 0.7) \
-            and ((volatility_55 / volatility_21) > 1.5) \
-            and ((volatility_21 / volatility_8) > 1.5) \
-            and (volatility_8 < 0.1) \
-            and (last_sma55 > last_sma144) and (last_sma144 > last_sma233) \
-            and (is_continuous_increase_sma233 is True):
-        # and (last_vcma55 > last_vcma144) & (last_vcma144 > last_vcma233):
-        # and is_continuous_increase_vcma233 is True:
-        print("End if statement...")
-        url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}"
-        webbrowser.open(url)
-        highchart_chart(data, ticker_in, url)
-        print("MATCH VCP!!!")
+    if volatility_8 != "0" and volatility_21 != "0" and volatility_55 != "0":
+        if (volatility_8 < volatility_21) & (volatility_21 < volatility_55) \
+                and (avg_volume_8 < avg_volume_55) \
+                and ((avg_volume_8 / avg_volume_55) < 0.7) \
+                and ((volatility_55 / volatility_21) > 1.5) \
+                and ((volatility_21 / volatility_8) > 1.5) \
+                and (volatility_8 < 0.1) \
+                and (last_sma55 > last_sma144) and (last_sma144 > last_sma233) \
+                and (is_continuous_increase_sma233 is True):
+            # and (last_vcma55 > last_vcma144) & (last_vcma144 > last_vcma233):
+            # and is_continuous_increase_vcma233 is True:
+            # print("End if statement...")
+            url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}"
+            webbrowser.open(url)
+            highchart_chart(data, ticker_in, url)
+            print("MATCH VCP!!!")
 
         # return 1
 
@@ -1406,12 +1480,12 @@ run_vwap_strategy_screener = 0  # VWAP均線的策略，均線呈多頭排序時
 run_find_stocks_in_range = 0  #
 
 # 要執行的ticker種類
-TEST = 1
+TEST = 0
 US = 0
 TW = 0
 ETF = 0
 FIN = 0  # Filter tickers from finviz screener
-YF = 0
+YF = 1
 
 # 將讀取到的資料轉換為 list，並存入 tickers 變數中
 if TW == 1:
@@ -1430,14 +1504,14 @@ if TEST == 1:
     # test_tickers = ['NVDA', 'MET']
 start_time = time.time()  # 記錄開始時間
 
-update_financial_tickers = 1
+update_financial_tickers = 0
 if update_financial_tickers == 1:
 
     # yf_tickers = get_tickers("YF", yf_start)
-    test_tickers = ['CCS', 'FLNG', 'ENLT', 'PCAR']
+    # test_tickers = ['CCS', 'FLNG', 'ENLT', 'PCAR', 'TSLA', 'MSFT']
     # filter_financial_ticker(test_tickers, "US")
-    # us_tickers = get_tickers("US", us_start)
-    filter_financial_ticker(test_tickers, "US")
+    us_tickers = get_tickers("US", us_start)
+    filter_financial_ticker(us_tickers, "US")
 
 run_refersh_financial_data = 0
 if run_refersh_financial_data == 1:
@@ -1462,7 +1536,7 @@ for ticker in filter_tickers:
 # debug mode => 寫出較多的資料
 # debugmode = 1
 # 決定是否要執行screener
-lets_party = 0
+lets_party = 1
 
 if lets_party == 1:
     if TEST == 1:
