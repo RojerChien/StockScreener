@@ -561,7 +561,7 @@ def filter_financial_ticker(tickers_in, category_in):
 
                     # print("PE is not valid, skip")
                     # if (ticker_trailing_pe > ticker_forward_pe) and \
-                    if eps_growth >= 1.2 and \
+                    if eps_growth >= 1.1 and \
                             fund_ownership_number >= 1 and \
                             (ticker_previous_close / ticker_52_week_low > 1.3) and \
                             (ticker_previous_close / ticker_52_week_high < 1.25) and \
@@ -1434,10 +1434,10 @@ update_financial_tickers = 1
 if update_financial_tickers == 1:
 
     # yf_tickers = get_tickers("YF", yf_start)
-    # test_tickers = ['CCS', 'FLNG', 'ENLT', 'PCAR']
+    test_tickers = ['CCS', 'FLNG', 'ENLT', 'PCAR']
     # filter_financial_ticker(test_tickers, "US")
-    us_tickers = get_tickers("US", us_start)
-    filter_financial_ticker(us_tickers, "US")
+    # us_tickers = get_tickers("US", us_start)
+    filter_financial_ticker(test_tickers, "US")
 
 run_refersh_financial_data = 0
 if run_refersh_financial_data == 1:
