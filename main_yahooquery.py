@@ -1455,7 +1455,7 @@ else:
     jpg_resolution = 800
 
 # volume Factor
-vol_factor = 5  # volume factor for VWAP_SCREENER
+vol_factor = 1  # volume factor for VWAP_SCREENER
 
 # screener要判斷的平均天數
 screener_day = 8
