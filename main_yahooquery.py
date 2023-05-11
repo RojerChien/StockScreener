@@ -635,7 +635,7 @@ def filter_financial_ticker(tickers_in, category_in):
                             (ticker_50_day_average > ticker_200_day_average):
                         filter_tickers.append(ticker)
                         url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker}"
-                        # webbrowser.open(url)
+                        webbrowser.open(url)
                 else:
                     continue
     print("============================================================================")
@@ -1504,7 +1504,7 @@ if TEST == 1:
     # test_tickers = ['NVDA', 'MET']
 start_time = time.time()  # 記錄開始時間
 
-update_financial_tickers = 0
+update_financial_tickers = 1
 if update_financial_tickers == 1:
 
     # yf_tickers = get_tickers("YF", yf_start)
@@ -1536,7 +1536,7 @@ for ticker in filter_tickers:
 # debug mode => 寫出較多的資料
 # debugmode = 1
 # 決定是否要執行screener
-lets_party = 1
+lets_party = 0
 
 if lets_party == 1:
     if TEST == 1:
