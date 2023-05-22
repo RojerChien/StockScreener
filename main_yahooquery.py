@@ -634,10 +634,22 @@ def filter_financial_ticker(tickers_in, category_in):
                             (ticker_previous_close / ticker_52_week_high > 0.75) and \
                             (ticker_50_day_average > ticker_200_day_average):
                         filter_tickers.append(ticker)
+
+
                         url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker}"
-                        webbrowser.open(url)
+                        filter_tickers_df = pd.DataFrame({
+                            'Ticker': [ticker],
+                            'URL': [url]
+                        })
+                        if os.path.exists('filter_ticker.csv'):
+                            filter_tickers_df.to_csv('filter_ticker.csv', mode='a', index=False, header=False)
+                        else:
+                            filter_tickers_df.to_csv('filter_ticker.csv', mode='a', index=False)
+                        # webbrowser.open(url)
                 else:
                     continue
+    # 將DataFrame寫入.csv檔案，如果檔案已存在，則在原檔案的基礎上新增行
+    # filter_tickers_df.to_csv('filter_ticker.csv', mode='a', index=False)
     print("============================================================================")
     print(f'total_ticker_no:{ticker_no}')
     print(f'ticker_wi_eps:{ticker_wi_eps}')
@@ -1365,6 +1377,7 @@ def vcp_screener_strategy_bak(ticker_in, data):
         # and is_continuous_increase_vcma233 is True:
         print("End if statement...")
         url = f"https://www.tradingview.com/chart/sWFIrRUP/?symbol={ticker_in}"
+
         # webbrowser.open(url)
         highchart_chart(data, ticker_in, url)
         print("MATCH VCP!!!")

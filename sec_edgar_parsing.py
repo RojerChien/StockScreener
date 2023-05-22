@@ -32,7 +32,7 @@ else:
     print(f"獲取網頁內容時出錯，狀態碼：{response.status_code}")
 
 
-from sec_edgar_py import EdgarWrapper
+from sec_edgar_py_test import EdgarWrapper
 client = EdgarWrapper()
 edgar = client.get_company_filings('MSFT', form_types=['10-Q'], amount=5)
 print(edgar)
