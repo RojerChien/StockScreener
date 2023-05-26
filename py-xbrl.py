@@ -82,8 +82,11 @@ if not found:
     print(f"找不到符合的資料：TradingSymbol 值為 {target_value}")"""
 import logging
 import json
+import csv
 from xbrl.cache import HttpCache
 from xbrl.instance import XbrlParser
+from collections import defaultdict
+
 
 # just to see which files are downloaded
 logging.basicConfig(level=logging.INFO)
@@ -91,13 +94,10 @@ logging.basicConfig(level=logging.INFO)
 cache: HttpCache = HttpCache('./cache')
 cache.set_headers({'From': 'YOUR@EMAIL.com', 'User-Agent': 'py-xbrl/2.1.0'})
 parser = XbrlParser(cache)
-
-# schema_url = "https://www.sec.gov/Archives/edgar/data/0000320193/000032019321000105/aapl-20210925.htm"
 schema_url = "https://www.sec.gov/Archives/edgar/data/320193/000032019323000064/aapl-20230401.htm"
-# schema_url = "https://www.sec.gov/Archives/edgar/data/320193/000032019323000064/aapl-20230401.htm"
 inst = parser.parse_instance(schema_url)
 # print json to console
-print(inst.json())
+# print(inst.json())
 
 # save to file
 inst.json('./test.json')
@@ -112,6 +112,8 @@ target_concepts = ["EarningsPerShareBasic", "EarningsPerShareDiluted", "NetIncom
 target_concept = "TradingSymbol"
 found = False
 
+
+
 for key, value in data["facts"].items():
     if "dimensions" in value and "concept" in value["dimensions"] and value["dimensions"]["concept"] == target_concept:
         trading_symbol = value["value"]
@@ -120,75 +122,74 @@ for key, value in data["facts"].items():
 
 if not found:
     print(f"找不到符合的資料：Concept 為 {target_concept}")
-
-
-
+processed = set()
 
 for key, value in data["facts"].items():
     concept = value["dimensions"]["concept"]
-    if concept in target_concepts:
-        period = value["dimensions"]["period"]
+    period = value["dimensions"]["period"]
+
+    # Check if 'decimals' exists in the 'value' dictionary
+    if 'decimals' in value:
         decimals = value["decimals"]
-        value = value["value"]
-        print(f"Concept: {concept}")
-        print(f"Period: {period}")
-        print(f"Decimals: {decimals}")
-        print(f"Value: {value}")
-        print("-----------")
+    else:
+        decimals = None  # Default value if 'decimals' does not exist
 
-data = [
-    {
-        "Concept": "EarningsPerShareBasic",
-        "Period": "2023-01-01/2023-04-01",
-        "Decimals": 2,
-        "Value": 1.53
-    },
-    {
-        "Concept": "EarningsPerShareBasic",
-        "Period": "2021-12-26/2022-03-26",
-        "Decimals": 2,
-        "Value": 1.54
-    },
-    {
-        "Concept": "EarningsPerShareBasic",
-        "Period": "2022-09-25/2023-04-01",
-        "Decimals": 2,
-        "Value": 3.42
-    },
-    {
-        "Concept": "EarningsPerShareBasic",
-        "Period": "2021-09-26/2022-03-26",
-        "Decimals": 2,
-        "Value": 3.65
-    }
-]
+    value_content = value["value"]
 
-quarters = {}
+    # Use a tuple for the set to avoid duplicates
+    data_item = (concept, period, decimals, value_content)
 
-for item in data:
-    concept = item["Concept"]
-    period = item["Period"]
-    value = item["Value"]
+    if data_item not in processed:
+        if concept in target_concepts:
+            print(f"Concept: {concept}")
+            print(f"Period: {period}")
+            print(f"Decimals: {decimals}")
+            print(f"Value: {value_content}")
+            print("-----------")
+        # Add data item to set, marking it as processed
+        processed.add(data_item)
 
-    start_date, end_date = period.split("/")
-    quarter = f"{start_date[:4]}Q{int(start_date[5:7]) // 3 + 1}"
 
-    if quarter not in quarters:
-        quarters[quarter] = []
 
-    quarters[quarter].append({
-        "Concept": concept,
-        "Period": period,
-        "Value": value
-    })
 
-for quarter, items in quarters.items():
-    print(f"季度 {quarter}:")
-    for item in items:
-        concept = item["Concept"]
-        period = item["Period"]
-        value = item["Value"]
-        print(f"Concept: {concept}")
-        print(f"Period: {period}")
-        print(f"Value: {value}")
-        print("-----------")
+data_rows = {}
+print(data)
+
+# Loop through all the facts
+for fact_id, fact in data["facts"].items():
+    print(type(fact))  # print the type of fact
+    print(fact)  # print the content of fact
+    try:
+        concept = fact["dimensions"]["concept"]
+        if concept in ["NetIncomeLoss", "EarningsPerShareBasic", "EarningsPerShareDiluted"]:
+            # Extract period and convert to tuple
+            period = tuple(fact["dimensions"]["period"].split('/'))
+
+            # Get or create row
+            entity = fact["dimensions"]["entity"]
+            row = data_rows.get(period, {
+                "TradingSymbol": trading_symbol,
+                "StartDate": period[0],
+                "EndDate": period[1]
+            })
+
+            # Add fact data to row
+            row[f"{concept}"] = fact["value"]
+            row[f"{concept}_Decimals"] = fact["decimals"]
+
+            # Save row
+            data_rows[period] = row
+    except TypeError:
+        print(f"Unexpected data type for fact: {fact}")
+
+# Write data to CSV
+with open('output.csv', 'w', newline='') as csvfile:
+    fieldnames = ["TradingSymbol", "StartDate", "EndDate",
+                  "NetIncomeLoss", "NetIncomeLoss_Decimals",
+                  "EarningsPerShareBasic", "EarningsPerShareBasic_Decimals",
+                  "EarningsPerShareDiluted", "EarningsPerShareDiluted_Decimals"]
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+    writer.writeheader()
+    for row in data_rows.values():
+        writer.writerow(row)

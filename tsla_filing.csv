@@ -1,0 +1,6 @@
+TradingSymbol,StartDate,EndDate,NetIncomeLoss,NetIncomeLoss_Decimals,EarningsPerShareBasic,EarningsPerShareBasic_Decimals,EarningsPerShareDiluted,EarningsPerShareDiluted_Decimals
+TSLA,2023-01-01,2023-03-31,2513000000.0,-6,0.8,2,0.73,2
+TSLA,2022-01-01,2022-03-31,3318000000.0,-6,1.07,2,0.95,2
+TSLA,2022-01-01,2022-12-31,12556000000.0,-6,4.02,2,3.62,2
+TSLA,2021-01-01,2021-12-31,5519000000.0,-6,1.87,2,1.63,2
+TSLA,2020-01-01,2020-12-31,721000000.0,-6,0.25,2,0.21,2

@@ -1,0 +1,919 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- DFIN New ActiveDisclosure (SM) XBRL Schema Document - http://www.dfinsolutions.com/ -->
+<!-- Creation Date :2023-05-05T17:09:59.9408+00:00 -->
+<!-- Copyright (c) 2023 Donnelly Financial Solutions, Inc. All Rights Reserved. -->
+<xsd:schema targetNamespace="http://www.berkshirehathaway.com/20230331" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:country="http://xbrl.sec.gov/country/2022" xmlns:dtr-types="http://www.xbrl.org/dtr/type/2020-01-21" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:brka="http://www.berkshirehathaway.com/20230331" xmlns:dei="http://xbrl.sec.gov/dei/2022" xmlns:xbrldt="http://xbrl.org/2005/xbrldt" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:enum2="http://xbrl.org/2020/extensible-enumerations-2.0" xmlns:srt="http://fasb.org/srt/2022" xmlns:us-gaap="http://fasb.org/us-gaap/2022" xmlns:currency="http://xbrl.sec.gov/currency/2022" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xsd:import schemaLocation="http://www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd" namespace="http://www.xbrl.org/2003/instance"/>
+  <xsd:import schemaLocation="http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd" namespace="http://www.xbrl.org/2003/linkbase"/>
+  <xsd:import schemaLocation="http://www.xbrl.org/2005/xbrldt-2005.xsd" namespace="http://xbrl.org/2005/xbrldt"/>
+  <xsd:import schemaLocation="https://www.xbrl.org/2020/extensible-enumerations-2.0.xsd" namespace="http://xbrl.org/2020/extensible-enumerations-2.0"/>
+  <xsd:import schemaLocation="https://xbrl.sec.gov/dei/2022/dei-2022.xsd" namespace="http://xbrl.sec.gov/dei/2022"/>
+  <xsd:import schemaLocation="https://xbrl.fasb.org/us-gaap/2022/elts/us-gaap-2022.xsd" namespace="http://fasb.org/us-gaap/2022"/>
+  <xsd:import schemaLocation="https://xbrl.sec.gov/country/2022/country-2022.xsd" namespace="http://xbrl.sec.gov/country/2022"/>
+  <xsd:import schemaLocation="https://xbrl.sec.gov/currency/2022/currency-2022.xsd" namespace="http://xbrl.sec.gov/currency/2022"/>
+  <xsd:import schemaLocation="https://www.xbrl.org/dtr/type/2020-01-21/types.xsd" namespace="http://www.xbrl.org/dtr/type/2020-01-21"/>
+  <xsd:import schemaLocation="https://xbrl.fasb.org/srt/2022/elts/srt-2022.xsd" namespace="http://fasb.org/srt/2022"/>
+  <xsd:annotation>
+    <xsd:appinfo>
+      <link:linkbaseRef xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase" xlink:href="brka-20230331_lab.xml" xlink:role="http://www.xbrl.org/2003/role/labelLinkbaseRef" xlink:title="Labels link" xlink:type="simple"/>
+      <link:linkbaseRef xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase" xlink:href="brka-20230331_pre.xml" xlink:role="http://www.xbrl.org/2003/role/presentationLinkbaseRef" xlink:title="Presentation link" xlink:type="simple"/>
+      <link:linkbaseRef xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase" xlink:href="brka-20230331_def.xml" xlink:role="http://www.xbrl.org/2003/role/definitionLinkbaseRef" xlink:title="Definition link" xlink:type="simple"/>
+      <link:linkbaseRef xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase" xlink:href="brka-20230331_cal.xml" xlink:role="http://www.xbrl.org/2003/role/calculationLinkbaseRef" xlink:title="Calculation link" xlink:type="simple"/>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DocumentDocumentAndEntityInformation" id="Role_DocumentDocumentAndEntityInformation">
+        <link:definition>100000 - Document - Document and Entity Information</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_StatementConsolidatedBalanceSheets" id="Role_StatementConsolidatedBalanceSheets">
+        <link:definition>100010 - Statement - Consolidated Balance Sheets</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_StatementConsolidatedBalanceSheetsParenthetical" id="Role_StatementConsolidatedBalanceSheetsParenthetical">
+        <link:definition>100020 - Statement - Consolidated Balance Sheets (Parenthetical)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_StatementConsolidatedStatementsOfEarnings" id="Role_StatementConsolidatedStatementsOfEarnings">
+        <link:definition>100030 - Statement - Consolidated Statements of Earnings</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_StatementConsolidatedStatementsOfEarningsParenthetical" id="Role_StatementConsolidatedStatementsOfEarningsParenthetical">
+        <link:definition>100040 - Statement - Consolidated Statements of Earnings (Parenthetical)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/StatementConsolidatedStatementsOfComprehensiveIncome1" id="StatementConsolidatedStatementsOfComprehensiveIncome1">
+        <link:definition>100050 - Statement - Consolidated Statements of Comprehensive Income</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_StatementConsolidatedStatementsOfChangesInShareholdersEquity" id="Role_StatementConsolidatedStatementsOfChangesInShareholdersEquity">
+        <link:definition>100060 - Statement - Consolidated Statements of Changes in Shareholders' Equity</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_StatementConsolidatedStatementsOfCashFlows" id="Role_StatementConsolidatedStatementsOfCashFlows">
+        <link:definition>100070 - Statement - Consolidated Statements of Cash Flows</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureGeneral" id="Role_DisclosureGeneral">
+        <link:definition>100080 - Disclosure - General</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureNewAccountingPronouncements" id="Role_DisclosureNewAccountingPronouncements">
+        <link:definition>100090 - Disclosure - New accounting pronouncements</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureSignificantBusinessAcquisitions1" id="DisclosureSignificantBusinessAcquisitions1">
+        <link:definition>100100 - Disclosure - Significant business acquisitions</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInvestmentsInFixedMaturitySecurities" id="Role_DisclosureInvestmentsInFixedMaturitySecurities">
+        <link:definition>100110 - Disclosure - Investments in fixed maturity securities</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInvestmentsInEquitySecurities" id="Role_DisclosureInvestmentsInEquitySecurities">
+        <link:definition>100120 - Disclosure - Investments in equity securities</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureEquityMethodInvestments" id="Role_DisclosureEquityMethodInvestments">
+        <link:definition>100130 - Disclosure - Equity method investments</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureInvestmentAndDerivativeContractGainsLosses" id="DisclosureInvestmentAndDerivativeContractGainsLosses">
+        <link:definition>100140 - Disclosure - Investment and derivative contract gains (losses)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureLoansAndFinanceReceivables" id="Role_DisclosureLoansAndFinanceReceivables">
+        <link:definition>100150 - Disclosure - Loans and finance receivables</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureOtherReceivables" id="Role_DisclosureOtherReceivables">
+        <link:definition>100160 - Disclosure - Other receivables</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInventories" id="Role_DisclosureInventories">
+        <link:definition>100170 - Disclosure - Inventories</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosurePropertyPlantAndEquipmentIncludingEquipmentHeldForLease" id="Role_DisclosurePropertyPlantAndEquipmentIncludingEquipmentHeldForLease">
+        <link:definition>100180 - Disclosure - Property, plant and equipment including equipment held for lease</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureGoodwillAndOtherIntangibleAssets" id="Role_DisclosureGoodwillAndOtherIntangibleAssets">
+        <link:definition>100190 - Disclosure - Goodwill and other intangible assets</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureUnpaidLossesAndLossAdjustmentExpenses" id="Role_DisclosureUnpaidLossesAndLossAdjustmentExpenses">
+        <link:definition>100200 - Disclosure - Unpaid losses and loss adjustment expenses</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureRetroactiveReinsuranceContracts" id="Role_DisclosureRetroactiveReinsuranceContracts">
+        <link:definition>100210 - Disclosure - Retroactive reinsurance contracts</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureLongDurationInsuranceContracts1" id="DisclosureLongDurationInsuranceContracts1">
+        <link:definition>100220 - Disclosure - Long duration insurance contracts</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureNotesPayableAndOtherBorrowings" id="Role_DisclosureNotesPayableAndOtherBorrowings">
+        <link:definition>100230 - Disclosure - Notes payable and other borrowings</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureFairValueMeasurements" id="Role_DisclosureFairValueMeasurements">
+        <link:definition>100240 - Disclosure - Fair value measurements</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureCommonStock" id="Role_DisclosureCommonStock">
+        <link:definition>100250 - Disclosure - Common stock</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureIncomeTaxes" id="Role_DisclosureIncomeTaxes">
+        <link:definition>100260 - Disclosure - Income taxes</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureAccumulatedOtherComprehensiveIncome" id="Role_DisclosureAccumulatedOtherComprehensiveIncome">
+        <link:definition>100270 - Disclosure - Accumulated other comprehensive income</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureSupplementalCashFlowInformation" id="Role_DisclosureSupplementalCashFlowInformation">
+        <link:definition>100280 - Disclosure - Supplemental cash flow information</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureContingenciesAndCommitments" id="Role_DisclosureContingenciesAndCommitments">
+        <link:definition>100290 - Disclosure - Contingencies and Commitments</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureRevenuesFromContractsWithCustomers" id="Role_DisclosureRevenuesFromContractsWithCustomers">
+        <link:definition>100300 - Disclosure - Revenues from contracts with customers</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureBusinessSegmentData" id="Role_DisclosureBusinessSegmentData">
+        <link:definition>100310 - Disclosure - Business segment data</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureNewAccountingPronouncementsPolicies" id="Role_DisclosureNewAccountingPronouncementsPolicies">
+        <link:definition>100320 - Disclosure - New accounting pronouncements (Policies)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureNewAccountingPronouncementsTables" id="DisclosureNewAccountingPronouncementsTables">
+        <link:definition>100330 - Disclosure - New accounting pronouncements (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureSignificantBusinessAcquisitionsTables" id="DisclosureSignificantBusinessAcquisitionsTables">
+        <link:definition>100340 - Disclosure - Significant business acquisitions (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInvestmentsInFixedMaturitySecuritiesTables" id="Role_DisclosureInvestmentsInFixedMaturitySecuritiesTables">
+        <link:definition>100350 - Disclosure - Investments in fixed maturity securities (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInvestmentsInEquitySecuritiesTables" id="Role_DisclosureInvestmentsInEquitySecuritiesTables">
+        <link:definition>100360 - Disclosure - Investments in equity securities (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureEquityMethodInvestmentsTables" id="Role_DisclosureEquityMethodInvestmentsTables">
+        <link:definition>100370 - Disclosure - Equity method investments (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureInvestmentAndDerivativeContractGainsLossesTables" id="DisclosureInvestmentAndDerivativeContractGainsLossesTables">
+        <link:definition>100380 - Disclosure - Investment and derivative contract gains (losses) (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureLoansAndFinanceReceivablesTables" id="Role_DisclosureLoansAndFinanceReceivablesTables">
+        <link:definition>100390 - Disclosure - Loans and finance receivables (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureOtherReceivablesTables" id="Role_DisclosureOtherReceivablesTables">
+        <link:definition>100400 - Disclosure - Other receivables (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInventoriesTables" id="Role_DisclosureInventoriesTables">
+        <link:definition>100410 - Disclosure - Inventories (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosurePropertyPlantAndEquipmentIncludingEquipmentHeldForLeaseTables" id="Role_DisclosurePropertyPlantAndEquipmentIncludingEquipmentHeldForLeaseTables">
+        <link:definition>100420 - Disclosure - Property, plant and equipment including equipment held for lease (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureEquipmentHeldForLeaseTables" id="Role_DisclosureEquipmentHeldForLeaseTables">
+        <link:definition>100430 - Disclosure - Equipment held for lease (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureGoodwillAndOtherIntangibleAssetsTables" id="Role_DisclosureGoodwillAndOtherIntangibleAssetsTables">
+        <link:definition>100440 - Disclosure - Goodwill and other intangible assets (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureUnpaidLossesAndLossAdjustmentExpensesTables" id="Role_DisclosureUnpaidLossesAndLossAdjustmentExpensesTables">
+        <link:definition>100450 - Disclosure - Unpaid losses and loss adjustment expenses (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureRetroactiveReinsuranceContractsTables" id="Role_DisclosureRetroactiveReinsuranceContractsTables">
+        <link:definition>100460 - Disclosure - Retroactive reinsurance contracts (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureLongDurationInsuranceContractsTables" id="DisclosureLongDurationInsuranceContractsTables">
+        <link:definition>100470 - Disclosure - Long duration insurance contracts (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureNotesPayableAndOtherBorrowingsTables" id="Role_DisclosureNotesPayableAndOtherBorrowingsTables">
+        <link:definition>100480 - Disclosure - Notes payable and other borrowings (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureFairValueMeasurementsTables" id="Role_DisclosureFairValueMeasurementsTables">
+        <link:definition>100490 - Disclosure - Fair value measurements (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureCommonStockTables" id="Role_DisclosureCommonStockTables">
+        <link:definition>100500 - Disclosure - Common stock (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureAccumulatedOtherComprehensiveIncomeTables" id="Role_DisclosureAccumulatedOtherComprehensiveIncomeTables">
+        <link:definition>100510 - Disclosure - Accumulated other comprehensive income (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureSupplementalCashFlowInformationTables" id="Role_DisclosureSupplementalCashFlowInformationTables">
+        <link:definition>100520 - Disclosure - Supplemental cash flow information (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureRevenuesFromContractsWithCustomersTables" id="Role_DisclosureRevenuesFromContractsWithCustomersTables">
+        <link:definition>100530 - Disclosure - Revenues from contracts with customers (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureBusinessSegmentDataTables" id="Role_DisclosureBusinessSegmentDataTables">
+        <link:definition>100540 - Disclosure - Business segment data (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureNewAccountingPronouncementsSummaryOfEffectsFromAdoptingAsu201812OnAffectedLineItemsConsolidatedStatementOfEarningsAndComprehensi" id="DisclosureNewAccountingPronouncementsSummaryOfEffectsFromAdoptingAsu201812OnAffectedLineItemsConsolidatedStatementOfEarningsAndComprehensi">
+        <link:definition>100550 - Disclosure - New accounting pronouncements - Summary of effects from adopting ASU 2018-12 on affected line items consolidated statement of earnings and comprehensive income (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureSignificantBusinessAcquisitionsNarrativeDetail" id="DisclosureSignificantBusinessAcquisitionsNarrativeDetail">
+        <link:definition>100560 - Disclosure - Significant business acquisitions - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureSignificantBusinessAcquisitionsSummaryOfPreliminaryValuesOfIdentifiedAssetsAcquiredAndLiabilitiesAssumedDetail" id="DisclosureSignificantBusinessAcquisitionsSummaryOfPreliminaryValuesOfIdentifiedAssetsAcquiredAndLiabilitiesAssumedDetail">
+        <link:definition>100570 - Disclosure - Significant business acquisitions - Summary of preliminary values of identified assets acquired and liabilities assumed (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureSignificantBusinessAcquisitionsSummaryOfUnauditedProFormaConsolidatedEarningsDetail" id="DisclosureSignificantBusinessAcquisitionsSummaryOfUnauditedProFormaConsolidatedEarningsDetail">
+        <link:definition>100580 - Disclosure - Significant business acquisitions - Summary of unaudited pro forma consolidated earnings (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInvestmentsInFixedMaturitySecuritiesDetail" id="Role_DisclosureInvestmentsInFixedMaturitySecuritiesDetail">
+        <link:definition>100590 - Disclosure - Investments in fixed maturity securities (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInvestmentsInFixedMaturitySecuritiesNarrativeDetail" id="Role_DisclosureInvestmentsInFixedMaturitySecuritiesNarrativeDetail">
+        <link:definition>100600 - Disclosure - Investments in fixed maturity securities - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInvestmentsInFixedMaturitySecuritiesAmortizedCostAndEstimatedFairValueOfSecuritiesWithFixedMaturitiesDetail" id="Role_DisclosureInvestmentsInFixedMaturitySecuritiesAmortizedCostAndEstimatedFairValueOfSecuritiesWithFixedMaturitiesDetail">
+        <link:definition>100610 - Disclosure - Investments in fixed maturity securities - Amortized cost and estimated fair value of securities with fixed maturities (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInvestmentsInEquitySecuritiesDetail" id="Role_DisclosureInvestmentsInEquitySecuritiesDetail">
+        <link:definition>100620 - Disclosure - Investments in equity securities (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInvestmentsInEquitySecuritiesParentheticalDetail" id="Role_DisclosureInvestmentsInEquitySecuritiesParentheticalDetail">
+        <link:definition>100630 - Disclosure - Investments in equity securities (Parenthetical) (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInvestmentsInEquitySecuritiesNarrativeDetail" id="Role_DisclosureInvestmentsInEquitySecuritiesNarrativeDetail">
+        <link:definition>100640 - Disclosure - Investments in equity securities - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureEquityMethodInvestmentsNarrativeDetail" id="Role_DisclosureEquityMethodInvestmentsNarrativeDetail">
+        <link:definition>100650 - Disclosure - Equity method investments - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureEquityMethodInvestmentsSummaryOfCarryingValueAndFairValueOfInvestmentsDetail" id="DisclosureEquityMethodInvestmentsSummaryOfCarryingValueAndFairValueOfInvestmentsDetail">
+        <link:definition>100660 - Disclosure - Equity Method Investments - Summary of carrying value and fair value of investments (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureEquityMethodInvestmentsSummaryOfEarningsAndDistributionsReceivedFromEquityMethodInvestmentsDetail" id="DisclosureEquityMethodInvestmentsSummaryOfEarningsAndDistributionsReceivedFromEquityMethodInvestmentsDetail">
+        <link:definition>100670 - Disclosure - Equity Method Investments - Summary of earnings and distributions received from equity method investments (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureEquityMethodInvestmentsUnauditedFinancialInformationDetail" id="DisclosureEquityMethodInvestmentsUnauditedFinancialInformationDetail">
+        <link:definition>100680 - Disclosure - Equity method investments - Unaudited financial information (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureInvestmentAndDerivativeContractGainsLossesDetail" id="DisclosureInvestmentAndDerivativeContractGainsLossesDetail">
+        <link:definition>100690 - Disclosure - Investment and derivative contract gains (losses) (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureInvestmentAndDerivativeContractGainsLossesNarrativeDetail" id="DisclosureInvestmentAndDerivativeContractGainsLossesNarrativeDetail">
+        <link:definition>100700 - Disclosure - Investment and derivative contract gains (losses) - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureLoansAndFinanceReceivablesDetail" id="Role_DisclosureLoansAndFinanceReceivablesDetail">
+        <link:definition>100710 - Disclosure - Loans and finance receivables (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureLoansAndFinanceReceivablesScheduleOfReconciliationOfAllowanceForCreditLossesOnLoansAndFinanceReceivablesDetail" id="DisclosureLoansAndFinanceReceivablesScheduleOfReconciliationOfAllowanceForCreditLossesOnLoansAndFinanceReceivablesDetail">
+        <link:definition>100720 - Disclosure - Loans and finance receivables - Schedule of reconciliation of allowance for credit losses on loans and finance receivables (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureLoansAndFinanceReceivablesNarrativeDetail" id="Role_DisclosureLoansAndFinanceReceivablesNarrativeDetail">
+        <link:definition>100730 - Disclosure - Loans and finance receivables - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureLoansAndFinanceReceivablesSummaryOfPerformingAndNonPerformingHomeLoansBeforeDiscountsAndAllowancesByYearOfLoanOriginationDetail" id="Role_DisclosureLoansAndFinanceReceivablesSummaryOfPerformingAndNonPerformingHomeLoansBeforeDiscountsAndAllowancesByYearOfLoanOriginationDetail">
+        <link:definition>100740 - Disclosure - Loans and finance receivables - Summary of performing and non-performing home loans before discounts and allowances by year of loan origination (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureOtherReceivablesDetail" id="Role_DisclosureOtherReceivablesDetail">
+        <link:definition>100750 - Disclosure - Other receivables (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureOtherReceivablesNarrativeDetail" id="Role_DisclosureOtherReceivablesNarrativeDetail">
+        <link:definition>100760 - Disclosure - Other receivables - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureInventoriesDetail" id="Role_DisclosureInventoriesDetail">
+        <link:definition>100770 - Disclosure - Inventories (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureInventoriesNarrativeDetail" id="DisclosureInventoriesNarrativeDetail">
+        <link:definition>100780 - Disclosure - Inventories - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosurePropertyPlantAndEquipmentDetail" id="Role_DisclosurePropertyPlantAndEquipmentDetail">
+        <link:definition>100790 - Disclosure - Property, plant and equipment (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosurePropertyPlantAndEquipmentDepreciationExpenseDetail" id="Role_DisclosurePropertyPlantAndEquipmentDepreciationExpenseDetail">
+        <link:definition>100800 - Disclosure - Property, plant and equipment - Depreciation expense (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureEquipmentHeldForLeaseDetail" id="Role_DisclosureEquipmentHeldForLeaseDetail">
+        <link:definition>100810 - Disclosure - Equipment held for lease (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureEquipmentHeldForLeaseNarrativeDetail" id="Role_DisclosureEquipmentHeldForLeaseNarrativeDetail">
+        <link:definition>100820 - Disclosure - Equipment held for lease - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureEquipmentHeldForLeaseSummaryOfFixedAndVariableOperatingLeaseRevenuesDetail1" id="DisclosureEquipmentHeldForLeaseSummaryOfFixedAndVariableOperatingLeaseRevenuesDetail1">
+        <link:definition>100830 - Disclosure - Equipment held for lease - Summary of fixed and variable operating lease revenues (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureGoodwillAndOtherIntangibleAssetsGoodwillDetail" id="Role_DisclosureGoodwillAndOtherIntangibleAssetsGoodwillDetail">
+        <link:definition>100840 - Disclosure - Goodwill and other intangible assets - Goodwill (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureGoodwillAndOtherIntangibleAssetsGoodwillParentheticalDetail" id="Role_DisclosureGoodwillAndOtherIntangibleAssetsGoodwillParentheticalDetail">
+        <link:definition>100850 - Disclosure - Goodwill and other intangible assets - Goodwill (Parenthetical) (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureGoodwillAndOtherIntangibleAssetsIntangibleAssetsDetail" id="Role_DisclosureGoodwillAndOtherIntangibleAssetsIntangibleAssetsDetail">
+        <link:definition>100860 - Disclosure - Goodwill and other intangible assets - Intangible assets (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureGoodwillAndOtherIntangibleAssetsIntangibleAssetsNarrativeDetail" id="Role_DisclosureGoodwillAndOtherIntangibleAssetsIntangibleAssetsNarrativeDetail">
+        <link:definition>100870 - Disclosure - Goodwill and other intangible assets - Intangible assets - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureUnpaidLossesAndLossAdjustmentExpensesReconciliationOfChangesInClaimLiabilitiesDetail" id="Role_DisclosureUnpaidLossesAndLossAdjustmentExpensesReconciliationOfChangesInClaimLiabilitiesDetail">
+        <link:definition>100880 - Disclosure - Unpaid losses and loss adjustment expenses - Reconciliation of changes in claim liabilities (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureUnpaidLossesAndLossAdjustmentExpensesNarrativeDetail" id="Role_DisclosureUnpaidLossesAndLossAdjustmentExpensesNarrativeDetail">
+        <link:definition>100890 - Disclosure - Unpaid losses and loss adjustment expenses - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureRetroactiveReinsuranceContractsReconciliationOfChangesInClaimLiabilitiesAndIncurredLossesAndLossAdjustmentExpensesDetail" id="DisclosureRetroactiveReinsuranceContractsReconciliationOfChangesInClaimLiabilitiesAndIncurredLossesAndLossAdjustmentExpensesDetail">
+        <link:definition>100900 - Disclosure - Retroactive reinsurance contracts - Reconciliation of changes in claim liabilities and incurred losses and loss adjustment expenses (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureRetroactiveReinsuranceContractsNarrativeDetail" id="Role_DisclosureRetroactiveReinsuranceContractsNarrativeDetail">
+        <link:definition>100910 - Disclosure - Retroactive reinsurance contracts - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureLongDurationInsuranceContractsSummaryOfPeriodicPaymentAnnuityAndLifeAndHealthInsuranceBenefitsLiabilitiesDetail" id="DisclosureLongDurationInsuranceContractsSummaryOfPeriodicPaymentAnnuityAndLifeAndHealthInsuranceBenefitsLiabilitiesDetail">
+        <link:definition>100920 - Disclosure - Long duration insurance contracts - Summary of periodic payment annuity and life and health Insurance benefits liabilities (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureLongDurationInsuranceContractsSummaryOfLifeAnnuityAndHealthInsuranceBenefitsLiabilitiesDetail" id="DisclosureLongDurationInsuranceContractsSummaryOfLifeAnnuityAndHealthInsuranceBenefitsLiabilitiesDetail">
+        <link:definition>100930 - Disclosure - Long duration insurance contracts - Summary of life, annuity and health insurance benefits liabilities (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureLongDurationInsuranceContractsSummaryOfChangesInDiscountedPresentValuesOfExpectedFuturePolicyBenefitsAndExpectedFutureNetPremiu" id="DisclosureLongDurationInsuranceContractsSummaryOfChangesInDiscountedPresentValuesOfExpectedFuturePolicyBenefitsAndExpectedFutureNetPremiu">
+        <link:definition>100940 - Disclosure - Long duration insurance contracts - Summary of changes in discounted present values of expected future policy benefits and expected future net premiums (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureLongDurationInsuranceContractsSummaryOfUndiscountedAndDiscountedExpectedFutureGrossPremiumsToBeCollectedAndUndiscountedExpectedF" id="DisclosureLongDurationInsuranceContractsSummaryOfUndiscountedAndDiscountedExpectedFutureGrossPremiumsToBeCollectedAndUndiscountedExpectedF">
+        <link:definition>100950 - Disclosure - Long duration insurance contracts - Summary of undiscounted and discounted expected future gross premiums to be collected and undiscounted expected future benefits for periodic payment annuities and life and health insurance (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureLongDurationInsuranceContractsSummaryOfGrossPremiumsEarnedAndInterestExpenseDetail" id="DisclosureLongDurationInsuranceContractsSummaryOfGrossPremiumsEarnedAndInterestExpenseDetail">
+        <link:definition>100960 - Disclosure - Long duration insurance contracts - Summary of gross premiums earned and interest expense (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureLongDurationInsuranceContractsSummaryOfWeightedAverageCurrentDiscountRatesAndInterestAccretionRatesEstablishedAtContractInception" id="DisclosureLongDurationInsuranceContractsSummaryOfWeightedAverageCurrentDiscountRatesAndInterestAccretionRatesEstablishedAtContractInception">
+        <link:definition>100970 - Disclosure - Long duration insurance contracts - Summary of weighted average current discount rates and interest accretion rates established at contract inception (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureLongDurationInsuranceContractsNarrativeDetail" id="DisclosureLongDurationInsuranceContractsNarrativeDetail">
+        <link:definition>100980 - Disclosure - Long duration insurance contracts - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureNotesPayableAndOtherBorrowingsDetail" id="Role_DisclosureNotesPayableAndOtherBorrowingsDetail">
+        <link:definition>100990 - Disclosure - Notes payable and other borrowings (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureNotesPayableAndOtherBorrowingsNarrativeDetail" id="Role_DisclosureNotesPayableAndOtherBorrowingsNarrativeDetail">
+        <link:definition>101000 - Disclosure - Notes payable and other borrowings - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureNotesPayableAndOtherBorrowingsCreditAgreementsNarrativeDetail" id="Role_DisclosureNotesPayableAndOtherBorrowingsCreditAgreementsNarrativeDetail">
+        <link:definition>101010 - Disclosure - Notes payable and other borrowings - Credit agreements - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureFairValueMeasurementsFinancialAssetsAndLiabilitiesDetail" id="Role_DisclosureFairValueMeasurementsFinancialAssetsAndLiabilitiesDetail">
+        <link:definition>101020 - Disclosure - Fair value measurements - Financial assets and liabilities (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureFairValueMeasurementsSignificantUnobservableInputsDetail" id="Role_DisclosureFairValueMeasurementsSignificantUnobservableInputsDetail">
+        <link:definition>101030 - Disclosure - Fair value measurements - Significant unobservable inputs (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureFairValueMeasurementsOtherInformationDetail" id="Role_DisclosureFairValueMeasurementsOtherInformationDetail">
+        <link:definition>101040 - Disclosure - Fair value measurements - Other information (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureCommonStockNarrativeDetail" id="Role_DisclosureCommonStockNarrativeDetail">
+        <link:definition>101050 - Disclosure - Common stock - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureCommonStockDetail" id="Role_DisclosureCommonStockDetail">
+        <link:definition>101060 - Disclosure - Common stock (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureCommonStockParentheticalDetail" id="Role_DisclosureCommonStockParentheticalDetail">
+        <link:definition>101070 - Disclosure - Common stock (Parenthetical) (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureIncomeTaxesNarrativeDetail" id="Role_DisclosureIncomeTaxesNarrativeDetail">
+        <link:definition>101080 - Disclosure - Income taxes - Narrative (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureAccumulatedOtherComprehensiveIncomeDetail" id="Role_DisclosureAccumulatedOtherComprehensiveIncomeDetail">
+        <link:definition>101090 - Disclosure - Accumulated other comprehensive income (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureSupplementalCashFlowInformationDetail" id="Role_DisclosureSupplementalCashFlowInformationDetail">
+        <link:definition>101100 - Disclosure - Supplemental cash flow information (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureRevenueFromContractsWithCustomersDisaggregatedByReportableSegmentAndSourceOfRevenueDetail" id="Role_DisclosureRevenueFromContractsWithCustomersDisaggregatedByReportableSegmentAndSourceOfRevenueDetail">
+        <link:definition>101110 - Disclosure - Revenue from contracts with customers disaggregated by reportable segment and source of revenue (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureRevenueFromContractsWithCustomersTransactionPriceAllocatedToSignificantUnsatisfiedRemainingPerformanceObligationsAndTimingOfWhenPerformanceObligationsExpectedToBeSatisfiedDetail" id="Role_DisclosureRevenueFromContractsWithCustomersTransactionPriceAllocatedToSignificantUnsatisfiedRemainingPerformanceObligationsAndTimingOfWhenPerformanceObligationsExpectedToBeSatisfiedDetail">
+        <link:definition>101120 - Disclosure - Revenue from contracts with customers transaction price allocated to significant unsatisfied remaining performance obligations and timing of when performance obligations expected to be satisfied (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureRevenueFromContractsWithCustomersTransactionPriceAllocatedToSignificantUnsatisfiedRemainingPerformanceObligationsAndTimingOfWhenPerformanceObligationsExpectedToBeSatisfiedDetailDefault" id="Role_DisclosureRevenueFromContractsWithCustomersTransactionPriceAllocatedToSignificantUnsatisfiedRemainingPerformanceObligationsAndTimingOfWhenPerformanceObligationsExpectedToBeSatisfiedDetailDefault">
+        <link:definition>101120 - Disclosure - Revenue from contracts with customers transaction price allocated to significant unsatisfied remaining performance obligations and timing of when performance obligations expected to be satisfied (Detail) [Default]</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureRevenueFromContractsWithCustomersTransactionPriceAllocatedToSignificantUnsatisfiedRemainingPerformanceObligationsAndTimingOfWhenPerformanceObligationsExpectedToBeSatisfiedDetail1" id="Role_DisclosureRevenueFromContractsWithCustomersTransactionPriceAllocatedToSignificantUnsatisfiedRemainingPerformanceObligationsAndTimingOfWhenPerformanceObligationsExpectedToBeSatisfiedDetail1">
+        <link:definition>101130 - Disclosure - Revenue from contracts with customers transaction price allocated to significant unsatisfied remaining performance obligations and timing of when performance obligations expected to be satisfied (Detail 1)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/Role_DisclosureBusinessSegmentDataRevenuesDetail" id="Role_DisclosureBusinessSegmentDataRevenuesDetail">
+        <link:definition>101140 - Disclosure - Business segment data - Revenues (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.berkshirehathaway.com/20230331/taxonomy/role/DisclosureBusinessSegmentDataEarningsBeforeIncomeTaxesDetail" id="DisclosureBusinessSegmentDataEarningsBeforeIncomeTaxesDetail">
+        <link:definition>101150 - Disclosure - Business segment data - Earnings before income taxes (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+    </xsd:appinfo>
+  </xsd:annotation>
+  <xsd:element id="brka_FiniteLivedAndAndIndefiniteLivedIntangibleAssetsByMajorClassAxis" name="FiniteLivedAndAndIndefiniteLivedIntangibleAssetsByMajorClassAxis" type="xbrli:stringItemType" substitutionGroup="xbrldt:dimensionItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_AccountsAndOtherReceivablesNet" name="AccountsAndOtherReceivablesNet" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_AircraftRepurchaseLiabilitiesAndDeferredRevenueLeasesNet" name="AircraftRepurchaseLiabilitiesAndDeferredRevenueLeasesNet" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_BusinessCombinationPercentageOfVotingEquityInterestsAcquiredInStages" name="BusinessCombinationPercentageOfVotingEquityInterestsAcquiredInStages" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_BusinessCombinationProFormaInformationNetEarningsLossPerEquivalentClassACommonShare" name="BusinessCombinationProFormaInformationNetEarningsLossPerEquivalentClassACommonShare" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_BusinessCombinationRecognizedIdentifiableAssetsAcquiredAndLiabilitiesAssumedGoodwillAndOtherIntangibleAssets" name="BusinessCombinationRecognizedIdentifiableAssetsAcquiredAndLiabilitiesAssumedGoodwillAndOtherIntangibleAssets" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_BusinessCombinationRecognizedIdentifiableAssetsAcquiredAndLiabilitiesAssumedUnpaidLossesAndLossAdjustmentExpenses" name="BusinessCombinationRecognizedIdentifiableAssetsAcquiredAndLiabilitiesAssumedUnpaidLossesAndLossAdjustmentExpenses" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_ChargeOffsNetOfRecoveriesOnReceivables" name="ChargeOffsNetOfRecoveriesOnReceivables" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_ClassOfWarrantOrRightPeriodUntilWhichWarrantsOrRightsExercisable" name="ClassOfWarrantOrRightPeriodUntilWhichWarrantsOrRightsExercisable" type="xbrli:durationItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_CommonStockVotingRightsNumberSharesPerClassOfStock" name="CommonStockVotingRightsNumberSharesPerClassOfStock" type="xbrli:decimalItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="brka_CostOfLeasing" name="CostOfLeasing" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_CostsOfServicesAndOperatingExpenses" name="CostsOfServicesAndOperatingExpenses" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_DebtInstrumentMaturityYear" name="DebtInstrumentMaturityYear" type="xbrli:gYearItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_DebtIssuedDuringPeriod" name="DebtIssuedDuringPeriod" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_DebtSecuritiesAvailableForSaleMaturityYearDescription" name="DebtSecuritiesAvailableForSaleMaturityYearDescription" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_EconomicEquivalentPercentageOfClassBCommonShareToClassACommonShare" name="EconomicEquivalentPercentageOfClassBCommonShareToClassACommonShare" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="brka_EquityMethodInvestmentSummarizedFinancialInformationNetIncomeLossAttributableToCommonStockholders" name="EquityMethodInvestmentSummarizedFinancialInformationNetIncomeLossAttributableToCommonStockholders" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_EquitySecuritiesAccumulatedUnrealizedGainLoss" name="EquitySecuritiesAccumulatedUnrealizedGainLoss" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_EquitySecuritiesFVNITerm" name="EquitySecuritiesFVNITerm" type="xbrli:durationItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_ExcessOfCarryingValueOfInvestmentOverInvesteesEquity" name="ExcessOfCarryingValueOfInvestmentOverInvesteesEquity" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_FreightRailTransportationRevenues" name="FreightRailTransportationRevenues" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_GuaranteedMinimumDeathAndLivingBenefitsAssociatedWithVariableAnnuityProductsLiability" name="GuaranteedMinimumDeathAndLivingBenefitsAssociatedWithVariableAnnuityProductsLiability" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_IncomeTaxesPrincipallyDeferred" name="IncomeTaxesPrincipallyDeferred" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_IncreaseDecreaseInDeferredChargesRetroactiveReinsurance" name="IncreaseDecreaseInDeferredChargesRetroactiveReinsurance" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_IncreaseDecreaseThroughTransactionsWithNoncontrollingInterestsAndOther" name="IncreaseDecreaseThroughTransactionsWithNoncontrollingInterestsAndOther" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_InsuranceUnderwritingExpenses" name="InsuranceUnderwritingExpenses" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_IntangibleAssetsExcludingGoodwill" name="IntangibleAssetsExcludingGoodwill" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_InventoryWorkInProcessAndOtherInventoryNetOfReserves" name="InventoryWorkInProcessAndOtherInventoryNetOfReserves" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_InvestmentConcentrationNumberOfCompanies" name="InvestmentConcentrationNumberOfCompanies" type="xbrli:integerItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="brka_InvestmentIncomeInterestDividendAndOther" name="InvestmentIncomeInterestDividendAndOther" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_InvestmentOwnedPercentOfCommonSharesOutstanding" name="InvestmentOwnedPercentOfCommonSharesOutstanding" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="brka_LiabilitiesIncludingDeferredIncomeTaxes" name="LiabilitiesIncludingDeferredIncomeTaxes" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitExpectedFuturePolicyBenefitCurrentPeriodIncreaseDecreaseEffectOfActualFromExpectedResults" name="LiabilityForFuturePolicyBenefitExpectedFuturePolicyBenefitCurrentPeriodIncreaseDecreaseEffectOfActualFromExpectedResults" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitExpectedFuturePolicyBenefitCurrentPeriodIncreaseDecreaseFromCashFlowAssumptionChange" name="LiabilityForFuturePolicyBenefitExpectedFuturePolicyBenefitCurrentPeriodIncreaseDecreaseFromCashFlowAssumptionChange" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitExpectedFuturePolicyBenefitForeignCurrencyEffect" name="LiabilityForFuturePolicyBenefitExpectedFuturePolicyBenefitForeignCurrencyEffect" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitExpectedFuturePolicyBenefitFromNetChangeInBenefits" name="LiabilityForFuturePolicyBenefitExpectedFuturePolicyBenefitFromNetChangeInBenefits" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitExpectedNetPremiumChangeInDiscountRateAssumption" name="LiabilityForFuturePolicyBenefitExpectedNetPremiumChangeInDiscountRateAssumption" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitExpectedNetPremiumCumulativeIncreaseDecreaseInCashFlowAssumption" name="LiabilityForFuturePolicyBenefitExpectedNetPremiumCumulativeIncreaseDecreaseInCashFlowAssumption" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitExpectedNetPremiumForeignCurrencyEffect" name="LiabilityForFuturePolicyBenefitExpectedNetPremiumForeignCurrencyEffect" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitExpectedNetPremiumIncreaseDecreaseEffectOfActualFromExpectedResults" name="LiabilityForFuturePolicyBenefitExpectedNetPremiumIncreaseDecreaseEffectOfActualFromExpectedResults" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitExpectedNetPremiumIncreaseDecreaseFromImpactOfCashFlowAssumption" name="LiabilityForFuturePolicyBenefitExpectedNetPremiumIncreaseDecreaseFromImpactOfCashFlowAssumption" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitExpectedNetPremiumPeriodIncrease" name="LiabilityForFuturePolicyBenefitExpectedNetPremiumPeriodIncrease" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_LiabilityForFuturePolicyBenefitsAfterReclassifications" name="LiabilityForFuturePolicyBenefitsAfterReclassifications" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_LiabilityForUnpaidClaimsAndClaimAdjustmentExpenseRetroactiveReinsuranceContracts" name="LiabilityForUnpaidClaimsAndClaimAdjustmentExpenseRetroactiveReinsuranceContracts" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_MinimumCashCashEquivalentsAndUSTreasuryBillThresholdAfterRepurchaseOfCommonStockShares" name="MinimumCashCashEquivalentsAndUSTreasuryBillThresholdAfterRepurchaseOfCommonStockShares" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_NumberOfPlacesRetailLocationsLocated" name="NumberOfPlacesRetailLocationsLocated" type="xbrli:integerItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="brka_NumberOfSharesObtainableFromConvertingOneShareFromOneClassToAnotherClass" name="NumberOfSharesObtainableFromConvertingOneShareFromOneClassToAnotherClass" type="xbrli:sharesItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="brka_OtherComprehensiveIncomeLossLongDurationInsuranceContractDiscountRateChangesTax" name="OtherComprehensiveIncomeLossLongDurationInsuranceContractDiscountRateChangesTax" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_OtherComprehensiveIncomeLossLongDurationInsuranceContracts" name="OtherComprehensiveIncomeLossLongDurationInsuranceContracts" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_OtherComprehensiveIncomeLossLongDurationInsuranceContractsDiscountRateChangesBeforeTax" name="OtherComprehensiveIncomeLossLongDurationInsuranceContractsDiscountRateChangesBeforeTax" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_OtherInventoryPurchasedGoodsNetOfReserves" name="OtherInventoryPurchasedGoodsNetOfReserves" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_PaymentsToAcquireEquitySecurities" name="PaymentsToAcquireEquitySecurities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_PaymentsToAcquireUSTreasuryBillsAndAvailableForSaleSecuritiesDebt" name="PaymentsToAcquireUSTreasuryBillsAndAvailableForSaleSecuritiesDebt" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_PercentageOfAvailableForSaleSecuritiesDebtSecuritiesByCreditRating" name="PercentageOfAvailableForSaleSecuritiesDebtSecuritiesByCreditRating" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="brka_PercentageOfIncreaseOrDecreaseInLiabilityForUnpaidClaimsAndClaimsAdjustmentExpenseNet" name="PercentageOfIncreaseOrDecreaseInLiabilityForUnpaidClaimsAndClaimsAdjustmentExpenseNet" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_PercentOfLoanBalancesWithPaymentStatusCurrent" name="PercentOfLoanBalancesWithPaymentStatusCurrent" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="brka_PolicyholderBenefitsAndClaimsIncurredLifeAnnuityAndHealth" name="PolicyholderBenefitsAndClaimsIncurredLifeAnnuityAndHealth" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_PreferredStockInvestmentLiquidationValue" name="PreferredStockInvestmentLiquidationValue" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_PreferredStockInvestmentMandatoryRedemptionAmountLiquidationValue" name="PreferredStockInvestmentMandatoryRedemptionAmountLiquidationValue" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_PreferredStockInvestmentMandatoryRedemptionPricePercentageOfLiquidationValue" name="PreferredStockInvestmentMandatoryRedemptionPricePercentageOfLiquidationValue" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_PreferredStockInvestmentRedemptionPricePercentageOfLiquidationValue" name="PreferredStockInvestmentRedemptionPricePercentageOfLiquidationValue" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_PreferredStockInvestmentRedemptionYearStart" name="PreferredStockInvestmentRedemptionYearStart" type="xbrli:gYearItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_ProceedsFromRedemptionsAndMaturitiesOfUSTreasuryBillsAndAvailableForSaleSecuritiesDebt" name="ProceedsFromRedemptionsAndMaturitiesOfUSTreasuryBillsAndAvailableForSaleSecuritiesDebt" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_ProceedsFromSaleOfUSTreasuryBillsAndAvailableForSaleSecuritiesDebt" name="ProceedsFromSaleOfUSTreasuryBillsAndAvailableForSaleSecuritiesDebt" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_ProceedsFromSalesOfEquitySecurities" name="ProceedsFromSalesOfEquitySecurities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_ReclassificationsToOtherPolicyholderLiabilities" name="ReclassificationsToOtherPolicyholderLiabilities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_ReductionInLiabilityEstimates" name="ReductionInLiabilityEstimates" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_SalesAndServiceRevenue" name="SalesAndServiceRevenue" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_ServiceRevenuesAndOtherIncome" name="ServiceRevenuesAndOtherIncome" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_TaxableGainsLossOnSalesOfEquitySecurities" name="TaxableGainsLossOnSalesOfEquitySecurities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_UnamortizedDeferredChargesOnReinsuranceAssumed" name="UnamortizedDeferredChargesOnReinsuranceAssumed" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_USTreasuryBills" name="USTreasuryBills" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="brka_UtilityAndEnergyOperatingRevenues" name="UtilityAndEnergyOperatingRevenues" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="brka_FiniteLivedAndAndIndefiniteLivedIntangibleAssetsByMajorClassDomain" name="FiniteLivedAndAndIndefiniteLivedIntangibleAssetsByMajorClassDomain" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_FiniteLivedAndIndefiniteLivedIntangibleAssetsLineItems" name="FiniteLivedAndIndefiniteLivedIntangibleAssetsLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_SupplementalCashFlowInformationLineItems" name="SupplementalCashFlowInformationLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_AAOrHigherCreditRatingMember" name="AAOrHigherCreditRatingMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_AccumulatedLongDurationInsuranceContractsMember" name="AccumulatedLongDurationInsuranceContractsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_AlleghanyAndPilotAcquisitionsMember" name="AlleghanyAndPilotAcquisitionsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_AlleghanyCorporationMember" name="AlleghanyCorporationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_AmericanExpressCompanyAppleIncBankOfAmericaCorporationCocaColaCompanyAndChevronCorporationMember" name="AmericanExpressCompanyAppleIncBankOfAmericaCorporationCocaColaCompanyAndChevronCorporationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_AmericanExpressCompanyMember" name="AmericanExpressCompanyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_AppleIncMember" name="AppleIncMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_AutoSalesMember" name="AutoSalesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BankOfAmericaCorporationMember" name="BankOfAmericaCorporationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BanksInsuranceAndFinanceMember" name="BanksInsuranceAndFinanceMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BerkadiaCommercialMortgageMember" name="BerkadiaCommercialMortgageMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BerkshireHathawayEnergyCompanyAndSubsidiariesMember" name="BerkshireHathawayEnergyCompanyAndSubsidiariesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BerkshireHathawayEnergyCompanyMember" name="BerkshireHathawayEnergyCompanyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BerkshireHathawayEnergySubsidiariesMember" name="BerkshireHathawayEnergySubsidiariesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BerkshireHathawayFinanceCorporationMember" name="BerkshireHathawayFinanceCorporationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BerkshireHathawayInsuranceGroupMember" name="BerkshireHathawayInsuranceGroupMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BerkshireHathawayPrimaryGroupMember" name="BerkshireHathawayPrimaryGroupMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BerkshireHathawayReinsuranceGroupMember" name="BerkshireHathawayReinsuranceGroupMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BurlingtonNorthernSantaFeAndSubsidiariesMember" name="BurlingtonNorthernSantaFeAndSubsidiariesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_BurlingtonNorthernSantaFeCorporationMember" name="BurlingtonNorthernSantaFeCorporationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ChevronCorporationMember" name="ChevronCorporationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_CocaColaCompanyMember" name="CocaColaCompanyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_CommercialIndustrialAndOtherMember" name="CommercialIndustrialAndOtherMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_CommonStockRepurchaseProgramMember" name="CommonStockRepurchaseProgramMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_CommonStockWarrantsMember" name="CommonStockWarrantsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ConsumerProductsMember" name="ConsumerProductsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_CorporateReconcilingItemsAndEliminationsMember" name="CorporateReconcilingItemsAndEliminationsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_CumulativePerpetualPreferredStockMember" name="CumulativePerpetualPreferredStockMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_CustomerRelationshipsAndContractsMember" name="CustomerRelationshipsAndContractsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_DeferredChargesReinsuranceAssumedMember" name="DeferredChargesReinsuranceAssumedMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ElectricityAndNaturalGasMember" name="ElectricityAndNaturalGasMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ElectricityNaturalGasAndFuelMember" name="ElectricityNaturalGasAndFuelMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_EquitySecuritiesFvNiMember" name="EquitySecuritiesFvNiMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_EquivalentClassAMember" name="EquivalentClassAMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_EquivalentClassBMember" name="EquivalentClassBMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_FurnitureFixturesAndOtherMember" name="FurnitureFixturesAndOtherMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_GeicoMember" name="GeicoMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_GroceryAndConvenienceStoreDistributionMember" name="GroceryAndConvenienceStoreDistributionMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_InsuranceAndOtherMember" name="InsuranceAndOtherMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_InsuranceCorporateAndOtherMember" name="InsuranceCorporateAndOtherMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_InvestmentCommitmentMember" name="InvestmentCommitmentMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_InvestmentConcentrationRiskMember" name="InvestmentConcentrationRiskMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_JefferiesFinancialGroupIncMember" name="JefferiesFinancialGroupIncMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_LandBuildingsImprovementsAndOtherMember" name="LandBuildingsImprovementsAndOtherMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_LandTrackStructureAndOtherRoadwayMember" name="LandTrackStructureAndOtherRoadwayMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_LifeAndHealthInsuranceMember" name="LifeAndHealthInsuranceMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_LifeAndHealthMember" name="LifeAndHealthMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_LocomotivesFreightCarsAndOtherEquipmentMember" name="LocomotivesFreightCarsAndOtherEquipmentMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ManufacturedAndSiteBuiltHomeLoansMember" name="ManufacturedAndSiteBuiltHomeLoansMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ManufacturedBuildingProductsMember" name="ManufacturedBuildingProductsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ManufacturedConsumerProductsMember" name="ManufacturedConsumerProductsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ManufacturedHousingLoanBalanceMember" name="ManufacturedHousingLoanBalanceMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ManufacturedIndustrialAndCommercialProductsMember" name="ManufacturedIndustrialAndCommercialProductsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ManufacturingBusinessesMember" name="ManufacturingBusinessesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_McLaneCompanyMember" name="McLaneCompanyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MeasurementInputsDiscountsForLiquidityAndSubordinationMember" name="MeasurementInputsDiscountsForLiquidityAndSubordinationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MOnePointFiveZeroZeroSeniorNotesDueTwoThousandThirtyMember" name="MOnePointFiveZeroZeroSeniorNotesDueTwoThousandThirtyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MOnePointOneTwoFiveSeniorNotesDueTwoThousandTwentySevenMember" name="MOnePointOneTwoFiveSeniorNotesDueTwoThousandTwentySevenMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MOnePointSixTwoFiveSeniorNotesDueTwoThousandThirtyFiveMember" name="MOnePointSixTwoFiveSeniorNotesDueTwoThousandThirtyFiveMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MOnePointThreeZeroZeroSeniorNotesDueTwoThousandTwentyFourMember" name="MOnePointThreeZeroZeroSeniorNotesDueTwoThousandTwentyFourMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MTwoPointOneFiveZeroSeniorNotesDueTwoThousandTwentyEightMember" name="MTwoPointOneFiveZeroSeniorNotesDueTwoThousandTwentyEightMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MTwoPointSixTwoFiveSeniorNotesDueTwoThousandFiftyNineMember" name="MTwoPointSixTwoFiveSeniorNotesDueTwoThousandFiftyNineMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MTwoPointThreeSevenFiveSeniorNotesDueTwoThousandThirtyNineMember" name="MTwoPointThreeSevenFiveSeniorNotesDueTwoThousandThirtyNineMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MTwoPointZeroZeroZeroSeniorNotesDueTwoThousandThirtyFourMember" name="MTwoPointZeroZeroZeroSeniorNotesDueTwoThousandThirtyFourMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MZeroPointFiveZeroZeroSeniorNotesDueTwoThousandFortyOneMember" name="MZeroPointFiveZeroZeroSeniorNotesDueTwoThousandFortyOneMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_MZeroPointZeroZeroZeroSeniorNotesDueTwoThousandTwentyFiveMember" name="MZeroPointZeroZeroZeroSeniorNotesDueTwoThousandTwentyFiveMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_OccidentalCommonStockMember" name="OccidentalCommonStockMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_OccidentalPetroleumCorporationMember" name="OccidentalPetroleumCorporationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_OtherAccumulatedOtherComprehensiveIncomeMember" name="OtherAccumulatedOtherComprehensiveIncomeMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_OtherInvestmentMember" name="OtherInvestmentMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_OtherRetailAndWholesaleDistributionMember" name="OtherRetailAndWholesaleDistributionMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_OtherSalesAndServiceContractsMember" name="OtherSalesAndServiceContractsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_PatentsAndTechnologyMember" name="PatentsAndTechnologyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_PeriodicPaymentAnnuitiesMember" name="PeriodicPaymentAnnuitiesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_PilotTravelCentersLimitedLiabilityCompanyMember" name="PilotTravelCentersLimitedLiabilityCompanyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_PilotTravelCentersLLCMember" name="PilotTravelCentersLLCMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_PremiumsEarnedNetMember" name="PremiumsEarnedNetMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_PrimaryInsuranceBusinessesMember" name="PrimaryInsuranceBusinessesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_PropertyAndCasualtyInsuranceAndReinsuranceExcludingRetroactiveReinsuranceMember" name="PropertyAndCasualtyInsuranceAndReinsuranceExcludingRetroactiveReinsuranceMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_PropertyAndCasualtyReinsuranceExcludingRetroactiveReinsuranceMember" name="PropertyAndCasualtyReinsuranceExcludingRetroactiveReinsuranceMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_PropertyAndCasualtyReinsuranceMember" name="PropertyAndCasualtyReinsuranceMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_RailroadMember" name="RailroadMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_RailroadUtilitiesAndEnergyMember" name="RailroadUtilitiesAndEnergyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_RetroactiveReinsuranceMember" name="RetroactiveReinsuranceMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_SeritageGrowthPropertiesMember" name="SeritageGrowthPropertiesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ServiceAndRetailingBusinessesMember" name="ServiceAndRetailingBusinessesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_SubsidiariesExcludingBerkshireHathawayFinanceCorporationMember" name="SubsidiariesExcludingBerkshireHathawayFinanceCorporationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_TermLoanMember" name="TermLoanMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_TheKraftHeinzCompanyAndOccidentalPetroleumCorporationMember" name="TheKraftHeinzCompanyAndOccidentalPetroleumCorporationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_TheKraftHeinzCompanyMember" name="TheKraftHeinzCompanyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_TravelCenterLocationsMember" name="TravelCenterLocationsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_UnitedStatesAndCanadaMember" name="UnitedStatesAndCanadaMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_UnpaidLossesAndLossAdjustmentExpensesMember" name="UnpaidLossesAndLossAdjustmentExpensesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_UtilitiesAndEnergyMember" name="UtilitiesAndEnergyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_UtilityGenerationTransmissionAndDistributionSystemsMember" name="UtilityGenerationTransmissionAndDistributionSystemsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ValuationTechniqueWarrantPricingModelMember" name="ValuationTechniqueWarrantPricingModelMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_FiniteLivedAndIndefiniteLivedIntangibleAssetsTable" name="FiniteLivedAndIndefiniteLivedIntangibleAssetsTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_ScheduleOfIndefiniteLivedAndFiniteLivedIntangibleAssetsTable" name="ScheduleOfIndefiniteLivedAndFiniteLivedIntangibleAssetsTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_SupplementalCashFlowInformationTable" name="SupplementalCashFlowInformationTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="brka_CommonStockDisclosureTextBlock" name="CommonStockDisclosureTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_InvestmentAndDerivativeContractGainsLossesTextBlock" name="InvestmentAndDerivativeContractGainsLossesTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_InvestmentsInEquitySecuritiesDisclosureTextBlock" name="InvestmentsInEquitySecuritiesDisclosureTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_InvestmentsInFixedMaturitiesDisclosureTextBlock" name="InvestmentsInFixedMaturitiesDisclosureTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_RetroactiveReinsuranceContractsTextBlock" name="RetroactiveReinsuranceContractsTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_ScheduleOfDepreciationExpenseTableTextBlock" name="ScheduleOfDepreciationExpenseTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_ScheduleOfFiniteAndIndefiniteLivedIntangibleAssetsByMajorClassTableTextBlock" name="ScheduleOfFiniteAndIndefiniteLivedIntangibleAssetsByMajorClassTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_ScheduleOfInvestmentsInEquitySecuritiesTableTextBlock" name="ScheduleOfInvestmentsInEquitySecuritiesTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_ScheduleOfLiabilityForUnpaidClaimsAndClaimsAdjustmentExpenseAndIncurredLossesAndLossAdjustmentExpensesRetroactiveReinsuranceContractsTableTextBlock" name="ScheduleOfLiabilityForUnpaidClaimsAndClaimsAdjustmentExpenseAndIncurredLossesAndLossAdjustmentExpensesRetroactiveReinsuranceContractsTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_ScheduleOfLoansAndLeasesReceivablesBeforeFeesDesignatedByYearOfLoanOriginationTableTextBlock" name="ScheduleOfLoansAndLeasesReceivablesBeforeFeesDesignatedByYearOfLoanOriginationTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_SummaryOfCarryingValueAndFairValueOfInvestmentsTableTextBlock" name="SummaryOfCarryingValueAndFairValueOfInvestmentsTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_SummaryOfEarningsAndDistributionsReceivedFromEquityMethodInvestmentsTableTextBlock" name="SummaryOfEarningsAndDistributionsReceivedFromEquityMethodInvestmentsTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_SummaryOfFutureBenefitsForPeriodicPaymentAnnuitiesAndLifeAndHealthInsuranceTableTextBlock" name="SummaryOfFutureBenefitsForPeriodicPaymentAnnuitiesAndLifeAndHealthInsuranceTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_SummaryOfGrossPremiumsEarnedAndInterestExpenseTableTextBlock" name="SummaryOfGrossPremiumsEarnedAndInterestExpenseTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_SummaryOfInvestmentAndDerivativeGainsAndLossesTableTextBlock" name="SummaryOfInvestmentAndDerivativeGainsAndLossesTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_SummaryOfLifeAnnuityAndHealthInsuranceBenefitsLiabilitiesTableTextBlock" name="SummaryOfLifeAnnuityAndHealthInsuranceBenefitsLiabilitiesTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_SummaryOfPeriodicPaymentAnnuityAndLifeAndHealthInsuranceBenefitsLiabilitiesTableTextBlock" name="SummaryOfPeriodicPaymentAnnuityAndLifeAndHealthInsuranceBenefitsLiabilitiesTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="brka_SummaryOfWeightedAverageCurrentDiscountRatesAndInterestAccretionRatesTableTextBlock" name="SummaryOfWeightedAverageCurrentDiscountRatesAndInterestAccretionRatesTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+</xsd:schema>

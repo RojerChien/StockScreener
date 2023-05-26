@@ -1,0 +1,1340 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- DFIN New ActiveDisclosure (SM) XBRL Schema Document - http://www.dfinsolutions.com/ -->
+<!-- Creation Date :2023-04-25T06:55:13.6469+00:00 -->
+<!-- Copyright (c) 2023 Donnelly Financial Solutions, Inc. All Rights Reserved. -->
+<xsd:schema targetNamespace="http://www.tencent.com/20221231" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:country="http://xbrl.sec.gov/country/2022" xmlns:dtr-types="http://www.xbrl.org/dtr/type/2020-01-21" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:dei="http://xbrl.sec.gov/dei/2022" xmlns:ifrs-full="https://xbrl.ifrs.org/taxonomy/2022-03-24/ifrs-full" xmlns:xbrldt="http://xbrl.org/2005/xbrldt" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:tme="http://www.tencent.com/20221231" xmlns:enum2="http://xbrl.org/2020/extensible-enumerations-2.0" xmlns:srt="http://fasb.org/srt/2022" xmlns:us-gaap="http://fasb.org/us-gaap/2022" xmlns:currency="http://xbrl.sec.gov/currency/2022" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xsd:import schemaLocation="http://www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd" namespace="http://www.xbrl.org/2003/instance"/>
+  <xsd:import schemaLocation="http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd" namespace="http://www.xbrl.org/2003/linkbase"/>
+  <xsd:import schemaLocation="http://www.xbrl.org/2005/xbrldt-2005.xsd" namespace="http://xbrl.org/2005/xbrldt"/>
+  <xsd:import schemaLocation="https://xbrl.sec.gov/dei/2022/dei-2022.xsd" namespace="http://xbrl.sec.gov/dei/2022"/>
+  <xsd:import schemaLocation="https://xbrl.fasb.org/us-gaap/2022/elts/us-gaap-2022.xsd" namespace="http://fasb.org/us-gaap/2022"/>
+  <xsd:import schemaLocation="https://xbrl.sec.gov/country/2022/country-2022.xsd" namespace="http://xbrl.sec.gov/country/2022"/>
+  <xsd:import schemaLocation="https://xbrl.ifrs.org/taxonomy/2022-03-24/full_ifrs/full_ifrs-cor_2022-03-24.xsd" namespace="https://xbrl.ifrs.org/taxonomy/2022-03-24/ifrs-full"/>
+  <xsd:import schemaLocation="https://xbrl.sec.gov/currency/2022/currency-2022.xsd" namespace="http://xbrl.sec.gov/currency/2022"/>
+  <xsd:import schemaLocation="https://www.xbrl.org/dtr/type/2020-01-21/types.xsd" namespace="http://www.xbrl.org/dtr/type/2020-01-21"/>
+  <xsd:import schemaLocation="https://xbrl.fasb.org/srt/2022/elts/srt-2022.xsd" namespace="http://fasb.org/srt/2022"/>
+  <xsd:annotation>
+    <xsd:appinfo>
+      <link:linkbaseRef xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase" xlink:href="tme-20221231_lab.xml" xlink:role="http://www.xbrl.org/2003/role/labelLinkbaseRef" xlink:title="Labels link" xlink:type="simple"/>
+      <link:linkbaseRef xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase" xlink:href="tme-20221231_pre.xml" xlink:role="http://www.xbrl.org/2003/role/presentationLinkbaseRef" xlink:title="Presentation link" xlink:type="simple"/>
+      <link:linkbaseRef xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase" xlink:href="tme-20221231_def.xml" xlink:role="http://www.xbrl.org/2003/role/definitionLinkbaseRef" xlink:title="Definition link" xlink:type="simple"/>
+      <link:linkbaseRef xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase" xlink:href="tme-20221231_cal.xml" xlink:role="http://www.xbrl.org/2003/role/calculationLinkbaseRef" xlink:title="Calculation link" xlink:type="simple"/>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/CoverPage" id="CoverPage">
+        <link:definition>100000 - Document - Cover Page</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ConsolidatedIncomeStatements" id="ConsolidatedIncomeStatements">
+        <link:definition>100010 - Statement - CONSOLIDATED INCOME STATEMENTS</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ConsolidatedStatementsOfComprehensiveIncome" id="ConsolidatedStatementsOfComprehensiveIncome">
+        <link:definition>100020 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/StatementConsolidatedStatementsOfComprehensiveIncome2" id="StatementConsolidatedStatementsOfComprehensiveIncome2">
+        <link:definition>100030 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME 2</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ConsolidatedBalanceSheets" id="ConsolidatedBalanceSheets">
+        <link:definition>100040 - Statement - CONSOLIDATED BALANCE SHEETS</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ConsolidatedStatementsOfChangesInEquity" id="ConsolidatedStatementsOfChangesInEquity">
+        <link:definition>100050 - Statement - CONSOLIDATED STATEMENTS OF CHANGES IN EQUITY</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ConsolidatedStatementsOfCashFlows" id="ConsolidatedStatementsOfCashFlows">
+        <link:definition>100060 - Statement - CONSOLIDATED STATEMENTS OF CASH FLOWS</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureGeneralInformationAndOrganization" id="DisclosureGeneralInformationAndOrganization">
+        <link:definition>100070 - Disclosure - General information and organization</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/SummaryOfSignificantAccountingPolicies" id="SummaryOfSignificantAccountingPolicies">
+        <link:definition>100080 - Disclosure - Summary of Significant Accounting Policies</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialRiskManagement" id="FinancialRiskManagement">
+        <link:definition>100090 - Disclosure - Financial Risk Management</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/CriticalAccountingEstimatesAndJudgments" id="CriticalAccountingEstimatesAndJudgments">
+        <link:definition>100100 - Disclosure - Critical accounting estimates and judgments</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/Revenue" id="Revenue">
+        <link:definition>100110 - Disclosure - Revenue</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/InterestIncome" id="InterestIncome">
+        <link:definition>100120 - Disclosure - Interest Income</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/OtherGainsNet" id="OtherGainsNet">
+        <link:definition>100130 - Disclosure - Other gains, net</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureExpensesByNature" id="DisclosureExpensesByNature">
+        <link:definition>100140 - Disclosure - Expenses by nature</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinanceCosts" id="FinanceCosts">
+        <link:definition>100150 - Disclosure - Finance costs</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/Taxation" id="Taxation">
+        <link:definition>100160 - Disclosure - Taxation</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/EarningsPerShare" id="EarningsPerShare">
+        <link:definition>100170 - Disclosure - Earnings per share</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/PropertyPlantAndEquipment" id="PropertyPlantAndEquipment">
+        <link:definition>100180 - Disclosure - Property Plant And Equipment</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureLandUseRights" id="DisclosureLandUseRights">
+        <link:definition>100190 - Disclosure - Land use rights</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/RightOfUseAssets" id="RightOfUseAssets">
+        <link:definition>100200 - Disclosure - Right-of-Use Assets</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/IntangibleAssets" id="IntangibleAssets">
+        <link:definition>100210 - Disclosure - Intangible Assets</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/Goodwill" id="Goodwill">
+        <link:definition>100220 - Disclosure - Goodwill</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/InvestmentsAccountedForUsingEquityMethod" id="InvestmentsAccountedForUsingEquityMethod">
+        <link:definition>100230 - Disclosure - Investments accounted for using equity method</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialAssetsAtFairValue" id="FinancialAssetsAtFairValue">
+        <link:definition>100240 - Disclosure - Financial Assets at Fair Value</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/PrepaymentsDepositsAndOtherAssets" id="PrepaymentsDepositsAndOtherAssets">
+        <link:definition>100250 - Disclosure - Prepayments deposits and other assets</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/AccountsReceivable" id="AccountsReceivable">
+        <link:definition>100260 - Disclosure - Accounts receivable</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TermDepositsAndCashAndCashEquivalents" id="TermDepositsAndCashAndCashEquivalents">
+        <link:definition>100270 - Disclosure - Term deposits and cash and cash equivalents</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareCapital" id="ShareCapital">
+        <link:definition>100280 - Disclosure - Share capital</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/OtherReserves" id="OtherReserves">
+        <link:definition>100290 - Disclosure - Other Reserves</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareBasedCompensation" id="ShareBasedCompensation">
+        <link:definition>100300 - Disclosure - Share Based Compensation</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/NotesPayable" id="NotesPayable">
+        <link:definition>100310 - Disclosure - Notes payable</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/OtherPayablesAndOtherLiabilities" id="OtherPayablesAndOtherLiabilities">
+        <link:definition>100320 - Disclosure - Other Payables and Other Liabilities</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DeferredRevenue" id="DeferredRevenue">
+        <link:definition>100330 - Disclosure - Deferred revenue</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/BusinessCombinations" id="BusinessCombinations">
+        <link:definition>100340 - Disclosure - Business Combinations</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/CashFlowInformation" id="CashFlowInformation">
+        <link:definition>100350 - Disclosure - Cash flow information</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialInstrumentsByCategory" id="FinancialInstrumentsByCategory">
+        <link:definition>100360 - Disclosure - Financial instruments by category</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/Commitments" id="Commitments">
+        <link:definition>100370 - Disclosure - Commitments</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/RelatedPartyTransactions" id="RelatedPartyTransactions">
+        <link:definition>100380 - Disclosure - Related Party Transactions</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ContingentLiabilities" id="ContingentLiabilities">
+        <link:definition>100390 - Disclosure - Contingent liabilities</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureDividends" id="DisclosureDividends">
+        <link:definition>100400 - Disclosure - Dividends</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/EventsOccurringAfterTheReportingPeriod" id="EventsOccurringAfterTheReportingPeriod">
+        <link:definition>100410 - Disclosure - Events occurring after the reporting period</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ApprovalOfTheseConsolidatedFinancialStatements" id="ApprovalOfTheseConsolidatedFinancialStatements">
+        <link:definition>100420 - Disclosure - Approval of these consolidated financial statements</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/SummaryOfSignificantAccountingPoliciesPolicies" id="SummaryOfSignificantAccountingPoliciesPolicies">
+        <link:definition>100430 - Disclosure - Summary of Significant Accounting Policies (Policies)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureGeneralInformationAndOrganizationTables" id="DisclosureGeneralInformationAndOrganizationTables">
+        <link:definition>100440 - Disclosure - General information and organization (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/SummaryOfSignificantAccountingPoliciesTables" id="SummaryOfSignificantAccountingPoliciesTables">
+        <link:definition>100450 - Disclosure - Summary of Significant Accounting Policies (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialRiskManagementTables" id="FinancialRiskManagementTables">
+        <link:definition>100460 - Disclosure - Financial Risk Management (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/OtherGainsNetTables" id="OtherGainsNetTables">
+        <link:definition>100470 - Disclosure - Other gains, net (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureExpensesByNatureTables" id="DisclosureExpensesByNatureTables">
+        <link:definition>100480 - Disclosure - Expenses by nature (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinanceCostTables" id="FinanceCostTables">
+        <link:definition>100490 - Disclosure - Finance cost (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TaxationTables" id="TaxationTables">
+        <link:definition>100500 - Disclosure - Taxation (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/EarningsPerShareTables" id="EarningsPerShareTables">
+        <link:definition>100510 - Disclosure - Earnings per share (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/PropertyPlantAndEquipmentTables" id="PropertyPlantAndEquipmentTables">
+        <link:definition>100520 - Disclosure - Property Plant And Equipment (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureLandUseRightsTables" id="DisclosureLandUseRightsTables">
+        <link:definition>100530 - Disclosure - Land use rights (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/RightOfUseAssetsTables" id="RightOfUseAssetsTables">
+        <link:definition>100540 - Disclosure - Right-of-Use Assets (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/IntangibleAssetsTables" id="IntangibleAssetsTables">
+        <link:definition>100550 - Disclosure - Intangible Assets (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/GoodwillTables" id="GoodwillTables">
+        <link:definition>100560 - Disclosure - Goodwill (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/InvestmentsAccountedForUsingEquityMethodTables" id="InvestmentsAccountedForUsingEquityMethodTables">
+        <link:definition>100570 - Disclosure - Investments accounted for using equity method (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialAssetsAtFairValueTables" id="FinancialAssetsAtFairValueTables">
+        <link:definition>100580 - Disclosure - Financial Assets at Fair Value (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/PrepaymentsDepositsAndOtherAssetsTables" id="PrepaymentsDepositsAndOtherAssetsTables">
+        <link:definition>100590 - Disclosure - Prepayments deposits and other assets (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/AccountsReceivableTables" id="AccountsReceivableTables">
+        <link:definition>100600 - Disclosure - Accounts receivable (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TermDepositsAndCashAndCashEquivalentsTables" id="TermDepositsAndCashAndCashEquivalentsTables">
+        <link:definition>100610 - Disclosure - Term deposits and cash and cash equivalents (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareCapitalTables" id="ShareCapitalTables">
+        <link:definition>100620 - Disclosure - Share capital (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/OtherReservesTables" id="OtherReservesTables">
+        <link:definition>100630 - Disclosure - Other Reserves (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareBasedCompensationTables" id="ShareBasedCompensationTables">
+        <link:definition>100640 - Disclosure - Share Based Compensation (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/NotesPayableTables" id="NotesPayableTables">
+        <link:definition>100650 - Disclosure - Notes payable (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/OtherPayablesAndOtherLiabilitiesTables" id="OtherPayablesAndOtherLiabilitiesTables">
+        <link:definition>100660 - Disclosure - Other Payables and Other Liabilities (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DeferredRevenueTables" id="DeferredRevenueTables">
+        <link:definition>100670 - Disclosure - Deferred revenue (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/BusinessCombinationsTables" id="BusinessCombinationsTables">
+        <link:definition>100680 - Disclosure - Business Combinations (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/CashFlowInformationTables" id="CashFlowInformationTables">
+        <link:definition>100690 - Disclosure - Cash flow information (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialInstrumentsByCategoryTables" id="FinancialInstrumentsByCategoryTables">
+        <link:definition>100700 - Disclosure - Financial instruments by category (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/CommitmentsTables" id="CommitmentsTables">
+        <link:definition>100710 - Disclosure - Commitments (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/RelatedPartyTransactionsTables" id="RelatedPartyTransactionsTables">
+        <link:definition>100720 - Disclosure - Related Party Transactions (Tables)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureGeneralInformationAndOrganizationSummaryOfSignificantSubsidiariesViesAndSubsidiariesOfViesDetails" id="DisclosureGeneralInformationAndOrganizationSummaryOfSignificantSubsidiariesViesAndSubsidiariesOfViesDetails">
+        <link:definition>100730 - Disclosure - General information and organization - Summary of Significant Subsidiaries, VIEs, and Subsidiaries of VIEs (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureGeneralInformationAndOrganizationAdditionalInformationDetails" id="DisclosureGeneralInformationAndOrganizationAdditionalInformationDetails">
+        <link:definition>100740 - Disclosure - General information and organization - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureGeneralInformationAndOrganizationSummaryOfCondensedSeparateFinancialStatementsDetails" id="DisclosureGeneralInformationAndOrganizationSummaryOfCondensedSeparateFinancialStatementsDetails">
+        <link:definition>100750 - Disclosure - General information and organization - Summary of Condensed Separate Financial Statements (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/SummaryOfSignificantAccountingPoliciesAdditionalInformationDetails" id="SummaryOfSignificantAccountingPoliciesAdditionalInformationDetails">
+        <link:definition>100760 - Disclosure - Summary of Significant Accounting Policies - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/SummaryOfSignificantAccountingPoliciesSummaryOfEstimatedUsefulLivesOfPropertyPlantAndEquipmentDetail" id="SummaryOfSignificantAccountingPoliciesSummaryOfEstimatedUsefulLivesOfPropertyPlantAndEquipmentDetail">
+        <link:definition>100770 - Disclosure - Summary of Significant Accounting Policies - Summary of Estimated Useful Lives of Property, Plant and Equipment (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/SummaryOfSignificantAccountingPoliciesSummaryOfEstimatedUsefulLivesOfAcquiredIntangibleAssetsDetail" id="SummaryOfSignificantAccountingPoliciesSummaryOfEstimatedUsefulLivesOfAcquiredIntangibleAssetsDetail">
+        <link:definition>100780 - Disclosure - Summary of Significant Accounting Policies - Summary of Estimated Useful Lives of Acquired Intangible Assets (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialRiskManagementAdditionalInformationDetails" id="FinancialRiskManagementAdditionalInformationDetails">
+        <link:definition>100790 - Disclosure - Financial Risk Management - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialRiskManagementSummaryOfMovementsInContingentConsiderationResultedFromBusinessCombinationMovementsAtFairValueUsingLevel3MeasurementsDetail" id="FinancialRiskManagementSummaryOfMovementsInContingentConsiderationResultedFromBusinessCombinationMovementsAtFairValueUsingLevel3MeasurementsDetail">
+        <link:definition>100800 - Disclosure - Financial Risk Management - Summary of Movements in Contingent Consideration Resulted from Business Combination Movements at Fair Value Using Level 3 Measurements (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/RevenueAdditionalInformationDetails" id="RevenueAdditionalInformationDetails">
+        <link:definition>100810 - Disclosure - Revenue - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/OtherGainsNetSummaryOfOtherLossesGainsNetDetails" id="OtherGainsNetSummaryOfOtherLossesGainsNetDetails">
+        <link:definition>100820 - Disclosure - Other gains, net - Summary of Other (losses)/gains, net (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureExpensesByNatureSummaryOfExpenseByNatureDetails" id="DisclosureExpensesByNatureSummaryOfExpenseByNatureDetails">
+        <link:definition>100830 - Disclosure - Expenses by nature - Summary of Expense By Nature (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureExpensesByNatureSummaryOfExpenseByNatureParentheticalDetails" id="DisclosureExpensesByNatureSummaryOfExpenseByNatureParentheticalDetails">
+        <link:definition>100840 - Disclosure - Expenses by nature - Summary of Expense By Nature (Parenthetical) (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureExpensesByNatureSummaryOfEmployeeBenefitsExpensesDetails" id="DisclosureExpensesByNatureSummaryOfEmployeeBenefitsExpensesDetails">
+        <link:definition>100850 - Disclosure - Expenses by Nature - Summary of Employee Benefits Expenses (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinanceCostsDetails" id="FinanceCostsDetails">
+        <link:definition>100860 - Disclosure - Finance costs (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TaxationAdditionalInformationDetails" id="TaxationAdditionalInformationDetails">
+        <link:definition>100870 - Disclosure - Taxation - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TaxationSummaryOfIncomeTaxExpensesDetails" id="TaxationSummaryOfIncomeTaxExpensesDetails">
+        <link:definition>100880 - Disclosure - Taxation - Summary of Income Tax Expenses (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TaxationSummaryOfReconciliationOfIncomeTaxDetails" id="TaxationSummaryOfReconciliationOfIncomeTaxDetails">
+        <link:definition>100890 - Disclosure - Taxation - Summary of Reconciliation of Income Tax (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TaxationSummaryOfReconciliationOfIncomeTaxParentheticalDetails" id="TaxationSummaryOfReconciliationOfIncomeTaxParentheticalDetails">
+        <link:definition>100900 - Disclosure - Taxation - Summary of Reconciliation of Income Tax (Parenthetical) (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TaxationSummaryOfAmountAndPerShareEffectOfTaxHolidayDetails" id="TaxationSummaryOfAmountAndPerShareEffectOfTaxHolidayDetails">
+        <link:definition>100910 - Disclosure - Taxation - Summary of Amount and Per Share Effect of Tax Holiday (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TaxationSummaryOfProfitBeforeTaxDetails" id="TaxationSummaryOfProfitBeforeTaxDetails">
+        <link:definition>100920 - Disclosure - Taxation - Summary of Profit Before Tax (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TaxationSummaryOfDeferredTaxAssetsAndDeferredTaxLiabilitiesDetails" id="TaxationSummaryOfDeferredTaxAssetsAndDeferredTaxLiabilitiesDetails">
+        <link:definition>100930 - Disclosure - Taxation - Summary of Deferred Tax Assets and Deferred Tax Liabilities (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TaxationSummaryOfRecoveryOfDeferredIncomeTaxDetails" id="TaxationSummaryOfRecoveryOfDeferredIncomeTaxDetails">
+        <link:definition>100940 - Disclosure - Taxation - Summary of Recovery of Deferred Income Tax (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TaxationSummaryOfMovementsOfDeferredIncomeTaxAssetsDetails" id="TaxationSummaryOfMovementsOfDeferredIncomeTaxAssetsDetails">
+        <link:definition>100950 - Disclosure - Taxation - Summary of Movements of Deferred Income Tax Assets (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureTaxationDisclosureOfMovementOfDeferredIncomeTaxLiabilitiesExplanatoryDetails" id="DisclosureTaxationDisclosureOfMovementOfDeferredIncomeTaxLiabilitiesExplanatoryDetails">
+        <link:definition>100960 - Disclosure - Taxation - Disclosure of Movement of Deferred Income Tax Liabilities Explanatory (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/EarningsPerShareSummaryOfComputationOfBasicAndDilutedNetIncomePerShareDetails" id="EarningsPerShareSummaryOfComputationOfBasicAndDilutedNetIncomePerShareDetails">
+        <link:definition>100970 - Disclosure - Earnings per share - Summary of Computation of Basic and Diluted Net Income Per Share (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/PropertyPlantAndEquipmentSummaryOfPropertyPlantAndEquipmentDetails" id="PropertyPlantAndEquipmentSummaryOfPropertyPlantAndEquipmentDetails">
+        <link:definition>100980 - Disclosure - Property Plant and Equipment - Summary of Property Plant and Equipment (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/PropertyPlantAndEquipmentSummaryOfDepreciationChargedToConsolidatedIncomeStatementsDetails" id="PropertyPlantAndEquipmentSummaryOfDepreciationChargedToConsolidatedIncomeStatementsDetails">
+        <link:definition>100990 - Disclosure - Property Plant and Equipment - Summary of Depreciation Charged to Consolidated Income Statements (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/LandUseRightSummaryOfQuantitativeInformationAboutLandUseRightDetails" id="LandUseRightSummaryOfQuantitativeInformationAboutLandUseRightDetails">
+        <link:definition>101000 - Disclosure - Land use right - Summary of Quantitative Information About Land Use Right (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/LandUseRightAdditionalInformationDetails" id="LandUseRightAdditionalInformationDetails">
+        <link:definition>101010 - Disclosure - Land use right - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureRightofuseAssetsScheduleOfCarryingAmountsOfRightofuseAssetsDetails" id="DisclosureRightofuseAssetsScheduleOfCarryingAmountsOfRightofuseAssetsDetails">
+        <link:definition>101020 - Disclosure - Right-of-Use Assets - Schedule of Carrying Amounts of Right-of-Use Assets (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureRightofuseAssetsScheduleInterestExpenseArisingFromLeaseLiabilitiesAndExpensesRelatedToShorttermLeasesDetails" id="DisclosureRightofuseAssetsScheduleInterestExpenseArisingFromLeaseLiabilitiesAndExpensesRelatedToShorttermLeasesDetails">
+        <link:definition>101030 - Disclosure - Right-of-Use Assets - Schedule Interest Expense Arising From Lease Liabilities And Expenses Related To Short-Term Leases (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureRightofuseAssetsAdditionalInformationDetails" id="DisclosureRightofuseAssetsAdditionalInformationDetails">
+        <link:definition>101040 - Disclosure - Right-of-Use Assets - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/IntangibleAssetsSummaryOfIntangibleAssetsDetails" id="IntangibleAssetsSummaryOfIntangibleAssetsDetails">
+        <link:definition>101050 - Disclosure - Intangible Assets - Summary of Intangible Assets (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/IntangibleAssetsSummaryOfAmortizationOfIntangibleAssetsAllocatedDetails" id="IntangibleAssetsSummaryOfAmortizationOfIntangibleAssetsAllocatedDetails">
+        <link:definition>101060 - Disclosure - Intangible Assets - Summary of Amortization of Intangible Assets Allocated (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/GoodwillSummaryOfGoodwillDetails" id="GoodwillSummaryOfGoodwillDetails">
+        <link:definition>101070 - Disclosure - Goodwill - Summary of Goodwill (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/GoodwillAdditionalInformationDetails" id="GoodwillAdditionalInformationDetails">
+        <link:definition>101080 - Disclosure - Goodwill - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/InvestmentsAccountedForUsingEquityMethodSummaryOfInvestmentsAccountedForUsingEquityMethodDetail" id="InvestmentsAccountedForUsingEquityMethodSummaryOfInvestmentsAccountedForUsingEquityMethodDetail">
+        <link:definition>101090 - Disclosure - Investments Accounted for Using Equity Method - Summary of Investments Accounted for Using Equity Method (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/InvestmentsAccountedForUsingEquityMethodSummaryOfShareOfProfitsLossesOfInvestmentsAccountedForUsingEquityMethodDetail" id="InvestmentsAccountedForUsingEquityMethodSummaryOfShareOfProfitsLossesOfInvestmentsAccountedForUsingEquityMethodDetail">
+        <link:definition>101100 - Disclosure - Investments Accounted for Using Equity Method - Summary of Share of Profits/(Losses) of Investments Accounted for Using Equity Method (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/InvestmentsAccountedForUsingEquityMethodSummaryOfMovementOfInvestmentsInAssociatesAndJointVenturesDetails" id="InvestmentsAccountedForUsingEquityMethodSummaryOfMovementOfInvestmentsInAssociatesAndJointVenturesDetails">
+        <link:definition>101110 - Disclosure - Investments Accounted for Using Equity Method - Summary of Movement of Investments in Associates and Joint Ventures (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/InvestmentsAccountedForUsingEquityMethodSummaryOfMovementOfInvestmentsInAssociatesAndJointVenturesParentheticalDetails" id="InvestmentsAccountedForUsingEquityMethodSummaryOfMovementOfInvestmentsInAssociatesAndJointVenturesParentheticalDetails">
+        <link:definition>101120 - Disclosure - Investments Accounted for Using Equity Method - Summary of Movement of Investments in Associates and Joint Ventures (Parenthetical) (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialAssetsAtFairValueSummaryOfFinancialAssetsAtFairValueThroughOtherComprehensiveIncomeDetails" id="FinancialAssetsAtFairValueSummaryOfFinancialAssetsAtFairValueThroughOtherComprehensiveIncomeDetails">
+        <link:definition>101130 - Disclosure - Financial Assets at Fair Value - Summary of Financial Assets at Fair Value Through Other Comprehensive Income (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialAssetsAtFairValueSummaryOfMovementOfOtherInvestmentDetails" id="FinancialAssetsAtFairValueSummaryOfMovementOfOtherInvestmentDetails">
+        <link:definition>101140 - Disclosure - Financial Assets at Fair Value - Summary of Movement of Other Investment (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/PrepaymentsDepositsAndOtherSummaryOfPrepaymentsDepositsAndOtherAssetsDetail" id="PrepaymentsDepositsAndOtherSummaryOfPrepaymentsDepositsAndOtherAssetsDetail">
+        <link:definition>101150 - Disclosure - Prepayments, deposits and other - Summary of Prepayments, deposits and other assets (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/AccountsReceivablesSummaryOfAccountsReceivableAndAgeingAnalysisDetails" id="AccountsReceivablesSummaryOfAccountsReceivableAndAgeingAnalysisDetails">
+        <link:definition>101160 - Disclosure - Accounts Receivables - Summary of Accounts Receivable and Ageing Analysis (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/AccountsReceivableSummaryOfLossAllowancesForAccountsReceivableDetails" id="AccountsReceivableSummaryOfLossAllowancesForAccountsReceivableDetails">
+        <link:definition>101170 - Disclosure - Accounts Receivable - Summary of Loss Allowances for Accounts Receivable (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureTermDepositsAndCashAndCashEquivalentsAdditionalInformationDetails" id="DisclosureTermDepositsAndCashAndCashEquivalentsAdditionalInformationDetails">
+        <link:definition>101180 - Disclosure - Term Deposits And Cash And Cash Equivalents - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/TermDepositsAndCashAndCashEquivalentsScheduleOfCashAndCashEquivalentsDetails" id="TermDepositsAndCashAndCashEquivalentsScheduleOfCashAndCashEquivalentsDetails">
+        <link:definition>101190 - Disclosure - Term Deposits And Cash And Cash Equivalents - Schedule of Cash and Cash Equivalents (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareCapitalScheduleOfClassesOfShareCapitalDetails" id="ShareCapitalScheduleOfClassesOfShareCapitalDetails">
+        <link:definition>101200 - Disclosure - Share Capital - Schedule of Classes of Share Capital (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareCapitalScheduleOfClassesOfShareCapitalParentheticalDetails" id="ShareCapitalScheduleOfClassesOfShareCapitalParentheticalDetails">
+        <link:definition>101210 - Disclosure - Share Capital - Schedule of Classes of Share Capital (Parenthetical) (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareCapitalScheduleAnalysisOfIssuedSharesDetails" id="ShareCapitalScheduleAnalysisOfIssuedSharesDetails">
+        <link:definition>101220 - Disclosure - Share Capital - Schedule Analysis of Issued Shares (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareCapitalAdditionalInformationDetail" id="ShareCapitalAdditionalInformationDetail">
+        <link:definition>101230 - Disclosure - Share Capital - Additional Information (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureOtherReservesScheduleOfOtherReserveDetails" id="DisclosureOtherReservesScheduleOfOtherReserveDetails">
+        <link:definition>101240 - Disclosure - Other Reserves - Schedule of Other Reserve (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareBasedCompensationAdditionalInformationDetails" id="ShareBasedCompensationAdditionalInformationDetails">
+        <link:definition>101250 - Disclosure - Share Based Compensation - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareBasedCompensationScheduleOfNumberWeightedAverageExercisePricesAndWeightedAverageGrantDateFairValueOfShareOptionsDetails" id="ShareBasedCompensationScheduleOfNumberWeightedAverageExercisePricesAndWeightedAverageGrantDateFairValueOfShareOptionsDetails">
+        <link:definition>101260 - Disclosure - Share Based Compensation - Schedule of Number, weighted Average Exercise Prices and Weighted-average Grant Date Fair Value of Share Options (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareBasedCompensationScheduleOfShareOptionsOutstandingDetails" id="ShareBasedCompensationScheduleOfShareOptionsOutstandingDetails">
+        <link:definition>101270 - Disclosure - Share Based Compensation - Schedule of Share Options Outstanding (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareBasedCompensationScheduleOfMovementsInTheNumberOfRsusAndAwardedSharesDetails" id="ShareBasedCompensationScheduleOfMovementsInTheNumberOfRsusAndAwardedSharesDetails">
+        <link:definition>101280 - Disclosure - Share Based Compensation - Schedule of Movements in the number of RSUs and Awarded Shares (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ShareBasedCompensationSummaryOfAssumptionsUsedToDetermineFairValueOfShareOptionsDetails" id="ShareBasedCompensationSummaryOfAssumptionsUsedToDetermineFairValueOfShareOptionsDetails">
+        <link:definition>101290 - Disclosure - Share Based Compensation - Summary of Assumptions Used to Determine Fair value of Share Options (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/NotesPayableSummaryOfNotePayableDetail" id="NotesPayableSummaryOfNotePayableDetail">
+        <link:definition>101300 - Disclosure - Notes payable - Summary of Note Payable (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/NotesPayableAdditionalInformationDetail" id="NotesPayableAdditionalInformationDetail">
+        <link:definition>101310 - Disclosure - Notes payable - Additional Information (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/NotesPayableSummaryOfUnsecuredSeniorNotesDetail" id="NotesPayableSummaryOfUnsecuredSeniorNotesDetail">
+        <link:definition>101320 - Disclosure - Notes payable - Summary of unsecured senior notes (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/OtherPayablesAndOtherLiabilitiesSummaryOfOtherPayablesAndOtherLiabilitiesDetails" id="OtherPayablesAndOtherLiabilitiesSummaryOfOtherPayablesAndOtherLiabilitiesDetails">
+        <link:definition>101330 - Disclosure - Other Payables and Other Liabilities - Summary of Other Payables and Other Liabilities (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/OtherPayablesAndOtherLiabilitiesSummaryOfOtherPayablesAndOtherLiabilitiesParentheticalDetails" id="OtherPayablesAndOtherLiabilitiesSummaryOfOtherPayablesAndOtherLiabilitiesParentheticalDetails">
+        <link:definition>101340 - Disclosure - Other Payables and Other Liabilities - Summary of Other Payables and Other Liabilities (Parenthetical) (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DeferredRevenueSummaryOfContractLiabilitiesDetails" id="DeferredRevenueSummaryOfContractLiabilitiesDetails">
+        <link:definition>101350 - Disclosure - Deferred Revenue - Summary of Contract Liabilities (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DeferredRevenueAdditionalInformationDetails" id="DeferredRevenueAdditionalInformationDetails">
+        <link:definition>101360 - Disclosure - Deferred Revenue - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/BusinessCombinationsAdditionalInformationDetails" id="BusinessCombinationsAdditionalInformationDetails">
+        <link:definition>101370 - Disclosure - Business Combinations - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/BusinessCombinationsSummaryOfAmountOfIdentifiedAssetsAcquiredAndLiabilitiesAssumedDetails" id="BusinessCombinationsSummaryOfAmountOfIdentifiedAssetsAcquiredAndLiabilitiesAssumedDetails">
+        <link:definition>101380 - Disclosure - Business Combinations - Summary of Amount of Identified Assets Acquired and Liabilities Assumed (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/CashFlowInformationSummaryOfCashGeneratedFromOperationsDetails" id="CashFlowInformationSummaryOfCashGeneratedFromOperationsDetails">
+        <link:definition>101390 - Disclosure - Cash Flow Information - Summary of Cash Generated from Operations (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/CashFlowInformationSummaryOfNonCashInvestingAndFinancingActivitiesDetails" id="CashFlowInformationSummaryOfNonCashInvestingAndFinancingActivitiesDetails">
+        <link:definition>101400 - Disclosure - Cash Flow Information - Summary of Non-cash Investing and Financing Activities (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/FinancialInstrumentsByCategorySummaryOfFinancialInstrumentsByCategoryDetails" id="FinancialInstrumentsByCategorySummaryOfFinancialInstrumentsByCategoryDetails">
+        <link:definition>101410 - Disclosure - Financial Instruments by Category - Summary of Financial Instruments by Category (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/CommitmentsSummaryOfFutureMinimumCommitmentsForNonCancellableOperatingCommitmentsDetails" id="CommitmentsSummaryOfFutureMinimumCommitmentsForNonCancellableOperatingCommitmentsDetails">
+        <link:definition>101420 - Disclosure - Commitments - Summary of Future Minimum Commitments for Non Cancellable Operating Commitments (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/CommitmentsSummaryOfMinimumRoyaltyPaymentsUnderLicensingAgreementDetails" id="CommitmentsSummaryOfMinimumRoyaltyPaymentsUnderLicensingAgreementDetails">
+        <link:definition>101430 - Disclosure - Commitments - Summary of Minimum Royalty Payments Under Licensing Agreement (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/CommitmentsAdditionalInformationDetails" id="CommitmentsAdditionalInformationDetails">
+        <link:definition>101440 - Disclosure - Commitments - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/RelatedPartyTransactionsSummaryOfMajorRelatedPartiesAndRelationshipsWithTheGroupDetails" id="RelatedPartyTransactionsSummaryOfMajorRelatedPartiesAndRelationshipsWithTheGroupDetails">
+        <link:definition>101450 - Disclosure - Related Party Transactions - Summary of Major Related Parties and Relationships with the Group (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/RelatedPartyTransactionsSummaryOfSignificantRelatedPartyTransactionDetails" id="RelatedPartyTransactionsSummaryOfSignificantRelatedPartyTransactionDetails">
+        <link:definition>101460 - Disclosure - Related Party Transactions - Summary of Significant Related Party Transaction (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/RelatedPartyTransactionsSummaryOfBalancesWithRelatedPartiesDetails" id="RelatedPartyTransactionsSummaryOfBalancesWithRelatedPartiesDetails">
+        <link:definition>101470 - Disclosure - Related Party Transactions - Summary of Balances with Related Parties (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/RelatedPartyTransactionsSummaryOfKeyManagementPersonnelCompensationDetails" id="RelatedPartyTransactionsSummaryOfKeyManagementPersonnelCompensationDetails">
+        <link:definition>101480 - Disclosure - Related Party Transactions - Summary of Key Management Personnel Compensation (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/RelatedPartyTransactionsAdditionalInformationDetail" id="RelatedPartyTransactionsAdditionalInformationDetail">
+        <link:definition>101490 - Disclosure - Related party transactions - Additional Information (Detail)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ContingentLiabilitiesAdditionalInformationDetails" id="ContingentLiabilitiesAdditionalInformationDetails">
+        <link:definition>101500 - Disclosure - Contingent Liabilities - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/ConsolidatedIncomeStatementsAlternate1" id="ConsolidatedIncomeStatementsAlternate1">
+        <link:definition>101510 - Statement - CONSOLIDATED INCOME STATEMENTS Alternate 1</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/DisclosureDividendsAdditionalInformationDetails" id="DisclosureDividendsAdditionalInformationDetails">
+        <link:definition>101520 - Disclosure - Dividends - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+      <link:roleType roleURI="http://www.tencent.com/20221231/taxonomy/role/EventsOccurringAfterTheReportingPeriodAdditionalInformationDetails" id="EventsOccurringAfterTheReportingPeriodAdditionalInformationDetails">
+        <link:definition>101530 - Disclosure - Events Occurring after the Reporting Period - Additional Information (Details)</link:definition>
+        <link:usedOn>link:presentationLink</link:usedOn>
+        <link:usedOn>link:calculationLink</link:usedOn>
+        <link:usedOn>link:definitionLink</link:usedOn>
+      </link:roleType>
+    </xsd:appinfo>
+  </xsd:annotation>
+  <xsd:element id="tme_ApprovalOfConsolidatedFinancialStatementsAbstract" name="ApprovalOfConsolidatedFinancialStatementsAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DefaultRootAbstract" name="DefaultRootAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DeferredTaxAssetsAbstract" name="DeferredTaxAssetsAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DeferredTaxLiabilities1Abstract" name="DeferredTaxLiabilities1Abstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DepositsFromBanksAbstract" name="DepositsFromBanksAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureExpenseByNatureAbstract" name="DisclosureExpenseByNatureAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfCashFlowInformationAbstract" name="DisclosureOfCashFlowInformationAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfDeferredRevenueAbstract" name="DisclosureOfDeferredRevenueAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationUnsecuredSeniorNotesAbstract" name="DisclosureOfDetailedInformationUnsecuredSeniorNotesAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfFutureMinimumCommitmentsForNonCancellableOperatingLeaseAbstract" name="DisclosureOfFutureMinimumCommitmentsForNonCancellableOperatingLeaseAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfMinimumRoyaltyPaymentsAbstract" name="DisclosureOfMinimumRoyaltyPaymentsAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfQuantitativeInformationAboutLandUseRightAbstract" name="DisclosureOfQuantitativeInformationAboutLandUseRightAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfShareBasedCompensationAbstract" name="DisclosureOfShareBasedCompensationAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfSignificantAccountingPoliciesAbstract" name="DisclosureOfSignificantAccountingPoliciesAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DividendAbstract" name="DividendAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_EarningsAbstract" name="EarningsAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_EquityAttributableToOwnersOfParentAbstract" name="EquityAttributableToOwnersOfParentAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_FairValuesOfEmployeeStockOptionsAbstract" name="FairValuesOfEmployeeStockOptionsAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_FinanceCostAbstract" name="FinanceCostAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_FinancialRiskManagementAbstract" name="FinancialRiskManagementAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_GeneralInformationOrganizationAndBasisOfPreparationAbstract" name="GeneralInformationOrganizationAndBasisOfPreparationAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OtherGainsLossesAbstract" name="OtherGainsLossesAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OtherPayablesAndOtherLiabilitiesAbstract" name="OtherPayablesAndOtherLiabilitiesAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_PrepaymentsDepositsAndOtherAssetsAbstract" name="PrepaymentsDepositsAndOtherAssetsAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_PrepaymentsDepositsAndOtherReceivablesAbstract" name="PrepaymentsDepositsAndOtherReceivablesAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_StatementOfNonCashInvestingAndFinancingActivitiesAbstract" name="StatementOfNonCashInvestingAndFinancingActivitiesAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_StatementsAbstract" name="StatementsAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TaxationAbstract" name="TaxationAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TaxEffectOfTaxHolidayPeriodAbstract" name="TaxEffectOfTaxHolidayPeriodAbstract" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_IncomeStatementLocation1Axis" name="IncomeStatementLocation1Axis" type="xbrli:stringItemType" substitutionGroup="xbrldt:dimensionItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SchemeAxis" name="SchemeAxis" type="xbrli:stringItemType" substitutionGroup="xbrldt:dimensionItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_AccountPayablesRecognisedAsOfAcquisitionDate" name="AccountPayablesRecognisedAsOfAcquisitionDate" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_AccruedExpenses" name="AccruedExpenses" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_AcquiredLandUseRights" name="AcquiredLandUseRights" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_AdditionsOtherThanThroughBusinessCombinationsAssociatesAndJointVenturesNewTaxonomyExtension1" name="AdditionsOtherThanThroughBusinessCombinationsAssociatesAndJointVenturesNewTaxonomyExtension1" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_AdjustmentsForDilutionEffectFromShareOptionsAndRestrictedShareUnits" name="AdjustmentsForDilutionEffectFromShareOptionsAndRestrictedShareUnits" type="xbrli:sharesItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_AdjustmentsForFairValueGainsLossesOfFinancialLiability" name="AdjustmentsForFairValueGainsLossesOfFinancialLiability" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_AdjustmentsForFairValueGainsLossesOnInvestments" name="AdjustmentsForFairValueGainsLossesOnInvestments" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_AdjustmentsForFairValueOnPuttableShares" name="AdjustmentsForFairValueOnPuttableShares" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_AdjustmentsForImpairmentProvisionForInvestmentsInAssociates" name="AdjustmentsForImpairmentProvisionForInvestmentsInAssociates" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_AdjustmentsForNetGainsLossesArisingFromInvestmentsAccountedForUsingEquityMethod" name="AdjustmentsForNetGainsLossesArisingFromInvestmentsAccountedForUsingEquityMethod" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_AdvertisingAgencyFees" name="AdvertisingAgencyFees" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_BuildingsUsefulLife" name="BuildingsUsefulLife" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_BusinessAcquisitionsContingentConsiderationAtFairValueGainOrLoss" name="BusinessAcquisitionsContingentConsiderationAtFairValueGainOrLoss" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_BusinessCombinationAdditionalInterestAcquiredInNonWhollyOwnedSubsidiary" name="BusinessCombinationAdditionalInterestAcquiredInNonWhollyOwnedSubsidiary" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_BusinessCombinationStepAcquisitionEquityInterestInAcquireeFairValueConsiderationTransferred" name="BusinessCombinationStepAcquisitionEquityInterestInAcquireeFairValueConsiderationTransferred" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_CapitalizationOfRetainedEarningsOfSubsidiaries" name="CapitalizationOfRetainedEarningsOfSubsidiaries" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_CashReceiptsFromRepaymentOfAdvancesAndLoansMadeToThirdParty" name="CashReceiptsFromRepaymentOfAdvancesAndLoansMadeToThirdParty" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_ContractualLifeShareOptionsGranded" name="ContractualLifeShareOptionsGranded" type="xbrli:durationItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ContractualTotalMinimumGuarantee" name="ContractualTotalMinimumGuarantee" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_ContributionToPensionPlansUnderSocialSecurityPlans" name="ContributionToPensionPlansUnderSocialSecurityPlans" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_CorporateIncomeTaxRate" name="CorporateIncomeTaxRate" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_CumulativeTaxLossesExpirationPeriod" name="CumulativeTaxLossesExpirationPeriod" type="xbrli:gYearItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_CurrentOtherInvestment" name="CurrentOtherInvestment" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_CurrentPrepaidRoyalties" name="CurrentPrepaidRoyalties" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_CustomersRepresentedPercentageOfGrossAccountsReceivable" name="CustomersRepresentedPercentageOfGrossAccountsReceivable" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_CustomersRepresentedPercentageOfRevenue" name="CustomersRepresentedPercentageOfRevenue" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DateOfIncorporationOrAcquisition" name="DateOfIncorporationOrAcquisition" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DeferredIncomeIncludedInCurrentLiabilities" name="DeferredIncomeIncludedInCurrentLiabilities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_DeferredTaxAssetsAccruals" name="DeferredTaxAssetsAccruals" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_DeferredTaxAssetsContractLiabilities" name="DeferredTaxAssetsContractLiabilities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_DeferredTaxAssetsCurrent" name="DeferredTaxAssetsCurrent" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_DeferredTaxAssetsDeemedDistributionArisingFromCarveOut" name="DeferredTaxAssetsDeemedDistributionArisingFromCarveOut" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_DeferredTaxAssetsNonCurrent" name="DeferredTaxAssetsNonCurrent" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_DeferredTaxLiabilitiesCurrentOne" name="DeferredTaxLiabilitiesCurrentOne" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_DeferredTaxLiabilitiesNonCurrent1" name="DeferredTaxLiabilitiesNonCurrent1" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_DeferredTaxLiabilitySetOff" name="DeferredTaxLiabilitySetOff" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_DescriptionOfPrincipalActivities" name="DescriptionOfPrincipalActivities" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisposalOfRightToUseAssets" name="DisposalOfRightToUseAssets" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_DividendFromInvestments" name="DividendFromInvestments" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_EffectOfChangesInCurrencyRate" name="EffectOfChangesInCurrencyRate" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_EquitySettledShareBasedCompensation" name="EquitySettledShareBasedCompensation" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_EstimatedUsefulLivesAcquiredIntangibleAssets" name="EstimatedUsefulLivesAcquiredIntangibleAssets" type="xbrli:durationItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_EstimatedUsefulLivesPropertyPlantAndEquipment" name="EstimatedUsefulLivesPropertyPlantAndEquipment" type="xbrli:durationItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ExchangeGains" name="ExchangeGains" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_ExerciseMultiples" name="ExerciseMultiples" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ExerciseOfShareOptionsAndRestrictedStockUnits" name="ExerciseOfShareOptionsAndRestrictedStockUnits" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_ExpectedRetentionRate" name="ExpectedRetentionRate" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ExpenseRelatingToShortTermLeasesChargedToCostOfRevenueAndExpenses" name="ExpenseRelatingToShortTermLeasesChargedToCostOfRevenueAndExpenses" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_FairValueChangeOnInvestments" name="FairValueChangeOnInvestments" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_FairValuesOfNotesPayable" name="FairValuesOfNotesPayable" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_FinancialAssetsAtFairValueProfitLossAcquiredThroughBusinessCombination" name="FinancialAssetsAtFairValueProfitLossAcquiredThroughBusinessCombination" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_GainFromBusinessCombinationStepAcquisition" name="GainFromBusinessCombinationStepAcquisition" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_IncomeFromGovernmentGrantsAndTaxRebates" name="IncomeFromGovernmentGrantsAndTaxRebates" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_IncreaseDecreaseThroughCurrencyTranslationDifferencesInvestmentsInSubsidiariesJointVenturesAndAssociates" name="IncreaseDecreaseThroughCurrencyTranslationDifferencesInvestmentsInSubsidiariesJointVenturesAndAssociates" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_IncreaseDecreaseThroughExerciseOfOptionsAndRestrictedStockUnits" name="IncreaseDecreaseThroughExerciseOfOptionsAndRestrictedStockUnits" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_IncreaseDecreaseThroughExpiryOfPutRightOfPuttableOrdinaryShares" name="IncreaseDecreaseThroughExpiryOfPutRightOfPuttableOrdinaryShares" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_IncreaseDecreaseThroughExpiryOfPuttableOrdinaryShares" name="IncreaseDecreaseThroughExpiryOfPuttableOrdinaryShares" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_IncreaseDecreaseThroughTransferFromOtherComprehensiveIncomeToRetainedEarnings" name="IncreaseDecreaseThroughTransferFromOtherComprehensiveIncomeToRetainedEarnings" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_IntangibleAssetsAccumulatedAmortization" name="IntangibleAssetsAccumulatedAmortization" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_IntangibleAssetsOtherThanGoodwillCost" name="IntangibleAssetsOtherThanGoodwillCost" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_IntangibleAssetsOtherThanGoodwillNetBookAmount" name="IntangibleAssetsOtherThanGoodwillNetBookAmount" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_InterestAndRelatedExpenses" name="InterestAndRelatedExpenses" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_InterestPaidLeaseLiabilitiesClassifiedAsFinancingActivities" name="InterestPaidLeaseLiabilitiesClassifiedAsFinancingActivities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_InvestmentCommitments" name="InvestmentCommitments" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_InvestmentOnEquityInterest" name="InvestmentOnEquityInterest" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_InvestmentPayables" name="InvestmentPayables" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_LandUseRights" name="LandUseRights" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_LegalCompensationSoughtValue" name="LegalCompensationSoughtValue" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_LockUpPeriodForSellingOfShares" name="LockUpPeriodForSellingOfShares" type="xbrli:durationItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_MaximumRepurchaseAmount" name="MaximumRepurchaseAmount" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_MinimumLeasePaymentsPayableUnderNoncancellableOperatingCommitment" name="MinimumLeasePaymentsPayableUnderNoncancellableOperatingCommitment" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_MinimumRoyaltyPaymentsUnderLicensingAgreements" name="MinimumRoyaltyPaymentsUnderLicensingAgreements" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_NonControllingInterestsArisingFromBusinessCombination" name="NonControllingInterestsArisingFromBusinessCombination" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_NonCurrentNotesPayables" name="NonCurrentNotesPayables" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_NonCurrentOtherInvestment" name="NonCurrentOtherInvestment" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_NonCurrentPrepaidRoyalties" name="NonCurrentPrepaidRoyalties" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_NonCurrentPrepaymentsAndOtherAssets" name="NonCurrentPrepaymentsAndOtherAssets" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_NonCurrentPrepaymentsAndOtherNonCurrentAssets" name="NonCurrentPrepaymentsAndOtherNonCurrentAssets" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_NumberOfCommonSharesReservedForFutureIssuance" name="NumberOfCommonSharesReservedForFutureIssuance" type="xbrli:sharesItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_NumberOfCustomers" name="NumberOfCustomers" type="xbrli:decimalItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_NumberOfCustomersAccountedForRevenues" name="NumberOfCustomersAccountedForRevenues" type="xbrli:decimalItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_NumberOfOtherEquityInstrumentsExpectedToVestInShareBasedPaymentArrangement" name="NumberOfOtherEquityInstrumentsExpectedToVestInShareBasedPaymentArrangement" type="xbrli:decimalItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_NumberOfShareOptionsNonVestedInShareBasedPaymentArrangement" name="NumberOfShareOptionsNonVestedInShareBasedPaymentArrangement" type="xbrli:decimalItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_NumberOfShareOptionsVestedAndExpectedToVestInShareBasedPaymentArrangement" name="NumberOfShareOptionsVestedAndExpectedToVestInShareBasedPaymentArrangement" type="xbrli:decimalItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_NumberOfSharesAllottedForShareAwardSchemes" name="NumberOfSharesAllottedForShareAwardSchemes" type="xbrli:sharesItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_NumberOfSharesHeldForShareAwardSchemes" name="NumberOfSharesHeldForShareAwardSchemes" type="xbrli:sharesItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_NumberOfTreasurySharesToTheGranteesForTheExerciseOfShareOptions" name="NumberOfTreasurySharesToTheGranteesForTheExerciseOfShareOptions" type="xbrli:sharesItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_OtherAssetsUsefulLife" name="OtherAssetsUsefulLife" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_OtherChannelCosts" name="OtherChannelCosts" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_OtherComprehensiveIncomeMaySubsequentlyReclassifiedToProfitLossCurrencyTranslation" name="OtherComprehensiveIncomeMaySubsequentlyReclassifiedToProfitLossCurrencyTranslation" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_OtherComprehensiveIncomeNetOfTaxGainsLossesCurrencyTranslation" name="OtherComprehensiveIncomeNetOfTaxGainsLossesCurrencyTranslation" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_OtherDeferredTaxAssets" name="OtherDeferredTaxAssets" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_OtherDeposits" name="OtherDeposits" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_OtherEquityTransaction" name="OtherEquityTransaction" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_OtherGainsLossesOther" name="OtherGainsLossesOther" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_OtherPayablesAndOtherAccruals" name="OtherPayablesAndOtherAccruals" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_OtherPayablesAndOtherLiabilities" name="OtherPayablesAndOtherLiabilities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_OtherPayablesAndOtherLiabilitiesArisingFromRelatedPartyTransactions" name="OtherPayablesAndOtherLiabilitiesArisingFromRelatedPartyTransactions" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_OtherPayablesAndOtherLiabilitiesShareRepurchasePayablesCurrent" name="OtherPayablesAndOtherLiabilitiesShareRepurchasePayablesCurrent" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_OtherTaxLiabilities" name="OtherTaxLiabilities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_PayablesForAcquisitionOfLandUseRight" name="PayablesForAcquisitionOfLandUseRight" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_PaymentAcquiredForLandUseRightConsideration" name="PaymentAcquiredForLandUseRightConsideration" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_PaymentForRemainingAcquisitionOfLandUseRight" name="PaymentForRemainingAcquisitionOfLandUseRight" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_Paymentsforfinancialassetsatfairvaluethroughothercomprehensiveincome" name="Paymentsforfinancialassetsatfairvaluethroughothercomprehensiveincome" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_PaymentsForFinancialAssetsAtFairValueThroughProfitOrLoss" name="PaymentsForFinancialAssetsAtFairValueThroughProfitOrLoss" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_PaymentsOfCashInRelationToPutRight" name="PaymentsOfCashInRelationToPutRight" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_PaymentsToAcquireShortTermInvestments1" name="PaymentsToAcquireShortTermInvestments1" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_PaymentToAcquireLandUseRight" name="PaymentToAcquireLandUseRight" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_PercentageOfAdditionalVotingEquityInterestsAcquired" name="PercentageOfAdditionalVotingEquityInterestsAcquired" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_PercentageOfDiscountRatioInFairValue" name="PercentageOfDiscountRatioInFairValue" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_PeriodOfSharesRepurchased" name="PeriodOfSharesRepurchased" type="xbrli:durationItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_PreferentialIncomeTaxRate" name="PreferentialIncomeTaxRate" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_PrepaidPromotionAndOtherExpenses" name="PrepaidPromotionAndOtherExpenses" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_PrepaymentsDepositsAndOtherAssetsAsOfAcquisitionDate" name="PrepaymentsDepositsAndOtherAssetsAsOfAcquisitionDate" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_Prepaymentsdepositsandotherassetsrecognisedasofacquisitiondate" name="Prepaymentsdepositsandotherassetsrecognisedasofacquisitiondate" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_PrepaymentsDepositsAndOtherAssetsRelatedPartyTransactions" name="PrepaymentsDepositsAndOtherAssetsRelatedPartyTransactions" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_PreTaxDiscountRates" name="PreTaxDiscountRates" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ProceedsFromBusinessCooperationArrangements" name="ProceedsFromBusinessCooperationArrangements" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_ProceedsFromDisposalOfInvestmentsAccountedForFinancialAssetsAtFairValueThroughProfitOrLossOrOtherComprehensiveIncome" name="ProceedsFromDisposalOfInvestmentsAccountedForFinancialAssetsAtFairValueThroughProfitOrLossOrOtherComprehensiveIncome" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_ProceedsFromIssuanceOfAdditionalEquityOfNonWhollyOwnedSubsidiaries" name="ProceedsFromIssuanceOfAdditionalEquityOfNonWhollyOwnedSubsidiaries" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_ProceedsFromShorttermInvestments" name="ProceedsFromShorttermInvestments" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_PurchaseOfLandUseRights" name="PurchaseOfLandUseRights" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_RatiosOfEnterpriseValueToRevenueOfCompanies" name="RatiosOfEnterpriseValueToRevenueOfCompanies" type="xbrli:pureItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ReceivablesCurrent" name="ReceivablesCurrent" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_RegisteredCapitalReserveAndStatutoryReservesOfVariableInterestEntities" name="RegisteredCapitalReserveAndStatutoryReservesOfVariableInterestEntities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_RemainingLeasePeriod" name="RemainingLeasePeriod" type="xbrli:durationItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_RepaymentForLoanFromNonControllingInterests" name="RepaymentForLoanFromNonControllingInterests" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_RepurchaseOfShares" name="RepurchaseOfShares" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_RevenueFromSaleOfSubscriptionPackages" name="RevenueFromSaleOfSubscriptionPackages" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_RevenueGrowthRate" name="RevenueGrowthRate" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ShareholdersAbandonment" name="ShareholdersAbandonment" type="xbrli:sharesItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_SharesHeldForShareAwardSchemes" name="SharesHeldForShareAwardSchemes" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_SharesHeldForShareAwardsSchemes" name="SharesHeldForShareAwardsSchemes" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_SharesWithHeldForShareAwardsSchemes" name="SharesWithHeldForShareAwardsSchemes" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_ShortTermInvestmentRecognisedAsOfAcquisitionDate" name="ShortTermInvestmentRecognisedAsOfAcquisitionDate" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_ShortTermInvestmentsIssuedByBank" name="ShortTermInvestmentsIssuedByBank" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_SignificantUnobervableInputsOfExpectedRateOfReturnOnShortTermInvestments" name="SignificantUnobervableInputsOfExpectedRateOfReturnOnShortTermInvestments" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_StepAcquisitionAccountedForAsBusinessCombinationUnderCommonControlInJointVenturesAndAssociates" name="StepAcquisitionAccountedForAsBusinessCombinationUnderCommonControlInJointVenturesAndAssociates" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_TaxEffectOfDifferentTaxRatesApplicableToSubsidiaries" name="TaxEffectOfDifferentTaxRatesApplicableToSubsidiaries" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_TaxEffectOfPreferentialTaxRateOnProfitOfSubsidiaries" name="TaxEffectOfPreferentialTaxRateOnProfitOfSubsidiaries" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_TaxEffectOfTaxHolidayPeriod" name="TaxEffectOfTaxHolidayPeriod" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_TaxEffectOfTaxHolidayPeriodIncludingPreviousYear" name="TaxEffectOfTaxHolidayPeriodIncludingPreviousYear" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_TaxEffectOfTaxHolidayPeriodPerOrdinaryShareBasic" name="TaxEffectOfTaxHolidayPeriodPerOrdinaryShareBasic" type="dtr-types:perShareItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_TaxEffectOfTaxHolidayPeriodPerOrdinaryShareDiluted" name="TaxEffectOfTaxHolidayPeriodPerOrdinaryShareDiluted" type="dtr-types:perShareItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_TaxEffectOfUnrecognisedDeferredIncomeTaxAssets" name="TaxEffectOfUnrecognisedDeferredIncomeTaxAssets" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_TerminalGrowthRate" name="TerminalGrowthRate" type="dtr-types:percentItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_TotalCashOutflowInForLeasesFinancingActivities" name="TotalCashOutflowInForLeasesFinancingActivities" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_TransferFromConstructionInProgress" name="TransferFromConstructionInProgress" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_TransferOfGainsOnDisposalOfFinancialInstrumentsToRetainedEarnings" name="TransferOfGainsOnDisposalOfFinancialInstrumentsToRetainedEarnings" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false" xbrli:balance="credit"/>
+  <xsd:element id="tme_UnrecognizedDeferredTaxAssets" name="UnrecognizedDeferredTaxAssets" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_UsefulLivesOrDepreciationRatesPropertyPlantAndEquipment1" name="UsefulLivesOrDepreciationRatesPropertyPlantAndEquipment1" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ValueAddedTaxRecoverable" name="ValueAddedTaxRecoverable" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false" xbrli:balance="debit"/>
+  <xsd:element id="tme_WeightedAverageExercisePriceOfShareOptionsNonVestedInShareBasedPaymentArrangement" name="WeightedAverageExercisePriceOfShareOptionsNonVestedInShareBasedPaymentArrangement" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_WeightedAverageExercisePriceOfShareOptionsVestedAndExpectedToVestInShareBasedPaymentArrangement" name="WeightedAverageExercisePriceOfShareOptionsVestedAndExpectedToVestInShareBasedPaymentArrangement" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_WeightedAverageGrantDateFairValueShareOptionsExercisableInShareBasedPaymentArrangement" name="WeightedAverageGrantDateFairValueShareOptionsExercisableInShareBasedPaymentArrangement" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_WeightedAverageGrantDateFairValueShareOptionsExercisedInShareBasedPaymentArrangement" name="WeightedAverageGrantDateFairValueShareOptionsExercisedInShareBasedPaymentArrangement" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_WeightedAverageGrantDateFairValueShareOptionsForfeitedInShareBasedPaymentArrangement" name="WeightedAverageGrantDateFairValueShareOptionsForfeitedInShareBasedPaymentArrangement" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_WeightedAverageGrantDateFairValueShareOptionsGrantedInShareBasedPaymentArrangement" name="WeightedAverageGrantDateFairValueShareOptionsGrantedInShareBasedPaymentArrangement" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_WeightedAverageGrantDateFairValueShareOptionsNonVestedInShareBasedPaymentArrangement" name="WeightedAverageGrantDateFairValueShareOptionsNonVestedInShareBasedPaymentArrangement" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_WeightedAverageGrantDateFairValueShareOptionsOutstandingInShareBasedPaymentArrangement" name="WeightedAverageGrantDateFairValueShareOptionsOutstandingInShareBasedPaymentArrangement" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_WeightedAverageGrantDateFairValueShareOptionsVestedAndExpectedToVestInShareBasedPaymentArrangement" name="WeightedAverageGrantDateFairValueShareOptionsVestedAndExpectedToVestInShareBasedPaymentArrangement" type="xbrli:monetaryItemType" substitutionGroup="xbrli:item" xbrli:periodType="instant" nillable="true" abstract="false"/>
+  <xsd:element id="tme_IncomeStatementLocation1Domain" name="IncomeStatementLocation1Domain" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SchemeDomain" name="SchemeDomain" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_AccountsReceivableLineItems" name="AccountsReceivableLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfBalancesWithRelatedPartiesLineItems" name="DisclosureOfBalancesWithRelatedPartiesLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfContractLiabilitiesLineItems" name="DisclosureOfContractLiabilitiesLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationUnsecuredSeniorNotesLineItems" name="DisclosureOfDetailedInformationUnsecuredSeniorNotesLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfFinancialAssetsDesignatedAsMeasuredAtFairValueThroughProfitOrLossLineItems" name="DisclosureOfFinancialAssetsDesignatedAsMeasuredAtFairValueThroughProfitOrLossLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfFutureMinimumCommitmentsForNonCancellableOperatingLeaseLineItems" name="DisclosureOfFutureMinimumCommitmentsForNonCancellableOperatingLeaseLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfInvestmentCommitmentsLineItems" name="DisclosureOfInvestmentCommitmentsLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfMinimumRoyaltyPaymentsLineItems" name="DisclosureOfMinimumRoyaltyPaymentsLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfQuantitativeInformationAboutLandUseRightLineItems" name="DisclosureOfQuantitativeInformationAboutLandUseRightLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfRangOfExercisePricesOfOutstandingShareOptionsLineItems" name="DisclosureOfRangOfExercisePricesOfOutstandingShareOptionsLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfShareBasedCompensationLineItems" name="DisclosureOfShareBasedCompensationLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfSignificantAccountingPoliciesLineItems" name="DisclosureOfSignificantAccountingPoliciesLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_FinancialRiskManagementLineItems" name="FinancialRiskManagementLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_GeneralInformationOrganizationAndBasisOfPreparationLineItems" name="GeneralInformationOrganizationAndBasisOfPreparationLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_IncomeStatementLineItems" name="IncomeStatementLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_IncomeTaxesLineItems" name="IncomeTaxesLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_InvestmentAccountedForUsingEquityMethodLineItems" name="InvestmentAccountedForUsingEquityMethodLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_PrepaymentsDepositsAndOtherReceivablesLineItems" name="PrepaymentsDepositsAndOtherReceivablesLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ProfitBeforeTaxLineItems" name="ProfitBeforeTaxLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_StatementsLineItems" name="StatementsLineItems" type="xbrli:stringItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_AccountPayableMember" name="AccountPayableMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_AccountsPayable1Member" name="AccountsPayable1Member" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_AccrualsMember" name="AccrualsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_AcquiredContentsAndCopyrightsMember" name="AcquiredContentsAndCopyrightsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_AssociatesAndAssociatesOfTencentGroupMember" name="AssociatesAndAssociatesOfTencentGroupMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_BeijingKuwoMember" name="BeijingKuwoMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_BeijingKuwoTechnologyCoLtdMember" name="BeijingKuwoTechnologyCoLtdMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_CarriedForwardContractLiabilitiesMember" name="CarriedForwardContractLiabilitiesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_CashAndCashEquivalentMember" name="CashAndCashEquivalentMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ChinaliteratureMember" name="ChinaliteratureMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ClassAAndClassBOrdinarySharesMember" name="ClassAAndClassBOrdinarySharesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ClassAOrdinarySharesInFormOfAmericanDepositarySharesMember" name="ClassAOrdinarySharesInFormOfAmericanDepositarySharesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ClassAOrdinarySharesMember" name="ClassAOrdinarySharesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ClassBOrdinarySharesMember" name="ClassBOrdinarySharesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ConsortiumConcertoMember" name="ConsortiumConcertoMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ConstructionInProgressRmbMillionMember" name="ConstructionInProgressRmbMillionMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ContributionFromUltimateHoldingCompanyMember" name="ContributionFromUltimateHoldingCompanyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_CostOfRevenuesMember" name="CostOfRevenuesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_CustomerFiveMember" name="CustomerFiveMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_CustomerFourMember" name="CustomerFourMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_CustomerOneMember" name="CustomerOneMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_CustomerThreeMember" name="CustomerThreeMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_CustomerTwoMember" name="CustomerTwoMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DeferredRevenueMember" name="DeferredRevenueMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DeferredTaxAssetsMember" name="DeferredTaxAssetsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DeferredTaxLiabilitiesMember" name="DeferredTaxLiabilitiesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DomainNameTrademarkAndInternetAudioVideoProgramTransmissionLicenseMember" name="DomainNameTrademarkAndInternetAudioVideoProgramTransmissionLicenseMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeEightMember" name="ExercisePriceRangeEightMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeElevenMember" name="ExercisePriceRangeElevenMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeFifteenMember" name="ExercisePriceRangeFifteenMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeFiveMember" name="ExercisePriceRangeFiveMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeFourMember" name="ExercisePriceRangeFourMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeFourteenMember" name="ExercisePriceRangeFourteenMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeNineMember" name="ExercisePriceRangeNineMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeOneMember" name="ExercisePriceRangeOneMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeSevenMember" name="ExercisePriceRangeSevenMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeSixMember" name="ExercisePriceRangeSixMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeTenMember" name="ExercisePriceRangeTenMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeThirteenMember" name="ExercisePriceRangeThirteenMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeThreeMember" name="ExercisePriceRangeThreeMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeTwelveMember" name="ExercisePriceRangeTwelveMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ExercisePriceRangeTwoMember" name="ExercisePriceRangeTwoMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_FinancialAssetAnalysisBasedOnInvoicedateMember" name="FinancialAssetAnalysisBasedOnInvoicedateMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_FirstCategoryVestingScheduleMember" name="FirstCategoryVestingScheduleMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ForeignExchangeRiskMember" name="ForeignExchangeRiskMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_GeneralAndAdministrativeExpensesMember" name="GeneralAndAdministrativeExpensesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_GuangxiHexianInvestmentManagementCoLtdMember" name="GuangxiHexianInvestmentManagementCoLtdMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_GuangzhouFanxingEntertainmentInformationTechnologyMember" name="GuangzhouFanxingEntertainmentInformationTechnologyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_GuangzhouKugouComputerTechnologyCoLtdMember" name="GuangzhouKugouComputerTechnologyCoLtdMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_GuangzhouShiyinlianSoftwareTechnologyCo.LtdMember" name="GuangzhouShiyinlianSoftwareTechnologyCo.LtdMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_IntangibleAssetsMember" name="IntangibleAssetsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_InternalDevelopedContentsMember" name="InternalDevelopedContentsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_LandUseRightAssetsMember" name="LandUseRightAssetsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_LeaseLiabilitiesPayableMember" name="LeaseLiabilitiesPayableMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_MAndEMobileLimitedMember" name="MAndEMobileLimitedMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_MEmobilelimitedMember" name="MEmobilelimitedMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_MusicContentCompanyMember" name="MusicContentCompanyMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_NonCompeteAgreementMember" name="NonCompeteAgreementMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_NotesPayableMember" name="NotesPayableMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OfficeFurnitureEquipmentAndOtherMember" name="OfficeFurnitureEquipmentAndOtherMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OnlineMusicAndSocialEntertainmentMember" name="OnlineMusicAndSocialEntertainmentMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OnlineMusicServicesMember" name="OnlineMusicServicesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OnlineMusicServicesToAssociatesMember" name="OnlineMusicServicesToAssociatesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OnlineUsersMember" name="OnlineUsersMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OtherBusinessCombinationMember" name="OtherBusinessCombinationMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OtherBusinessMember" name="OtherBusinessMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OtherInvestments1Member" name="OtherInvestments1Member" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OtherPayablesAndOtherLiabilitiesMember" name="OtherPayablesAndOtherLiabilitiesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OtherReceivablesMember" name="OtherReceivablesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OtherReserves1Member" name="OtherReserves1Member" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_OthersMember" name="OthersMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_PrcMember" name="PrcMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_PrepaymentAndOtherInvestmentsMember" name="PrepaymentAndOtherInvestmentsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_PuttableOdinarySharesMember" name="PuttableOdinarySharesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_RestrictedCashMember" name="RestrictedCashMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_RestrictedShareUnitsMember" name="RestrictedShareUnitsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SecondCategoryVestingScheduleMember" name="SecondCategoryVestingScheduleMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SellingAndMarketingExpensesMember" name="SellingAndMarketingExpensesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SeniorNotesTranchOneMember" name="SeniorNotesTranchOneMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SeniorNotesTranchTwoMember" name="SeniorNotesTranchTwoMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SeniorUnsecuredNotesMember" name="SeniorUnsecuredNotesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ServersAndNetworkEquipmentMember" name="ServersAndNetworkEquipmentMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ShareRepurchaseSchemeMember" name="ShareRepurchaseSchemeMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SharesHeldForShareAwardSchemesMember" name="SharesHeldForShareAwardSchemesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ShenzhenLanrenOnlineTechnologyCoLtdMember" name="ShenzhenLanrenOnlineTechnologyCoLtdMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ShenzhenMember" name="ShenzhenMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ShortTermInvestmentMember" name="ShortTermInvestmentMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ShortTermInvestments1Member" name="ShortTermInvestments1Member" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SocialEntertainmentServicesAndOthersMember" name="SocialEntertainmentServicesAndOthersMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SocialEntertainmentServicesAndOthersToAssociatesMember" name="SocialEntertainmentServicesAndOthersToAssociatesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_StockOption1Member" name="StockOption1Member" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_SupplierResourcesMember" name="SupplierResourcesMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TencentGroupMember" name="TencentGroupMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TencentHoldingsLimitedMember" name="TencentHoldingsLimitedMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TencentMember" name="TencentMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TencentMusicEntertainmentBeijingCoLtdMember" name="TencentMusicEntertainmentBeijingCoLtdMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TencentMusicEntertainmentHongKongLimitedMember" name="TencentMusicEntertainmentHongKongLimitedMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TencentMusicEntertainmentShenzhenCoLtdMember" name="TencentMusicEntertainmentShenzhenCoLtdMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TencentMusicEntertainmentTechnologyShenzhenCoLtdMember" name="TencentMusicEntertainmentTechnologyShenzhenCoLtdMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TermDepositsMember" name="TermDepositsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ThirdCategoryVestingScheduleMember" name="ThirdCategoryVestingScheduleMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TmeTechShenzhenAndYeelionOnlineBeijingMember" name="TmeTechShenzhenAndYeelionOnlineBeijingMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TwoThousandAndSeventeenRestrictedShareSchemeAndTwoThousandAndSeventeenOptionPlanMember" name="TwoThousandAndSeventeenRestrictedShareSchemeAndTwoThousandAndSeventeenOptionPlanMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_TwoThousandFourteenShareIncentivePlanMember" name="TwoThousandFourteenShareIncentivePlanMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_VIEsAndSubsidiariesOfVIEsMember" name="VIEsAndSubsidiariesOfVIEsMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_YeelionOnlineNetworkTechnologyBeijingCoLtdMember" name="YeelionOnlineNetworkTechnologyBeijingCoLtdMember" type="dtr-types:domainItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_AccountReceivableTable" name="AccountReceivableTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfContractLiabilitiesTable" name="DisclosureOfContractLiabilitiesTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationUnsecuredSeniorNotesTable" name="DisclosureOfDetailedInformationUnsecuredSeniorNotesTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfFinancialAssetsDesignatedAsMeasuredAtFairValueThroughProfitOrLossTable" name="DisclosureOfFinancialAssetsDesignatedAsMeasuredAtFairValueThroughProfitOrLossTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfFutureMinimumCommitmentsForNonCancellableOperatingLeaseTable" name="DisclosureOfFutureMinimumCommitmentsForNonCancellableOperatingLeaseTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfMinimumRoyaltyPaymentsTable" name="DisclosureOfMinimumRoyaltyPaymentsTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfQuantitativeInformationAboutLandUseRightTable" name="DisclosureOfQuantitativeInformationAboutLandUseRightTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfShareBasedCompensationTable" name="DisclosureOfShareBasedCompensationTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DisclosureOfSignificantAccountingPoliciesTable" name="DisclosureOfSignificantAccountingPoliciesTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_FinancialRiskManagementTable" name="FinancialRiskManagementTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_GeneralInformationOrganizationAndBasisOfPreparationTable" name="GeneralInformationOrganizationAndBasisOfPreparationTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_IncomeStatementTable" name="IncomeStatementTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_IncomeTaxesTable" name="IncomeTaxesTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_InvestmentAccountedForusingEquityMethodTable" name="InvestmentAccountedForusingEquityMethodTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_PrepaymentsDepositsAndOtherReceivablesTable" name="PrepaymentsDepositsAndOtherReceivablesTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_ProfitBeforeTaxTable" name="ProfitBeforeTaxTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_StatementsTable" name="StatementsTable" type="xbrli:stringItemType" substitutionGroup="xbrldt:hypercubeItem" xbrli:periodType="duration" nillable="true" abstract="true"/>
+  <xsd:element id="tme_DescriptionOfAccountingPolicyForBasisOfPreparationOfFinancialStatementsExplanatory" name="DescriptionOfAccountingPolicyForBasisOfPreparationOfFinancialStatementsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DescriptionOfAccountingPolicyForCostOfRevenuesExplanatory" name="DescriptionOfAccountingPolicyForCostOfRevenuesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DescriptionOfAccountingPolicyForCurrentAndDeferredIncomeTaxExplanatory" name="DescriptionOfAccountingPolicyForCurrentAndDeferredIncomeTaxExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DescriptionOfAccountingPolicyForGeneralAndAdministrativeExpensesExplanatory" name="DescriptionOfAccountingPolicyForGeneralAndAdministrativeExpensesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DescriptionOfAccountingPolicyForInvestmentsAndOtherFinancialAssetsExplanatory" name="DescriptionOfAccountingPolicyForInvestmentsAndOtherFinancialAssetsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DescriptionOfAccountingPolicyForNewAndAmendmentsToAccountingStandardsAdoptedAndRecentAccountingPronouncementsExplanatory" name="DescriptionOfAccountingPolicyForNewAndAmendmentsToAccountingStandardsAdoptedAndRecentAccountingPronouncementsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DescriptionOfAccountingPolicyForPrinciplesOfConsolidationAndEquityAccountingExplanatory" name="DescriptionOfAccountingPolicyForPrinciplesOfConsolidationAndEquityAccountingExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DescriptionOfAccountingPolicyForSellingAndMarketingExpensesExplanatory" name="DescriptionOfAccountingPolicyForSellingAndMarketingExpensesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DescriptionOfAccountingPolicyForShortTermInvestmentsExplanatory" name="DescriptionOfAccountingPolicyForShortTermInvestmentsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfAccountsReceivableAndAgeingAnalysis" name="DisclosureOfAccountsReceivableAndAgeingAnalysis" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfAmortizationOfIntangibleAssetsExplanatory" name="DisclosureOfAmortizationOfIntangibleAssetsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfApprovalOfConsolidatedFinancialStatementsExplanatory" name="DisclosureOfApprovalOfConsolidatedFinancialStatementsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfBalanceWithRelatedPartiesExplanatory" name="DisclosureOfBalanceWithRelatedPartiesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfComponentsOfIncomeTaxExplanatory" name="DisclosureOfComponentsOfIncomeTaxExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfContractLiabilitiesExplanatory" name="DisclosureOfContractLiabilitiesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDepreciationChargedToIncomeStatementsExplanatory" name="DisclosureOfDepreciationChargedToIncomeStatementsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationAboutCarryingAmountsOfLandUseRightExplanatory" name="DisclosureOfDetailedInformationAboutCarryingAmountsOfLandUseRightExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationAboutCarryingAmountsOfRightOfUseAssetsExplanatory" name="DisclosureOfDetailedInformationAboutCarryingAmountsOfRightOfUseAssetsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationAboutExpensesByNatureExplanatory" name="DisclosureOfDetailedInformationAboutExpensesByNatureExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationAboutInterestExpenseArisingFromLeaseLiabilitiesAndExpensesRelatedToShortTermLeasesOfRightOfUseAssetsExplanatoryTextBlock" name="DisclosureOfDetailedInformationAboutInterestExpenseArisingFromLeaseLiabilitiesAndExpensesRelatedToShortTermLeasesOfRightOfUseAssetsExplanatoryTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationAboutInvestmentsAccountedForUsingEquityMethodExplanatory" name="DisclosureOfDetailedInformationAboutInvestmentsAccountedForUsingEquityMethodExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationAboutShareOfProfitsLossesOfInvestmentsAccountedForUsingEquityMethodExplanatory" name="DisclosureOfDetailedInformationAboutShareOfProfitsLossesOfInvestmentsAccountedForUsingEquityMethodExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationOfCashGeneratedFromOperationsExplanatory" name="DisclosureOfDetailedInformationOfCashGeneratedFromOperationsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationOfFinanceCostExplanatorytextBlock" name="DisclosureOfDetailedInformationOfFinanceCostExplanatorytextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationOfNonCashInvestingAndFinancingActivitiesExplanatory" name="DisclosureOfDetailedInformationOfNonCashInvestingAndFinancingActivitiesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationOtherReserveExplanatory" name="DisclosureOfDetailedInformationOtherReserveExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfDetailedInformationUnsecuredSeniorNotesExplanatoryTableTextBlock" name="DisclosureOfDetailedInformationUnsecuredSeniorNotesExplanatoryTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfEstimatedUsefulLivesOnAcquiredIntangibleAssetsExplanatory" name="DisclosureOfEstimatedUsefulLivesOnAcquiredIntangibleAssetsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfEstimatedUsefulLivesPropertyPlantAndEquipmentExplanatory" name="DisclosureOfEstimatedUsefulLivesPropertyPlantAndEquipmentExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfFinancialAssetsAtFairValueThroughOtherComprehensiveIncomeExplanatory" name="DisclosureOfFinancialAssetsAtFairValueThroughOtherComprehensiveIncomeExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfFinancialAssetsAtFairValueThroughProfitOrLoss" name="DisclosureOfFinancialAssetsAtFairValueThroughProfitOrLoss" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfLossAllowancesForAccountsReceivableTextBlock" name="DisclosureOfLossAllowancesForAccountsReceivableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfMovementOfDeferredIncomeTaxAssetsExplanatory" name="DisclosureOfMovementOfDeferredIncomeTaxAssetsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfMovementOfDeferredIncomeTaxLiabilitiesExplanatory" name="DisclosureOfMovementOfDeferredIncomeTaxLiabilitiesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfMovementsOfInvestmentsInAssociatesAndJointVenturesExplanatoryTextBlock" name="DisclosureOfMovementsOfInvestmentsInAssociatesAndJointVenturesExplanatoryTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfNatureOfRelatedPartiesAndRelationshipsExplanatoryTextBlock" name="DisclosureOfNatureOfRelatedPartiesAndRelationshipsExplanatoryTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfOtherGainsLossesExplanatory" name="DisclosureOfOtherGainsLossesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfOtherPayablesAndOtherLiabilitiesExplanatory" name="DisclosureOfOtherPayablesAndOtherLiabilitiesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfProfitBeforeTaxExplanatory" name="DisclosureOfProfitBeforeTaxExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfQuantitativeInformationAboutLandUseRight" name="DisclosureOfQuantitativeInformationAboutLandUseRight" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfReconciliationOfAccountingProfitMultipliedByApplicableTaxRatesExplanatory" name="DisclosureOfReconciliationOfAccountingProfitMultipliedByApplicableTaxRatesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfRecoveryOfDeferredIncomeTaxExplanatory" name="DisclosureOfRecoveryOfDeferredIncomeTaxExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfShareCapitalAdditionalPaidInCapitalAndSharesHeldForShareAwardSchemesExplanatory" name="DisclosureOfShareCapitalAdditionalPaidInCapitalAndSharesHeldForShareAwardSchemesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfSignificantSubsidiariesVIEsAndSubsidiariesOfVIEsExplanatory" name="DisclosureOfSignificantSubsidiariesVIEsAndSubsidiariesOfVIEsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfTaxEffectOfTaxHolidayPeriodPerShareExplanatory" name="DisclosureOfTaxEffectOfTaxHolidayPeriodPerShareExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfTermDepositsExplanatory" name="DisclosureOfTermDepositsExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_DisclosureOfTradeReceivablesExplanatory" name="DisclosureOfTradeReceivablesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_LandUseRightPolicyTextBlock" name="LandUseRightPolicyTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ScheduleOfCashAndCashEquivalentTableTextBlock" name="ScheduleOfCashAndCashEquivalentTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ScheduleOfFutureMinimumLeasePaymentsForNonCancelableOperatingCommitmentsTableTextBlock" name="ScheduleOfFutureMinimumLeasePaymentsForNonCancelableOperatingCommitmentsTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ScheduleOfGoodwillExplanatory" name="ScheduleOfGoodwillExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ScheduleOfMinimumRoyaltyPaymentsTableTextBlock" name="ScheduleOfMinimumRoyaltyPaymentsTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ScheduleOfOtherGainsAndLossesExplanatory" name="ScheduleOfOtherGainsAndLossesExplanatory" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ScheduleOfOtherPayablesAndOtherLiabilitiesTableTextBlock" name="ScheduleOfOtherPayablesAndOtherLiabilitiesTableTextBlock" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+  <xsd:element id="tme_ScheduleOfPrepaymentsDepositsAndOtherReceivables" name="ScheduleOfPrepaymentsDepositsAndOtherReceivables" type="dtr-types:textBlockItemType" substitutionGroup="xbrli:item" xbrli:periodType="duration" nillable="true" abstract="false"/>
+</xsd:schema>
