@@ -1,10 +1,10 @@
 import requests
-import time
 import re
 import logging
 import json
 import csv
 import pandas as pd
+import time  # 导入 time 模块
 from bs4 import BeautifulSoup
 from xbrl.cache import HttpCache
 from xbrl.instance import XbrlParser
@@ -13,6 +13,7 @@ from collections import defaultdict
 
 
 def remove_ptp_list(ptp_tickers, tickers):
+    # 移除 PTP 列表
     us_non_ptp_tickers = [x for x in tickers if x not in ptp_tickers]
     us_ptp_tickers = [x for x in tickers if x in ptp_tickers]
     print("PTP US stocks:", us_ptp_tickers)
@@ -57,7 +58,6 @@ def get_ptp_tickers(url1='https://help.zh-tw.firstrade.com/article/841-new-1446-
     ptp_lists_len = len(ptp_lists)
     print("Total PTP Tickers:", ptp_lists_len)
     return ptp_lists
-    print(ptp_lists)
 
 
 def get_tickers(category, start):
@@ -94,15 +94,35 @@ def parse_instance_and_write_csv(ticker, schema_url: str, output_filename: str =
     cache: HttpCache = HttpCache('./cache')
     cache.set_headers({'From': 'YOUR@EMAIL.com', 'User-Agent': 'py-xbrl/2.1.0'})
 
+    try:
+        # 下载XML实例文件内容
+        response = requests.get(schema_url)
+        xml_content = response.text
+
+        # 预处理XML内容
+        xml_content = preprocess_xml_content(xml_content)
+
+        parser = XbrlParser(cache)
+        inst = parser.parse_instance(xml_content)
+
+    except FileNotFoundError:
+        print(f"File not found for ticker {ticker}. Skipping...")
+
+    headers = {
+        'User-Agent': 'Wantai Corp',
+        'From': 'rojer.chien@gmail.com'
+    }
+
     # 下载XML实例文件内容
     response = requests.get(schema_url)
+
     xml_content = response.text
 
     # 预处理XML内容
     xml_content = preprocess_xml_content(xml_content)
 
     parser = XbrlParser(cache)
-    inst = parser.parse_instance(xml_content )
+    inst = parser.parse_instance(xml_content)
 
     inst.json('./test.json')
     print(inst.json)
@@ -112,7 +132,8 @@ def parse_instance_and_write_csv(ticker, schema_url: str, output_filename: str =
     found = False
 
     for key, value in data["facts"].items():
-        if "dimensions" in value and "concept" in value["dimensions"] and value["dimensions"]["concept"] == target_concept:
+        if "dimensions" in value and "concept" in value["dimensions"] and value["dimensions"][
+            "concept"] == target_concept:
             trading_symbol = value["value"]
             # print(f"找到符合的資料：{key} 的 TradingSymbol 值為 {trading_symbol}")
             found = True
@@ -154,8 +175,6 @@ def parse_instance_and_write_csv(ticker, schema_url: str, output_filename: str =
 
         for row in data_rows.values():
             writer.writerow(row)
-
-# def get_filing_urls(symbol: str, form_types=['10-Q', '10-K', '6-K', '20-F'], amount=1):
 
 def get_filing_urls(symbol: str, form_types=['10-Q', '10-K'], amount=1):
     client = EdgarWrapper()
@@ -218,8 +237,8 @@ for symbol in us_tickers:
         except ValueError as e:
             print(f"Error for ticker {symbol}: {str(e)}")
             err_number += 1
-            continue  # skips the rest of the loop for this ticker and moves to the next one
-        # print('URL List:', urls)
+            continue  # 跳过当前符号，继续下一个符号的循环
+
         if not urls:
             print("urls is empty")
             empty_number += 1
@@ -234,16 +253,16 @@ for symbol in us_tickers:
         count = 0
 
 df = pd.read_csv('filing.csv')
-# 選取需要的欄位
+# 选择需要的列
 columns_to_check = ['EarningsPerShareBasic',
                     'EarningsPerShareBasic_Decimals',
                     'EarningsPerShareDiluted',
                     'EarningsPerShareDiluted_Decimals']
 
-# 刪去含有空值的行
+# 删除含有空值的行
 df = df.dropna(subset=columns_to_check)
 
-# 儲存新的csv檔案
+# 保存新的CSV文件
 df.to_csv('filing.csv', index=False)
 
 
@@ -251,3 +270,11 @@ print(f"Total ticker number: {run_number}")
 print(f"Wi URL number: {url_number}")
 print(f"Wo URL number: {empty_number}")
 print(f"Error URL number: {err_number}")
+
+
+
+
+
+
+
+
