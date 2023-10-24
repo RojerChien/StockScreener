@@ -8,7 +8,7 @@ dir_path = os.getcwd()
 # pg_files = glob.glob(os.path.join(dir_path, "*.jpg"))
 # image_files = glob.glob(os.path.join(dir_path, "*.[jp][pn]g"))
 # image_files = glob.glob(os.path.join(dir_path, "*.html"))
-remove_file_list = glob.glob(os.path.join(dir_path, "*.[jp][pn]g")) + glob.glob(os.path.join(dir_path, "*.xml"))
+remove_file_list = glob.glob(os.path.join(dir_path, "*.[jp][pn]g")) + glob.glob(os.path.join(dir_path, "*.htm*"))
 
 
 # 删除所有.jpg文件

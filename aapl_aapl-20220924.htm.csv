@@ -1,8 +1,0 @@
-TradingSymbol,StartDate,EndDate,NetIncomeLoss,NetIncomeLoss_Decimals,EarningsPerShareBasic,EarningsPerShareBasic_Decimals,EarningsPerShareDiluted,EarningsPerShareDiluted_Decimals
-AAPL,2021-09-26,2022-09-24,99803000000.0,-6,6.15,2,6.11,2
-AAPL,2020-09-27,2021-09-25,94680000000.0,-6,5.67,2,5.61,2
-AAPL,2019-09-29,2020-09-26,57411000000.0,-6,3.31,2,3.28,2
-TradingSymbol,StartDate,EndDate,NetIncomeLoss,NetIncomeLoss_Decimals,EarningsPerShareBasic,EarningsPerShareBasic_Decimals,EarningsPerShareDiluted,EarningsPerShareDiluted_Decimals
-AAPL,2021-09-26,2022-09-24,99803000000.0,-6,6.15,2,6.11,2
-AAPL,2020-09-27,2021-09-25,94680000000.0,-6,5.67,2,5.61,2
-AAPL,2019-09-29,2020-09-26,57411000000.0,-6,3.31,2,3.28,2
