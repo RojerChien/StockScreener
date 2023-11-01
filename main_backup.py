@@ -8,7 +8,6 @@ import numpy as np
 from highcharts import Highstock
 from bs4 import BeautifulSoup
 from yahooquery import Ticker
-from openpyxl import load_workbook
 
 pd.options.mode.chained_assignment = None  # 將警告訊息關閉
 
@@ -91,14 +90,14 @@ def highchart_chart(dfin, ticker_in, url, date=today):
     # 將RSI加到數據中
     chart.add_data_set(rsi_data, 'line', 'RSI', yAxis=2, dataGrouping={'units': [['day', [1]]]})
 
-    # 添加50日成交量移動平均線
-    dfin['volume_50ma'] = dfin['volume'].rolling(window=50).mean()
-    volume_50ma = dfin['volume_50ma'].values.tolist()
-    volume_50ma = [
+    # 添加10日成交量移動平均線
+    dfin['volume_10ma'] = dfin['volume'].rolling(window=10).mean()
+    volume_10ma = dfin['volume_10ma'].values.tolist()
+    volume_10ma = [
         [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), v]
-        for i, v in enumerate(volume_50ma)
+        for i, v in enumerate(volume_10ma)
     ]
-    chart.add_data_set(volume_50ma, 'line', '50日成交量移動平均', yAxis=1, dataGrouping={'units': [['day', [1]]]})
+    chart.add_data_set(volume_10ma, 'line', '10日成交量移動平均', yAxis=1, dataGrouping={'units': [['day', [1]]]})
 
     # 添加蜡烛图序列
     ohlc = dfin[['open', 'high', 'low', 'close']].values.tolist()
@@ -273,33 +272,8 @@ def get_us_tickers(category) -> dict:
     print(f'############ Start Getting Ticker by new {category} mode')
     df = pd.read_excel("Tickers.xlsx", sheet_name=category)
 
-    # 使用字典推导式创建字典
-    us_tickers_dict = {
-        str(sym).replace('/', '-'): {"Sector": sector, "Industry": industry}
-        for sym, sector, industry in zip(df["Symbol"], df["Sector"], df["Industry"])
-        if '^' not in str(sym)
-    }
-
-    tickers_length_pre = len(us_tickers_dict)
-    print(f'Total {category} Tickers before remove PTP:', tickers_length_pre)
-
-    ptp_lists = get_ptp_tickers()
-    symbols_removed_ptp = [sym for sym in us_tickers_dict if sym not in ptp_lists]
-    tickers_length_post = len(symbols_removed_ptp)
-    print(f'Total {category} Tickers after remove PTP:', tickers_length_post)
-    # print(us_tickers_dict)
-
-    return us_tickers_dict, symbols_removed_ptp
-
-
-
-def get_us_tickers_backup(category) -> dict:
-    print(f'############ Start Getting Ticker by new {category} mode')
-    df = pd.read_excel("Tickers.xlsx", sheet_name=category)
-
     # 把Symbol, Sector, Industry這三個欄位的值都存儲到列表中
-    # symbols = [str(sym).replace('/', '-') for sym in df["Symbol"] if '^' not in str(sym)]
-    symbols = [str(sym) for sym in df["Symbol"] if '^' not in str(sym)]
+    symbols = [str(sym).replace('/', '-') for sym in df["Symbol"] if '^' not in str(sym)]
     sectors = df["Sector"].tolist()
     industries = df["Industry"].tolist()
 
@@ -449,14 +423,16 @@ def get_yq_historical_data(ticker_list):
 def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, days=233, percentage=2, ticker_type="US",
                                     run_number=1, update_historical_data=1):
     # line_notify_message("Start: " + str(today) + " " + str(ticker_type))
-
-    df_out = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector', 'isMatchVWAP', 'isVolumeGreaterAvgVolume55',
-                                   'volumeGrowthWithAvgVolume55', 'volatility15', 'url'])
-
     data_all_tickers = get_yq_historical_data(tickers_in)
     data_all_tickers.to_csv('data_all_tickers.csv', index=True)
+    data_all_financial = get_yq_financial_data(tickers_in)
+    # 將字典轉換為 DataFrame
+    # data_all_financial_df = pd.DataFrame(data_all_financial)
+    # 保存 DataFrame 到 CSV 文件
+    # data_all_financial_df.to_csv('data_all_financial.csv', index=True)
 
-    # df_sector = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector'])
+    # print(data_all_financial)
+    df_sector = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector'])
     for ticker in tickers_in:
         sector = tickers_dict_in[ticker]["Sector"]
         industry = tickers_dict_in[ticker]["Industry"]
@@ -464,6 +440,12 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
         if update_historical_data:
             df = sel_yq_historical_data(data_all_tickers, ticker)
             df.to_csv('yq_historical.csv', index=False)
+            industry, sector = sel_yq_financial_data(data_all_financial, ticker)
+            df_sector = pd.concat(
+                [df_sector, pd.DataFrame({'Ticker': [ticker], 'Industry': [industry], 'Sector': [sector]})],
+                ignore_index=True)
+            # 将 DataFrame 写入 Excel 文件
+            df_sector.to_excel('industry_sector.xlsx', index=False)
 
         else:
             if os.path.exists('yq_historical.csv'):
@@ -472,32 +454,39 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
             continue
 
         run_number += 1
+        # 計算過去 days 天的最高價
+        highest_price = df['close'].rolling(window=days).max().iloc[-1]
 
+        # 計算正負 percentage% 的範圍
+        upper_range = highest_price * (1 + percentage / 100)
+        lower_range = highest_price * (1 - percentage / 100)
+        # print(upper_range)
+        # print(lower_range)
+
+        # 篩選出最近的收盤價在範圍內的股票
+        last_close_price = round(df['close'].iloc[-1], 2)
+        stocks_in_range = (last_close_price >= lower_range) & (last_close_price <= upper_range)
+
+        # global scenario
         df['AvgVol'] = df['volume'].rolling(55).mean()  # 55為平均的天數
-        last_volume = df['volume'].iloc[-1]
-        last_volume_wi_factor = last_volume * vol_factor
-        print(f"Last Volume: {last_volume}")
-        print(f"Last Volume wi Factor: {last_volume_wi_factor}")
-        last_avg_volume_55 = round(df['AvgVol'].iloc[-1], 2)
-        last_vwap_55 = round(df['vwap55'].iloc[-1], 2)
-        avg_money_traded = (last_avg_volume_55 * last_vwap_55) >= 2000000
-        is_volume_greater_avg_volume_55 = last_volume_wi_factor > last_avg_volume_55
-        # 最後成交量大於55天平均成交量的比例，正數為較高；負數為較低
-        volume_compare_wi_avg_volume_55 = (last_volume_wi_factor / last_avg_volume_55 ) - 1
+        last_avgvol55 = round(df['AvgVol'].iloc[-1], 2)
+        last_vwap55 = round(df['vwap55'].iloc[-1], 2)
+        avg_money_traded = (last_avgvol55 * last_vwap55) >= 2000000
         # avg_money_traded
-        volatility_H = df['close'].max() / df['close'].mean()
-        volatility_L = df['close'].min() / df['close'].mean()
+        volatility_H = df['close'].max() / df['close'].mean()  # 把voltility改成用close來算max，避免一些小型股會有突然上漲後再拉回的情況
+        volatility_L = df['close'].min() / df['close'].mean()  # 把voltility改成用close來算min，避免一些小型股會有突然上漲後再拉回的情況
         volatility = volatility_H - volatility_L
         # 計算最後的15天的波動率
         last_15_days = df['close'].tail(15)
-        volatility_H_15 = last_15_days.max() / last_15_days.mean()
-        volatility_L_15 = last_15_days.min() / last_15_days.mean()
+        volatility_H_15 = last_15_days.max() / last_15_days.mean()  # 把voltility改成用close來算max，避免一些小型股會有突然上漲後再拉回的情況
+        volatility_L_15 = last_15_days.min() / last_15_days.mean()  # 把voltility改成用close來算min，避免一些小型股會有突然上漲後再拉回的情況
         volatility_15 = volatility_H_15 - volatility_L_15
-        url = get_tradingview_url(ticker, ticker_type)
-        # 過濾資料筆數少於144筆的股票，確保上市時間有半年並且判斷半年內的波動率，像死魚一樣不動的股票就不分析
-        if len(df.index) > 144 and volatility_15 > 0.01 and volatility > 0.15 and avg_money_traded:
+        # print (str(len(df.index)) + " " + str(volatility_H) + " " + str(volatility_L) + " " + str(volatility))
+
+        if len(df.index) > 144 and volatility_15 > 0.01 and volatility > 0.15 and avg_money_traded:  # 過濾資料筆數少於144筆的股票，確保上市時間有半年並且判斷半年內的波動率，像死魚一樣不動的股票就不分析
             if ForcePLOT == 1:
                 url = get_tradingview_url(ticker, ticker_type)
+                # url = f'https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A{tickers_in}'
                 highchart_chart(df, tickers_in, url)
             df['VWAP21_Result'] = (df['vwap5'] > df['vwap21'])
             df['VWAP55_Result'] = (df['vwap5'] > df['vwap21']) & (df['vwap21'] > df['vwap55'])
@@ -509,6 +498,7 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
                     df['vwap55'] > df['vwap89']) & (df['vwap89'] > df['vwap144']) & (
                                            df['vwap144'] > df['vwap233'])
 
+            # VWAP5_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2])
             VWAP21_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
                     df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2])
             VWAP55_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
@@ -558,7 +548,8 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
             VWAP21_history = np.array_equal(vwap_values_21[-21:-1], pattern_21[:-1]) and vwap_values_21[-1] == \
                              pattern_21[
                                  -1]
-
+            final_result = "FALSE"
+            # scenario = 144
             VWAP55_history = "True"  # 只找出價格在範圍內的股票 VWAP144_Result
             if (scenario == 55) and (VWAP55_inc == True) and (last_vwap_value_144 == True):
                 final_result = "TRUE"
@@ -571,48 +562,25 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
             elif (scenario == 233) and (VWAP233_inc == True) and (last_vwap_value_144 == True):
                 final_result = "TRUE"
             else:
-                final_result = "FALSE"
-                # continue
+                # print ("No Scenario")
+                # print("No Scenario")
+                # return 1
+                continue
             # print(final_result)
             if (final_result == 'TRUE'):
                 url = get_tradingview_url(ticker, ticker_type)
+                # url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=" + ticker)
+                print(ticker)
+                print(today)
+                print(url)
                 highchart_chart(df, ticker, url)
-            print(f"run Number:{run_number}")
-            print(f"Ticker:{ticker}")
-            print(f"Industry:{industry}")
-            print(f"Sector:{sector}")
-            print(f"isMatchVWAP:{final_result}")
-            print(f"isVolumeGreaterAvgVolume55:{is_volume_greater_avg_volume_55}")
-            print(f"volumeGrowthWithAvgVolume55:{volume_compare_wi_avg_volume_55}")
-            print(f"Volatility15:{volatility_15}")
-            print(f"Url:{url}")
-
-            df_out.loc[run_number] = {
-                'Ticker': ticker,
-                'Industry': industry,
-                'Sector': sector,
-                'isMatchVWAP': final_result,
-                'isVolumeGreaterAvgVolume55': is_volume_greater_avg_volume_55,
-                'volumeGrowthWithAvgVolume55': volume_compare_wi_avg_volume_55,
-                'volatility15': volatility_15,
-                'url': url
-            }
+                # plotly_chart(df, plot_title, 0)
         else:
             print("volume or volatility not meet, skip analysis!")
-    df_out.to_excel('Result.xlsx', index=False)
-    ### 將url那欄改成超連結
-    wb = load_workbook('Result.xlsx')
-    ws = wb.active
+        # lineNotifyMessage(token, "Finished: " + today + " " + category + "\nScanned " + str(run_number) + " of " + str(
+        #    start) + " Stocks in " + category + " Market\n" + str(true_number) + " Meet Criteria")
 
-    # 假設 URL 在第 3 列
-    url_col = 8
-    for row in range(2, ws.max_row + 1):
-        cell = ws.cell(row=row, column=url_col)
-        cell.hyperlink = cell.value
-        cell.style = 'Hyperlink'
 
-    # 保存更改
-    wb.save('Result.xlsx')
 def calculate_volatility(df, n_days):
     # 選擇最後n_days天的數據
     hist = df.tail(n_days)
@@ -664,7 +632,7 @@ else:
     jpg_resolution = 800
 
 # volume Factor
-vol_factor = 1.5  # volume factor for VWAP_SCREENER
+vol_factor = 1  # volume factor for VWAP_SCREENER
 
 # screener要判斷的平均天數
 screener_day = 8
@@ -686,8 +654,8 @@ fin_start = 0
 run_vwap_strategy_screener_in_range = 1  # VWAP均線的策略，均線呈多頭排序時買入，且限價在最高價正負2%的股票
 
 # 要執行的ticker種類
-TEST = 1
-US = 0
+TEST = 0
+US = 1
 
 # 將讀取到的資料轉換為 list，並存入 tickers 變數中
 if US == 1:
