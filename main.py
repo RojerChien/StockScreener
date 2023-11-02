@@ -1,12 +1,14 @@
 import pandas as pd
+import subprocess
 import os
+import sys
 import time
 import webbrowser
 import requests
 import datetime
 import numpy as np
-from highcharts import Highstock
-from bs4 import BeautifulSoup
+from highcharts import Highstock # pip install python-highcharts
+from bs4 import BeautifulSoup # pip install beautifulsoup4
 from yahooquery import Ticker
 from openpyxl import load_workbook
 
@@ -252,7 +254,16 @@ def highchart_chart(dfin, ticker_in, url, date=today):
     filename = f'{ticker_in}_{date}.html'
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(chart.htmlcontent)
-    webbrowser.open(filename)
+    filepath = os.path.abspath(filename)
+    if sys.platform == 'darwin':  # Mac OS X
+        subprocess.run(['open', '-a', 'Google Chrome', filepath])
+    elif sys.platform == 'win32':  # Windows
+        subprocess.run(['start', 'chrome', filepath], shell=True)
+    else:  # 其他平台，如 Linux
+        subprocess.run(['xdg-open', filepath])
+
+    # print(f'HTML File Name:{filepath}')
+    # webbrowser.open(filepath)
 
 
 def calculate_rsi(data, period):
@@ -531,13 +542,13 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
                                   df['vwap233'].iloc[-1] > df['vwap233'].iloc[-2])
 
             vwap_values_233 = df['VWAP233_Result'].values
-            last_vwap_value_233 = df['VWAP233_Result'][-1]
+            last_vwap_value_233 = df['VWAP233_Result'].iloc[-1]
             pattern_233 = np.array([False] * 20 + [True])
             VWAP233_history = np.array_equal(vwap_values_233[-21:-1], pattern_233[:-1]) and vwap_values_233[-1] == \
                               pattern_233[-1]
 
             vwap_values_144 = df['VWAP144_Result'].values
-            last_vwap_value_144 = df['VWAP144_Result'][-1]
+            last_vwap_value_144 = df['VWAP144_Result'].iloc[-1]
             pattern_144 = np.array([False] * 20 + [True])
             VWAP144_history = np.array_equal(vwap_values_144[-21:-1], pattern_144[:-1]) and vwap_values_144[-1] == \
                               pattern_144[-1]
@@ -686,18 +697,18 @@ fin_start = 0
 run_vwap_strategy_screener_in_range = 1  # VWAP均線的策略，均線呈多頭排序時買入，且限價在最高價正負2%的股票
 
 # 要執行的ticker種類
-TEST = 1
-US = 0
+TEST = 0
+US = 1
 
 # 將讀取到的資料轉換為 list，並存入 tickers 變數中
 if US == 1:
     us_tickers_dict, us_tickers = get_us_tickers("US")
 if TEST == 1:
-    test_tickers = ['AAPL', 'MSFT', 'JPM']
+    test_tickers = ['AAPL', 'MSFT', 'GIII']
     test_tickers_dict = {
         "AAPL": {"Sector": "Technology", "Industry": "Electronics"},
         "MSFT": {"Sector": "Technology", "Industry": "Software"},
-        "JPM": {"Sector": "Finance", "Industry": "Banking"}
+        "GIII": {"Sector": "Finance", "Industry": "Banking"}
     }
 
 start_time = time.time()  # 記錄開始時間
