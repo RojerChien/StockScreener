@@ -303,34 +303,6 @@ def get_us_tickers(category) -> dict:
     return us_tickers_dict, symbols_removed_ptp
 
 
-
-def get_us_tickers_backup(category) -> dict:
-    print(f'############ Start Getting Ticker by new {category} mode')
-    df = pd.read_excel("Tickers.xlsx", sheet_name=category)
-
-    # 把Symbol, Sector, Industry這三個欄位的值都存儲到列表中
-    # symbols = [str(sym).replace('/', '-') for sym in df["Symbol"] if '^' not in str(sym)]
-    symbols = [str(sym) for sym in df["Symbol"] if '^' not in str(sym)]
-    sectors = df["Sector"].tolist()
-    industries = df["Industry"].tolist()
-
-    # 使用Symbol作為鍵，建立一個字典來查找Sector和Industry的值
-    us_tickers_dict = {}
-    for symbol, sector, industry in zip(symbols, sectors, industries):
-        symbol = str(symbol).replace('/', '-')
-        us_tickers_dict[symbol] = {"Sector": sector, "Industry": industry}
-
-    tickers_length_pre = len(symbols)
-    print(f'Total {category} Tickers before remove PTP:', tickers_length_pre)
-    ptp_lists = get_ptp_tickers()
-    # print(f'PTP Stock List: {ptp_lists}')
-    symbols_removed_ptp = remove_ptp_list(ptp_lists, symbols)
-    tickers_length_post = len(symbols_removed_ptp)
-    print(f'Total {category} Tickers after remove PTP:', tickers_length_post)
-
-    return us_tickers_dict, symbols_removed_ptp
-
-
 def calculate_vwap(df_in, duration, ochl='close'):
     # data['Typical Price'] = (data['high'] + data['low'] + data['close']) / 3
     df_in['VWPrice'] = df_in[ochl] * df_in['volume']
@@ -438,7 +410,6 @@ def sel_yq_financial_data(data_all, ticker_in):
         print(f"Data for {ticker_in} is not a dictionary.")
 
     return industry, sector
-
 
 
 def get_yq_historical_data(ticker_list):
