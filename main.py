@@ -436,7 +436,7 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
                                    'volumeGrowthWithAvgVolume55', 'volatility15', 'url'])
 
     data_all_tickers = get_yq_historical_data(tickers_in)
-    # data_all_tickers.to_csv('data_all_tickers.csv', index=True)
+    data_all_tickers.to_csv('data_all_tickers.csv', index=True)
 
     # df_sector = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector'])
     for ticker in tickers_in:
@@ -668,8 +668,8 @@ fin_start = 0
 run_vwap_strategy_screener_in_range = 1  # VWAP均線的策略，均線呈多頭排序時買入，且限價在最高價正負2%的股票
 
 # 要執行的ticker種類
-TEST = 0
-US = 1
+TEST = 1
+US = 0
 
 # 將讀取到的資料轉換為 list，並存入 tickers 變數中
 if US == 1:
