@@ -436,7 +436,7 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
                                    'volumeGrowthWithAvgVolume55', 'volatility15', 'url'])
 
     data_all_tickers = get_yq_historical_data(tickers_in)
-    data_all_tickers.to_csv('data_all_tickers.csv', index=True)
+    # data_all_tickers.to_csv('data_all_tickers.csv', index=True)
 
     # df_sector = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector'])
     for ticker in tickers_in:
