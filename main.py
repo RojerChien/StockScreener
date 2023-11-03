@@ -693,7 +693,7 @@ if TEST == 1:
 else:
     US = 1
 
-# 將讀取到的資料轉換為 list，並存入 tickers 變數中
+# 將讀取到的資料轉換為 list，並存入 tickers  變數中
 if US == 1:
     us_tickers_dict, us_tickers = get_us_tickers("US")
 if TEST == 1:
