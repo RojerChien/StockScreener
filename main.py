@@ -428,15 +428,20 @@ def get_yq_historical_data(ticker_list):
     return data_all
 
 
+def check_vwap_scenario(scenario, last_vwap_value_144, vwap_condition):
+    # vwap_condition is a boolean value for the specific scenario
+    return "TRUE" if vwap_condition and last_vwap_value_144 else "FALSE"
+
+
 def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, days=233, percentage=2, ticker_type="US",
                                     run_number=1, update_historical_data=1):
     # line_notify_message("Start: " + str(today) + " " + str(ticker_type))
 
     df_out = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector', 'isMatchVWAP', 'isVolumeGreaterAvgVolume55',
-                                   'volumeGrowthWithAvgVolume55', 'volatility15', 'url'])
+                                   'volumeGrowthWithAvgVolume55', 'volatility15', 'newHighVolume', 'volume_level', 'url'])
 
     data_all_tickers = get_yq_historical_data(tickers_in)
-    data_all_tickers.to_csv('data_all_tickers.csv', index=True)
+    # data_all_tickers.to_csv('data_all_tickers.csv', index=True)
 
     # df_sector = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector'])
     for ticker in tickers_in:
@@ -457,7 +462,13 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
 
         df['AvgVol'] = df['volume'].rolling(55).mean()  # 55為平均的天數
         last_volume = df['volume'].iloc[-1]
+        max_volume_144 = df['volume'].rolling(window=144).max().iloc[-1]
         last_volume_wi_factor = last_volume * vol_factor
+        volume_level = (last_volume_wi_factor / max_volume_144) - 1
+        new_high_volume = "False" #Give new_high_volume a default value
+        if volume_level > 0:
+            new_high_volume = "True"
+            print(f"New High Level{new_high_volume}")
         print(f"Last Volume: {last_volume}")
         print(f"Last Volume wi Factor: {last_volume_wi_factor}")
         last_avg_volume_55 = round(df['AvgVol'].iloc[-1], 2)
@@ -542,6 +553,8 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
                                  -1]
 
             VWAP55_history = "True"  # 只找出價格在範圍內的股票 VWAP144_Result
+
+            """
             if (scenario == 55) and (VWAP55_inc == True) and (last_vwap_value_144 == True):
                 final_result = "TRUE"
             elif (scenario == 21) and (VWAP21_inc == True) and (last_vwap_value_144 == True):
@@ -553,7 +566,9 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
             elif (scenario == 233) and (VWAP233_inc == True) and (last_vwap_value_144 == True):
                 final_result = "TRUE"
             else:
-                final_result = "FALSE"
+                final_result = "FALSE" 
+            """
+            final_result = check_vwap_scenario(144, last_vwap_value_144, VWAP144_inc)
                 # continue
             # print(final_result)
             if (final_result == 'TRUE'):
@@ -567,6 +582,8 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
             print(f"isVolumeGreaterAvgVolume55:{is_volume_greater_avg_volume_55}")
             print(f"volumeGrowthWithAvgVolume55:{volume_compare_wi_avg_volume_55}")
             print(f"Volatility15:{volatility_15}")
+            print(f"newHighVolume:{new_high_volume}")
+            print(f"volume_level:{volume_level}")
             print(f"Url:{url}")
 
             df_out.loc[run_number] = {
@@ -577,6 +594,8 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
                 'isVolumeGreaterAvgVolume55': is_volume_greater_avg_volume_55,
                 'volumeGrowthWithAvgVolume55': volume_compare_wi_avg_volume_55,
                 'volatility15': volatility_15,
+                'newHighVolume': new_high_volume,
+                'volume_level': volume_level,
                 'url': url
             }
         else:
@@ -668,8 +687,11 @@ fin_start = 0
 run_vwap_strategy_screener_in_range = 1  # VWAP均線的策略，均線呈多頭排序時買入，且限價在最高價正負2%的股票
 
 # 要執行的ticker種類
-TEST = 1
-US = 0
+TEST = 0
+if TEST == 1:
+    US = 0
+else:
+    US = 1
 
 # 將讀取到的資料轉換為 list，並存入 tickers 變數中
 if US == 1:
