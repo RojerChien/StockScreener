@@ -438,7 +438,8 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
     # line_notify_message("Start: " + str(today) + " " + str(ticker_type))
 
     df_out = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector', 'isMatchVWAP', 'isVolumeGreaterAvgVolume55',
-                                   'volumeGrowthWithAvgVolume55', 'volatility15', 'newHighVolume', 'volume_level', 'url'])
+                                   'volumeGrowthWithAvgVolume55', 'volatility15', 'newHighVolume', 'volume_level',
+                                   'price_near_high', 'url'])
 
     data_all_tickers = get_yq_historical_data(tickers_in)
     # data_all_tickers.to_csv('data_all_tickers.csv', index=True)
@@ -458,9 +459,14 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
         if df.empty:
             continue
 
-        run_number += 1
-
         df['AvgVol'] = df['volume'].rolling(55).mean()  # 55為平均的天數
+        max_price_144 = df['high'].rolling(window=144).max().iloc[-1]
+        last_close = df['close'].iloc[-1]
+        last_close_pect_max_144 = (last_close / max_price_144) - 1
+        if last_close_pect_max_144 < 0.05:
+            price_near_high = "True"
+        else:
+            price_near_high = "False"
         last_volume = df['volume'].iloc[-1]
         max_volume_144 = df['volume'].rolling(window=144).max().iloc[-1]
         last_volume_wi_factor = last_volume * vol_factor
@@ -571,8 +577,9 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
             final_result = check_vwap_scenario(144, last_vwap_value_144, VWAP144_inc)
                 # continue
             # print(final_result)
-            if (final_result == 'TRUE'):
-                url = get_tradingview_url(ticker, ticker_type)
+            run_number += 1
+            if final_result == 'TRUE' and is_volume_greater_avg_volume_55:
+                # url = get_tradingview_url(ticker, ticker_type)
                 highchart_chart(df, ticker, url)
             print(f"run Number:{run_number}")
             print(f"Ticker:{ticker}")
@@ -584,6 +591,7 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
             print(f"Volatility15:{volatility_15}")
             print(f"newHighVolume:{new_high_volume}")
             print(f"volume_level:{volume_level}")
+            print(f"price_near_high:{price_near_high}")
             print(f"Url:{url}")
 
             df_out.loc[run_number] = {
@@ -596,6 +604,7 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
                 'volatility15': volatility_15,
                 'newHighVolume': new_high_volume,
                 'volume_level': volume_level,
+                'price_near_high': price_near_high,
                 'url': url
             }
         else:
@@ -665,7 +674,7 @@ else:
     jpg_resolution = 800
 
 # volume Factor
-vol_factor = 1.5  # volume factor for VWAP_SCREENER
+vol_factor = 1  # volume factor for VWAP_SCREENER
 
 # screener要判斷的平均天數
 screener_day = 8
@@ -697,10 +706,10 @@ else:
 if US == 1:
     us_tickers_dict, us_tickers = get_us_tickers("US")
 if TEST == 1:
-    test_tickers = ['AAPL', 'MSFT', 'GIII']
+    test_tickers = ['STX', 'IT', 'GIII']
     test_tickers_dict = {
-        "AAPL": {"Sector": "Technology", "Industry": "Electronics"},
-        "MSFT": {"Sector": "Technology", "Industry": "Software"},
+        "STX": {"Sector": "Technology", "Industry": "Electronics"},
+        "IT": {"Sector": "Technology", "Industry": "Software"},
         "GIII": {"Sector": "Finance", "Industry": "Banking"}
     }
 
@@ -712,6 +721,7 @@ start_time = time.time()  # 記錄開始時間
 # debugmode = 1
 # 決定是否要執行screener
 lets_party = 1
+# 20231105
 
 if lets_party == 1:
     if TEST == 1:
