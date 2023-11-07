@@ -78,7 +78,7 @@ def add_vwap_to_chart(chart, dfin, window, color, line_width, yAxis=0, id=None):
                        dataGrouping={'units': [['day', [1]]]})
 
 
-def highchart_chart(dfin, ticker_in, url, date=today):
+def plot_highchart_chart(dfin, ticker_in, url, date=today):
     # 初始化highstock对象
     chart = Highstock(renderTo='container', width=None, height=930)  # 添加宽度和高度
     # chart = highstock(renderTo='container', width=1800, height=900)  # 添加宽度和高度
@@ -283,7 +283,6 @@ def calculate_rsi(data, period):
 def get_us_tickers(category) -> dict:
     print(f'############ Start  Getting Ticker by new {category} mode')
     df = pd.read_excel("Tickers.xlsx", sheet_name=category)
-    print(f'############ Finish Getting Ticker by new {category} mode')
 
     # 使用字典推导式创建字典
     us_tickers_dict = {
@@ -300,7 +299,7 @@ def get_us_tickers(category) -> dict:
     tickers_length_post = len(symbols_removed_ptp)
     print(f'Total {category} Tickers after remove PTP:', tickers_length_post)
     # print(us_tickers_dict)
-
+    print(f'############ Finish Getting Ticker by new {category} mode')
     return us_tickers_dict, symbols_removed_ptp
 
 
@@ -416,13 +415,13 @@ def sel_yq_financial_data(data_all, ticker_in):
 def get_yq_historical_data(ticker_list):
     # print(ticker_list)
     get_data_start_time = time.time()  # Record start time
-    print("############ Start  getting stock historical data")
+    print("############ Start  Getting Stock Historical Data")
     ticker = Ticker(ticker_list, asynchronous=True)
     data_all = ticker.history(period="3y", interval="1d")
     get_data_end_time = time.time()  # Record end time
     get_data_elapsed_time = round(get_data_end_time - get_data_start_time, 2)  # Compute elapsed time
     print(f"Get Data Elapsed time: {get_data_elapsed_time} seconds")
-    print("############ Finish getting stock historical data")
+    print("############ Finish Getting Stock Historical Data")
     # Save DataFrame as CSV
     # data_all.to_csv('data_all.csv', index=True)
     # Save DataFrame as Parquet
@@ -430,7 +429,7 @@ def get_yq_historical_data(ticker_list):
     return data_all
 
 
-def check_vwap_scenario(scenario, last_vwap_value_144, vwap_condition):
+def check_vwap_scenario_old(scenario, last_vwap_value_144, vwap_condition):
     # vwap_condition is a boolean value for the specific scenario
     return "TRUE" if vwap_condition and last_vwap_value_144 else "FALSE"
 
@@ -448,33 +447,72 @@ def get_vwap_result(df, vwap_levels):
 def check_vwap_scenario(scenario, last_vwap_value, vwap_increment):
     return "TRUE" if scenario in vwap_increment and last_vwap_value else "FALSE"
 
+
+def get_vwap_result(df, vwap_levels):
+    result = True
+    for i in range(len(vwap_levels) - 1):
+        result &= df[f'vwap{vwap_levels[i]}'].iloc[-1] > df[f'vwap{vwap_levels[i + 1]}'].iloc[-1]
+    return result
+
+def check_vwap_scenario(scenario, last_vwap_value, vwap_increment):
+    return "TRUE" if scenario in vwap_increment and last_vwap_value else "FALSE"
+
+
+def calculate_vwap_result(df, scenario):
+    # Start with a series of True values, since we're going to use logical AND operations
+    result = pd.Series(True, index=df.index)
+
+    # Define the VWAP columns in the order they will be compared
+    vwap_columns = ['vwap5', 'vwap21', 'vwap55', 'vwap89', 'vwap144', 'vwap233']
+
+    # Find the index of the scenario in the vwap_columns list
+    scenario_index = vwap_columns.index(f'vwap{scenario}')
+
+    # Perform the comparison for each VWAP column up to the scenario
+    for i in range(scenario_index):
+        result &= (df[vwap_columns[i]] > df[vwap_columns[i + 1]])
+
+    return result
+
+
 def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, days=233, percentage=2, ticker_type="US",
                                     run_number=1, update_historical_data=1):
-    # line_notify_message("Start: " + str(today) + " " + str(ticker_type))
-
     df_out = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector', 'isMatchVWAP', 'isVolumeGreaterAvgVolume55',
                                    'volumeGrowthWithAvgVolume55', 'volatility15', 'newHighVolume', 'volume_level',
                                    'price_near_high', 'url'])
 
     data_all_tickers = get_yq_historical_data(tickers_in)
-    # data_all_tickers.to_csv('data_all_tickers.csv', index=True)
 
-    # df_sector = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector'])
     for ticker in tickers_in:
         sector = tickers_dict_in[ticker]["Sector"]
         industry = tickers_dict_in[ticker]["Industry"]
-        print(ticker_type, ticker, run_number)
-        if update_historical_data:
-            df = sel_yq_historical_data(data_all_tickers, ticker)
-            df.to_csv('yq_historical.csv', index=False)
-
-        else:
-            if os.path.exists('yq_historical.csv'):
-                df = pd.read_csv('yq_historical.csv')
+        # print(ticker_type, ticker, run_number)
+        run_number += 1
+        df = get_historical_data_for_ticker(ticker, update_historical_data, data_all_tickers)
         if df.empty:
             continue
 
-        df['AvgVol'] = df['volume'].rolling(55).mean()  # 55為平均的天數
+
+        # Add by Rojer Chien
+        # Part1
+        last_volume = df['volume'].iloc[-1]
+        last_volume_wi_factor = last_volume * vol_factor
+        last_avg_volume_55 = round(df['AvgVol'].iloc[-1], 2)
+        is_volume_greater_avg_volume_55 = last_volume_wi_factor > last_avg_volume_55
+
+        # Part2
+        # 最後成交量大於55天平均成交量的比例，正數為較高；負數為較低
+        volume_compare_wi_avg_volume_55 = (last_volume_wi_factor / last_avg_volume_55) - 1
+
+        # Part3
+        max_volume_144 = df['volume'].rolling(window=144).max().iloc[-1]
+        volume_level = (last_volume_wi_factor / max_volume_144) - 1
+        new_high_volume = "False"  # Give new_high_volume a default value
+        if volume_level > 0:
+            new_high_volume = "True"
+            print(f"New High Level{new_high_volume}")
+
+        # Part4
         max_price_144 = df['high'].rolling(window=144).max().iloc[-1]
         last_close = df['close'].iloc[-1]
         last_close_pect_max_144 = (last_close / max_price_144) - 1
@@ -482,162 +520,147 @@ def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, d
             price_near_high = "True"
         else:
             price_near_high = "False"
-        last_volume = df['volume'].iloc[-1]
-        max_volume_144 = df['volume'].rolling(window=144).max().iloc[-1]
-        last_volume_wi_factor = last_volume * vol_factor
-        volume_level = (last_volume_wi_factor / max_volume_144) - 1
-        new_high_volume = "False" #Give new_high_volume a default value
-        if volume_level > 0:
-            new_high_volume = "True"
-            print(f"New High Level{new_high_volume}")
-        print(f"Last Volume: {last_volume}")
-        print(f"Last Volume wi Factor: {last_volume_wi_factor}")
-        last_avg_volume_55 = round(df['AvgVol'].iloc[-1], 2)
-        last_vwap_55 = round(df['vwap55'].iloc[-1], 2)
-        avg_money_traded = (last_avg_volume_55 * last_vwap_55) >= 2000000
-        is_volume_greater_avg_volume_55 = last_volume_wi_factor > last_avg_volume_55
-        # 最後成交量大於55天平均成交量的比例，正數為較高；負數為較低
-        volume_compare_wi_avg_volume_55 = (last_volume_wi_factor / last_avg_volume_55 ) - 1
-        # avg_money_traded
-        volatility_H = df['close'].max() / df['close'].mean()
-        volatility_L = df['close'].min() / df['close'].mean()
-        volatility = volatility_H - volatility_L
-        # 計算最後的15天的波動率
-        last_15_days = df['close'].tail(15)
-        volatility_H_15 = last_15_days.max() / last_15_days.mean()
-        volatility_L_15 = last_15_days.min() / last_15_days.mean()
-        volatility_15 = volatility_H_15 - volatility_L_15
+
+        # Part5
         url = get_tradingview_url(ticker, ticker_type)
-        # 過濾資料筆數少於144筆的股票，確保上市時間有半年並且判斷半年內的波動率，像死魚一樣不動的股票就不分析
-        if len(df.index) > 144 and volatility_15 > 0.01 and volatility > 0.15 and avg_money_traded:
-            if ForcePLOT == 1:
-                url = get_tradingview_url(ticker, ticker_type)
-                highchart_chart(df, tickers_in, url)
-            df['VWAP21_Result'] = (df['vwap5'] > df['vwap21'])
-            df['VWAP55_Result'] = (df['vwap5'] > df['vwap21']) & (df['vwap21'] > df['vwap55'])
-            df['VWAP89_Result'] = (df['vwap5'] > df['vwap21']) & (df['vwap21'] > df['vwap55']) & (
-                    df['vwap55'] > df['vwap89'])
-            df['VWAP144_Result'] = (df['vwap5'] > df['vwap21']) & (df['vwap21'] > df['vwap55']) & (
-                    df['vwap55'] > df['vwap89']) & (df['vwap89'] > df['vwap144'])
-            df['VWAP233_Result'] = (df['vwap5'] > df['vwap21']) & (df['vwap21'] > df['vwap55']) & (
-                    df['vwap55'] > df['vwap89']) & (df['vwap89'] > df['vwap144']) & (
-                                           df['vwap144'] > df['vwap233'])
 
-            VWAP21_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
-                    df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2])
-            VWAP55_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
-                    df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2]) and (
-                                 df['vwap55'].iloc[-1] > df['vwap55'].iloc[-2])
-            VWAP89_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
-                    df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2]) and (
-                                 df['vwap55'].iloc[-1] > df['vwap55'].iloc[-2]) and (
-                                 df['vwap89'].iloc[-1] > df['vwap89'].iloc[-2])
-            VWAP144_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
-                    df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2]) and (
-                                  df['vwap55'].iloc[-1] > df['vwap55'].iloc[-2]) and (
-                                  df['vwap89'].iloc[-1] > df['vwap89'].iloc[-2]) and (
-                                  df['vwap144'].iloc[-1] > df['vwap144'].iloc[-2])
-            VWAP233_inc = (df['vwap5'].iloc[-1] > df['vwap5'].iloc[-2]) and (
-                    df['vwap21'].iloc[-1] > df['vwap21'].iloc[-2]) and (
-                                  df['vwap55'].iloc[-1] > df['vwap55'].iloc[-2]) and (
-                                  df['vwap89'].iloc[-1] > df['vwap89'].iloc[-2]) and (
-                                  df['vwap144'].iloc[-1] > df['vwap144'].iloc[-2]) and (
-                                  df['vwap233'].iloc[-1] > df['vwap233'].iloc[-2])
+        # df = prepare_dataframe_with_calculations(df)
+        volatility_15 = calculate_volatility(df, 15)
+        volatility = calculate_volatility(df, len(df.index))
 
-            vwap_values_233 = df['VWAP233_Result'].values
-            last_vwap_value_233 = df['VWAP233_Result'].iloc[-1]
-            pattern_233 = np.array([False] * 20 + [True])
-            VWAP233_history = np.array_equal(vwap_values_233[-21:-1], pattern_233[:-1]) and vwap_values_233[-1] == \
-                              pattern_233[-1]
+        vwap_levels = [5, 21, 55, 89, 144, 233]
+        vwap_increment = {level: get_vwap_result(df, vwap_levels[:i+1]) for i, level in enumerate(vwap_levels)}
+        df['VWAP_Result'] = calculate_vwap_result(df, scenario)
+        final_result = check_vwap_scenario(scenario, df['VWAP_Result'].iloc[-1], vwap_increment)
+        # Assuming 'avg_money_traded' is calculated as the product of average volume and last VWAP value
+        df['average_volume'] = df['volume'].rolling(55).mean()  # 55為平均的天數
+        last_average_volume = round(df['average_volume'].iloc[-1], 2)
+        last_VWAP = round(df['vwap55'].iloc[-1], 2)
 
-            vwap_values_144 = df['VWAP144_Result'].values
-            last_vwap_value_144 = df['VWAP144_Result'].iloc[-1]
-            pattern_144 = np.array([False] * 20 + [True])
-            VWAP144_history = np.array_equal(vwap_values_144[-21:-1], pattern_144[:-1]) and vwap_values_144[-1] == \
-                              pattern_144[-1]
-
-            vwap_values_89 = df['VWAP89_Result'].values
-            pattern_89 = np.array([False] * 20 + [True])
-            VWAP89_history = np.array_equal(vwap_values_89[-21:-1], pattern_89[:-1]) and vwap_values_89[-1] == \
-                             pattern_89[
-                                 -1]
-
-            vwap_values_55 = df['VWAP55_Result'].values
-            pattern_55 = np.array([False] * 20 + [True])
-            VWAP55_history = np.array_equal(vwap_values_55[-21:-1], pattern_55[:-1]) and vwap_values_55[-1] == \
-                             pattern_55[
-                                 -1]
-            vwap_values_21 = df['VWAP21_Result'].values
-            pattern_21 = np.array([False] * 20 + [True])
-            VWAP21_history = np.array_equal(vwap_values_21[-21:-1], pattern_21[:-1]) and vwap_values_21[-1] == \
-                             pattern_21[
-                                 -1]
-
-            VWAP55_history = "True"  # 只找出價格在範圍內的股票 VWAP144_Result
-
-            """
-            if (scenario == 55) and (VWAP55_inc == True) and (last_vwap_value_144 == True):
-                final_result = "TRUE"
-            elif (scenario == 21) and (VWAP21_inc == True) and (last_vwap_value_144 == True):
-                final_result = "TRUE"
-            elif (scenario == 89) and (VWAP89_inc == True) and (last_vwap_value_144 == True):
-                final_result = "TRUE"
-            elif (scenario == 144) and (VWAP144_inc == True) and (last_vwap_value_144 == True):
-                final_result = "TRUE"
-            elif (scenario == 233) and (VWAP233_inc == True) and (last_vwap_value_144 == True):
-                final_result = "TRUE"
-            else:
-                final_result = "FALSE" 
-            """
-            final_result = check_vwap_scenario(144, last_vwap_value_144, VWAP144_inc)
-                # continue
-            # print(final_result)
-            run_number += 1
-            if final_result == 'TRUE' and is_volume_greater_avg_volume_55:
-                # url = get_tradingview_url(ticker, ticker_type)
-                highchart_chart(df, ticker, url)
-            print(f"run Number:{run_number}")
-            print(f"Ticker:{ticker}")
-            print(f"Industry:{industry}")
-            print(f"Sector:{sector}")
-            print(f"isMatchVWAP:{final_result}")
-            print(f"isVolumeGreaterAvgVolume55:{is_volume_greater_avg_volume_55}")
-            print(f"volumeGrowthWithAvgVolume55:{volume_compare_wi_avg_volume_55}")
-            print(f"Volatility15:{volatility_15}")
-            print(f"newHighVolume:{new_high_volume}")
-            print(f"volume_level:{volume_level}")
-            print(f"price_near_high:{price_near_high}")
-            print(f"Url:{url}")
-
-            df_out.loc[run_number] = {
-                'Ticker': ticker,
-                'Industry': industry,
-                'Sector': sector,
-                'isMatchVWAP': final_result,
-                'isVolumeGreaterAvgVolume55': is_volume_greater_avg_volume_55,
-                'volumeGrowthWithAvgVolume55': volume_compare_wi_avg_volume_55,
-                'volatility15': volatility_15,
-                'newHighVolume': new_high_volume,
-                'volume_level': volume_level,
-                'price_near_high': price_near_high,
-                'url': url
-            }
+        # print(f"Last Average Volume: {last_average_volume}")
+        # print(f"Last VWAP Result: {last_VWAP}")
+        # print(f"Final Result: {final_result}")
+        df['avg_money_traded'] = df['average_volume'].iloc[-1] * df['vwap55'].iloc[-1]
+        df_out = update_output_dataframe(ticker, industry, sector, final_result, is_volume_greater_avg_volume_55,
+                                         volume_compare_wi_avg_volume_55, volatility_15, new_high_volume, volume_level,
+                                         price_near_high, url, df_out)
+        if final_result == 'TRUE' and should_analyze_stock(df, volatility_15, volatility):
+            plot_highchart_chart(df, ticker, ticker_type)
         else:
-            print("volume or volatility not meet, skip analysis!")
-    df_out.to_excel('Result.xlsx', index=False)
-    ### 將url那欄改成超連結
-    wb = load_workbook('Result.xlsx')
-    ws = wb.active
+            final_result = "SKIP"
+        print(f"{ticker_type}-{run_number} {ticker} {final_result}")
+            # df_out = update_output_dataframe(df_out, run_number, ticker, industry, sector, final_result, df)
+        """  
+        else:
+            print("Volume or volatility not meet, skip analysis!")
+        """
+    save_results_to_excel(df_out)
 
-    # 假設 URL 在第 3 列
-    url_col = 8
+    df_out['url'] = df_out['url'].apply(lambda x: f'<a href="{x}">Link</a>')
+    # 將DataFrame轉換為HTML表格，並移除Pandas的索引列，escape=False防止HTML標籤被轉義
+    html_table = df_out.to_html(index=False, escape=False)
+
+    # HTML和JavaScript的模板
+    html_template = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>VWAP Strategy Screener Results</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+    </head>
+    <body>
+    {html_table}
+    <script>
+    $(document).ready( function () {{
+        $('table').DataTable();
+    }});
+    </script>
+    </body>
+    </html>
+    """
+
+    # 將HTML保存到文件
+    with open('vwap_strategy_screener_results.html', 'w', encoding='utf-8') as f:
+        f.write(html_template)
+
+
+def get_historical_data_for_ticker(ticker, update_historical_data, data_all_tickers):
+    if update_historical_data:
+        df = sel_yq_historical_data(data_all_tickers, ticker)
+        df.to_csv('yq_historical.csv', index=False)
+    else:
+        if os.path.exists('yq_historical.csv'):
+            df = pd.read_csv('yq_historical.csv')
+    return df
+
+def prepare_dataframe_with_calculations(df):
+    # Add your calculations here, e.g., VWAP results, volume calculations, etc.
+    return df
+
+
+def should_analyze_stock(df, volatility_15, volatility):
+    # Assuming there's a minimum threshold for 'avg_money_traded' that you want to check
+    min_avg_money_traded = 2000000  # Example threshold
+    return (
+        len(df.index) > 144 and
+        volatility_15 > 0.01 and
+        volatility > 0.15 and
+        df['avg_money_traded'].iloc[-1] >= min_avg_money_traded
+    )
+
+
+def update_output_dataframe(ticker, industry, sector, final_result, is_volume_greater_avg_volume_55,
+                            volume_compare_wi_avg_volume_55, volatility_15, new_high_volume, volume_level,
+                            price_near_high, url, df_in):
+
+    new_row = {
+    'Ticker': ticker,
+    'Industry': industry,
+    'Sector': sector,
+    'isMatchVWAP': final_result,
+    'isVolumeGreaterAvgVolume55': is_volume_greater_avg_volume_55,
+    'volumeGrowthWithAvgVolume55': volume_compare_wi_avg_volume_55,
+    'volatility15': volatility_15,
+    'newHighVolume': new_high_volume,
+    'volume_level': volume_level,
+    'price_near_high': price_near_high,
+    'url': url
+    }
+    # 將 new_row 轉換為 DataFrame
+    new_row_df = pd.DataFrame([new_row])
+
+    # 檢查 NA 值
+    na_values = new_row_df.isna()
+
+    # 如果存在 NA 值，打印出來
+    if na_values.any().any():  # 第一個 any() 檢查每列是否有 NA，第二個 any() 檢查是否有任何列包含 NA
+        na_columns = na_values.any()
+        na_columns = na_columns[na_columns].index.tolist()  # 獲取包含 NA 值的列名列表
+        print(f"NA values found in columns: {na_columns}")
+        print(new_row_df[na_columns])  # 打印出包含 NA 值的列
+
+    # df_out = pd.concat([df_in, pd.DataFrame([new_row])], ignore_index=True)
+    df_out = pd.concat([df_in, new_row_df], ignore_index=True)
+    # df_out = df_in.append(new_row, ignore_index=True)
+    return df_out
+
+def save_results_to_excel(df_out):
+    df_out.to_excel('Result.xlsx', index=False)
+    add_hyperlinks_to_excel('Result.xlsx')
+
+def add_hyperlinks_to_excel(filename):
+    wb = load_workbook(filename)
+    ws = wb.active
+    url_col = 11  # Assuming URL is in the 11th column
     for row in range(2, ws.max_row + 1):
         cell = ws.cell(row=row, column=url_col)
         cell.hyperlink = cell.value
         cell.style = 'Hyperlink'
+    wb.save(filename)
 
-    # 保存更改
-    wb.save('Result.xlsx')
 def calculate_volatility(df, n_days):
     # 選擇最後n_days天的數據
     hist = df.tail(n_days)
@@ -675,7 +698,7 @@ def calculate_volatility_duration(df, end_day, start_day='0'):
 
 
 # VWAP Scenario
-scenario = 144  # 21, 55, 89, 144, 233共5種
+scenario = 55  # 21, 55, 89, 144, 233共5種
 
 # RSI的日期範圍
 rsi_period = 14
@@ -712,21 +735,25 @@ run_vwap_strategy_screener_in_range = 1  # VWAP均線的策略，均線呈多頭
 
 # 要執行的ticker種類
 TEST = 1
-if TEST == 1:
-    US = 0
-else:
-    US = 1
+US = 0
 
 # 將讀取到的資料轉換為 list，並存入 tickers  變數中
 if US == 1:
     us_tickers_dict, us_tickers = get_us_tickers("US")
 if TEST == 1:
+    print(f"Mode:{TEST}")
+    us_tickers_dict, us_tickers = get_us_tickers("US")
+    us_tickers = us_tickers[:10]
+    us_tickers_dict = {ticker: us_tickers_dict[ticker] for ticker in us_tickers}
+
+"""if TEST == 1:
     test_tickers = ['STX', 'IT', 'GIII']
     test_tickers_dict = {
         "STX": {"Sector": "Technology", "Industry": "Electronics"},
         "IT": {"Sector": "Technology", "Industry": "Software"},
         "GIII": {"Sector": "Finance", "Industry": "Banking"}
     }
+"""
 
 start_time = time.time()  # 記錄開始時間
 
@@ -739,14 +766,16 @@ lets_party = 1
 # 20231105
 
 if lets_party == 1:
-    if TEST == 1:
-        category = "TEST"
-        vwap_strategy_screener_in_range(test_tickers, test_tickers_dict)
+    vwap_strategy_screener_in_range(us_tickers, us_tickers_dict)
+    # if TEST == 1:
+    #     category = "TEST"
+    #     vwap_strategy_screener_in_range(test_tickers, test_tickers_dict)
 
-    if US == 1:
-        category = "US"
-        vwap_strategy_screener_in_range(us_tickers, us_tickers_dict)
+    # if US == 1:
+    #     category = "US"
+    #    vwap_strategy_screener_in_range(us_tickers, us_tickers_dict)
 
 end_time = time.time()  # 記錄結束時間
 elapsed_time = round(end_time - start_time, 2)  # 計算運行時間
 print(f"Elapsed time: {elapsed_time} seconds")
+
