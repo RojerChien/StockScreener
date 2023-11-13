@@ -991,7 +991,7 @@ fin_start = 0
 run_vwap_strategy_screener_in_range = 1  # VWAP均線的策略，均線呈多頭排序時買入，且限價在最高價正負2%的股票
 
 # 要執行的ticker種類
-TEST = 0
+TEST = 1
 if TEST == 1:
     US = 0
 else:
