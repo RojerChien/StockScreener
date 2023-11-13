@@ -124,6 +124,33 @@ def plot_highchart_chart(dfin, ticker_in, url, date=today):
 
     # 设置图表选项
     options = {
+        'rangeSelector': {
+            'buttons': [{
+                'type': 'month',
+                'count': 1,
+                'text': '1m'
+            }, {
+                'type': 'month',
+                'count': 3,
+                'text': '3m'
+            }, {
+                'type': 'month',
+                'count': 6,
+                'text': '6m'
+            }, {
+                'type': 'ytd',
+                'text': 'YTD'
+            }, {
+                'type': 'year',
+                'count': 1,
+                'text': '1y'
+            }, {
+                'type': 'all',
+                'text': 'All'
+            }],
+            'inputEnabled': True,
+            'selected': 2  # 這裡的0代表上面buttons列表中的第一個按鈕，也就是'6m'
+        },
         'chart': {
             'events': {
                 'load': """
@@ -166,7 +193,194 @@ def plot_highchart_chart(dfin, ticker_in, url, date=today):
                 'y': 0
             }
         },
-        'rangeSelector': {'selected': 4},
+        'title': {'text': f'{ticker_in} ({date})'},
+        'yAxis': [
+            {'labels': {'align': 'right', 'x': -3},
+             'title': {'text': 'OHLC'},
+             'height': '60%',
+             'lineWidth': 2},
+            {'labels': {'align': 'right', 'x': -3},
+             'title': {'text': 'Volume'},
+             'top': '63%',
+             'height': '20%',
+             'offset': 0,
+             'lineWidth': 2},
+            {'labels': {'align': 'right', 'x': -3},
+             'title': {'text': 'RSI'},
+             'top': '86%',  # 調整此值以設置RSI圖表的位置
+             'height': '14%',  # 調整此值以設置RSI圖表的高度
+             'offset': 0,
+             'lineWidth': 2,
+             'plotLines': [
+                 {'value': 30,
+                  'color': '#FF4500',
+                  'width': 1},
+                 {'value': 70,
+                  'color': '#FF4500',
+                  'width': 1}
+             ]}
+        ],
+        'tooltip': {
+            'formatter': f"""
+                function () {{
+                    var dataIndex = this.points[0].point.index;
+                    var s = '<b>' + Highcharts.dateFormat('%A, %b %e, %Y', this.x) + '</b>';
+                    s += '<br/>';
+
+                    this.points.forEach(function (point) {{
+                        if (point.series.name === '{ticker_in}') {{
+                            s += '<br/>' + point.series.name + ': ';
+                            s += 'Open: ' + point.point.open.toFixed(2);
+                            s += ', High: ' + point.point.high.toFixed(2);
+                            s += ', Low: ' + point.point.low.toFixed(2);
+                            s += ', Close: ' + point.point.close.toFixed(2);
+
+                            // 計算漲跌幅
+                            var change = 0;
+                            if (dataIndex > 0) {{
+                                var previousClose = point.series.options.data[dataIndex - 1][4];
+                                change = ((point.point.close - previousClose) / previousClose) * 100;
+                            }}
+                            s += '<br/>漲跌幅: ' + change.toFixed(2) + '%';
+                        }} else {{
+                            s += '<br/>' + point.series.name + ': ' + point.y;
+                        }}
+                    }});
+
+                    return s;
+                }}
+            """
+        },
+        'plotOptions': {
+            'line': {
+                'showInLegend': True
+            },
+            'candlestick': {
+                'color': 'red',
+                'upColor': 'green'
+            },
+            'column': {
+                'borderColor': 'none'
+            }
+        },
+        'subtitle': {
+            'text': f'<a href="{url}" target="_blank" style="color: #003399; text-decoration: underline; cursor: pointer;">TradingView</a>',
+            'useHTML': True,
+            'align': 'center',
+            'y': 35
+        },
+    }
+
+    chart.set_dict_options(options)
+
+    # 显示图表
+    # chart.save_file('candlestick_volume')
+    # with open('candlestick_volume.html', 'w', encoding='utf-8') as f:
+    # filename = f'./HTML/{date}/{ticker_in}_{date}.html'
+    filename = f'{ticker_in}_{date}.html'
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write(chart.htmlcontent)
+    filepath = os.path.abspath(filename)
+    # 以下為開啟html的code，後續已經改成當程式執行完畢後，一次性的從dataframe去開啟所有html
+    """if sys.platform == 'darwin':  # Mac OS X
+        subprocess.run(['open', '-a', 'Google Chrome', filepath])
+    elif sys.platform == 'win32':  # Windows
+        subprocess.run(['start', 'chrome', filepath], shell=True)
+    else:  # 其他平台，如 Linux
+        subprocess.run(['xdg-open', filepath])"""
+    return filepath
+    # print(f'HTML File Name:{filepath}')
+    # webbrowser.open(filepath)
+
+
+def plot_highchart_chart_backup_20231108(dfin, ticker_in, url, date=today):
+    # 初始化highstock对象
+    chart = Highstock(renderTo='container', width=None, height=930)  # 添加宽度和高度
+    # chart = highstock(renderTo='container', width=1800, height=900)  # 添加宽度和高度
+
+    # 加入RSI data
+    rsi_data = dfin['RSI'].values.tolist()
+    rsi_data = [
+        [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(r, 2)]
+        for i, r in enumerate(rsi_data)
+    ]
+
+    # 將RSI加到數據中
+    chart.add_data_set(rsi_data, 'line', 'RSI', yAxis=2, dataGrouping={'units': [['day', [1]]]})
+
+    # 添加50日成交量移動平均線
+    dfin['volume_50ma'] = dfin['volume'].rolling(window=50).mean()
+    volume_50ma = dfin['volume_50ma'].values.tolist()
+    volume_50ma = [
+        [int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), v]
+        for i, v in enumerate(volume_50ma)
+    ]
+    chart.add_data_set(volume_50ma, 'line', '50日成交量移動平均', yAxis=1, dataGrouping={'units': [['day', [1]]]})
+
+    # 添加蜡烛图序列
+    ohlc = dfin[['open', 'high', 'low', 'close']].values.tolist()
+    ohlc = [[int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), round(o, 2), round(h, 2), round(l, 2), round(c, 2)] for
+            i, (o, h, l, c) in enumerate(ohlc)]
+
+    chart.add_data_set(ohlc, 'candlestick', ticker_in, dataGrouping={'units': [['day', [1]]]})
+    add_vwap_to_chart(chart, dfin, 144, 'purple', 3, id='vwap144')
+    add_vwap_to_chart(chart, dfin, 55, 'red', 3, id='vwap55')
+    add_vwap_to_chart(chart, dfin, 21, 'orange', 3, id='vwap21')
+    add_vwap_to_chart(chart, dfin, 5, 'blue', 3, id='vwap5')
+
+    # 添加成交量序列
+    volume = dfin[['open', 'close', 'volume']].values.tolist()
+    volume = [{'x': int(pd.Timestamp(dfin.index[i]).value // 10 ** 6), 'y': v, 'color': 'red' if o > c else 'green'} for
+              i, (o, c, v) in enumerate(volume)]
+
+    # chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'units': [['day', [1]]]})
+    # 禁用datagroup，讓volume在顯示時是正常的，但也可能影響效能
+    chart.add_data_set(volume, 'column', '成交量', yAxis=1, dataGrouping={'enabled': False})
+
+    # 设置图表选项
+    options = {
+        'chart': {
+            'events': {
+                'load': """
+                    function () {
+                        var chart = this;
+
+                        // Create the toggleVwapLines function
+                        var toggleVwapLines = function () {
+                            var vwap144 = chart.get('vwap144'),
+                                vwap55 = chart.get('vwap55'),
+                                vwap21 = chart.get('vwap21');
+                                vwap5 = chart.get('vwap5');
+                            if (vwap144.visible) {
+                                vwap144.hide();
+                                vwap55.hide();
+                                vwap21.hide();
+                                vwap5.hide();
+                            } else {
+                                vwap144.show();
+                                vwap55.show();
+                                vwap21.show();
+                                vwap5.show();
+                            }
+                        };
+
+                        // Add a custom button
+                        chart.renderer.button('Toggle VWAP Lines', null, null, toggleVwapLines)
+                            .attr({
+                                zIndex: 3
+                            })
+                            .add();
+                    }
+                """
+            }
+        },
+        'navigation': {
+            'buttonOptions': {
+                'align': 'right',
+                'verticalAlign': 'top',
+                'y': 0
+            }
+        },
         'title': {'text': f'{ticker_in} ({date})'},
         'yAxis': [
             {'labels': {'align': 'right', 'x': -3},
@@ -255,16 +469,29 @@ def plot_highchart_chart(dfin, ticker_in, url, date=today):
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(chart.htmlcontent)
     filepath = os.path.abspath(filename)
-    if sys.platform == 'darwin':  # Mac OS X
+    # 以下為開啟html的code，後續已經改成當程式執行完畢後，一次性的從dataframe去開啟所有html
+    """if sys.platform == 'darwin':  # Mac OS X
         subprocess.run(['open', '-a', 'Google Chrome', filepath])
     elif sys.platform == 'win32':  # Windows
         subprocess.run(['start', 'chrome', filepath], shell=True)
     else:  # 其他平台，如 Linux
-        subprocess.run(['xdg-open', filepath])
-
+        subprocess.run(['xdg-open', filepath])"""
+    return filepath
     # print(f'HTML File Name:{filepath}')
     # webbrowser.open(filepath)
 
+
+def open_html_files(df):
+    for index, row in df.iterrows():
+        # 檢查 highchart_html_path 是否不是 NA 且副檔名為 .html
+        if pd.notna(row['highchart_html_path']) and row['highchart_html_path'].endswith('.html'):
+            filepath = os.path.abspath(row['highchart_html_path'])
+            if sys.platform == 'darwin':  # Mac OS X
+                subprocess.run(['open', '-a', 'Google Chrome', filepath])
+            elif sys.platform == 'win32':  # Windows
+                subprocess.run(['start', 'chrome', filepath], shell=True)
+            else:  # 其他平台，如 Linux
+                subprocess.run(['xdg-open', filepath])
 
 def calculate_rsi(data, period):
     delta = data['close'].diff().dropna()
@@ -335,6 +562,12 @@ def sel_yq_historical_data(data_all, ticker_in):
         data_org = calculate_vwap(data_org, 610)
         data_org['AvgVol'] = data_org['volume'].rolling(55).mean()  # 55為平均的天數
         data_org['RSI'] = calculate_rsi(data_org, rsi_period)
+        # 确认数据点数量
+        # print(len(data_org['volume']))
+        # 检查是否有缺失值
+        # print(data_org['volume'].isnull().sum())
+        # 确认数据类型
+        # print(data_org['volume'].dtype)
     else:
         print(f'Index not found:{ticker_in}')
         empty_df = pd.DataFrame()
@@ -361,7 +594,6 @@ def get_tradingview_url(ticker_in, category):
             url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TWSE%3A" + row2)
         else:
             row2 = ticker_in[:4]
-
             url = ("https://www.tradingview.com/chart/sWFIrRUP/?symbol=TPEX%3A" + row2)
     return url
 
@@ -475,118 +707,6 @@ def calculate_vwap_result(df, scenario):
     return result
 
 
-def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, days=233, percentage=2, ticker_type="US",
-                                    run_number=1, update_historical_data=1):
-    df_out = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector', 'isMatchVWAP', 'isVolumeGreaterAvgVolume55',
-                                   'volumeGrowthWithAvgVolume55', 'volatility15', 'newHighVolume', 'volume_level',
-                                   'price_near_high', 'url'])
-
-    data_all_tickers = get_yq_historical_data(tickers_in)
-
-    for ticker in tickers_in:
-        sector = tickers_dict_in[ticker]["Sector"]
-        industry = tickers_dict_in[ticker]["Industry"]
-        # print(ticker_type, ticker, run_number)
-        run_number += 1
-        df = get_historical_data_for_ticker(ticker, update_historical_data, data_all_tickers)
-        if df.empty:
-            continue
-
-
-        # Add by Rojer Chien
-        # Part1
-        last_volume = df['volume'].iloc[-1]
-        last_volume_wi_factor = last_volume * vol_factor
-        last_avg_volume_55 = round(df['AvgVol'].iloc[-1], 2)
-        is_volume_greater_avg_volume_55 = last_volume_wi_factor > last_avg_volume_55
-
-        # Part2
-        # 最後成交量大於55天平均成交量的比例，正數為較高；負數為較低
-        volume_compare_wi_avg_volume_55 = (last_volume_wi_factor / last_avg_volume_55) - 1
-
-        # Part3
-        max_volume_144 = df['volume'].rolling(window=144).max().iloc[-1]
-        volume_level = (last_volume_wi_factor / max_volume_144) - 1
-        new_high_volume = "False"  # Give new_high_volume a default value
-        if volume_level > 0:
-            new_high_volume = "True"
-            print(f"New High Level{new_high_volume}")
-
-        # Part4
-        max_price_144 = df['high'].rolling(window=144).max().iloc[-1]
-        last_close = df['close'].iloc[-1]
-        last_close_pect_max_144 = (last_close / max_price_144) - 1
-        if last_close_pect_max_144 < 0.05:
-            price_near_high = "True"
-        else:
-            price_near_high = "False"
-
-        # Part5
-        url = get_tradingview_url(ticker, ticker_type)
-
-        # df = prepare_dataframe_with_calculations(df)
-        volatility_15 = calculate_volatility(df, 15)
-        volatility = calculate_volatility(df, len(df.index))
-
-        vwap_levels = [5, 21, 55, 89, 144, 233]
-        vwap_increment = {level: get_vwap_result(df, vwap_levels[:i+1]) for i, level in enumerate(vwap_levels)}
-        df['VWAP_Result'] = calculate_vwap_result(df, scenario)
-        final_result = check_vwap_scenario(scenario, df['VWAP_Result'].iloc[-1], vwap_increment)
-        # Assuming 'avg_money_traded' is calculated as the product of average volume and last VWAP value
-        df['average_volume'] = df['volume'].rolling(55).mean()  # 55為平均的天數
-        last_average_volume = round(df['average_volume'].iloc[-1], 2)
-        last_VWAP = round(df['vwap55'].iloc[-1], 2)
-
-        # print(f"Last Average Volume: {last_average_volume}")
-        # print(f"Last VWAP Result: {last_VWAP}")
-        # print(f"Final Result: {final_result}")
-        df['avg_money_traded'] = df['average_volume'].iloc[-1] * df['vwap55'].iloc[-1]
-        df_out = update_output_dataframe(ticker, industry, sector, final_result, is_volume_greater_avg_volume_55,
-                                         volume_compare_wi_avg_volume_55, volatility_15, new_high_volume, volume_level,
-                                         price_near_high, url, df_out)
-        if final_result == 'TRUE' and should_analyze_stock(df, volatility_15, volatility):
-            plot_highchart_chart(df, ticker, ticker_type)
-        else:
-            final_result = "SKIP"
-        print(f"{ticker_type}-{run_number} {ticker} {final_result}")
-            # df_out = update_output_dataframe(df_out, run_number, ticker, industry, sector, final_result, df)
-        """  
-        else:
-            print("Volume or volatility not meet, skip analysis!")
-        """
-    save_results_to_excel(df_out)
-
-    df_out['url'] = df_out['url'].apply(lambda x: f'<a href="{x}">Link</a>')
-    # 將DataFrame轉換為HTML表格，並移除Pandas的索引列，escape=False防止HTML標籤被轉義
-    html_table = df_out.to_html(index=False, escape=False)
-
-    # HTML和JavaScript的模板
-    html_template = f"""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="UTF-8">
-    <title>VWAP Strategy Screener Results</title>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
-    </head>
-    <body>
-    {html_table}
-    <script>
-    $(document).ready( function () {{
-        $('table').DataTable();
-    }});
-    </script>
-    </body>
-    </html>
-    """
-
-    # 將HTML保存到文件
-    with open('vwap_strategy_screener_results.html', 'w', encoding='utf-8') as f:
-        f.write(html_template)
-
-
 def get_historical_data_for_ticker(ticker, update_historical_data, data_all_tickers):
     if update_historical_data:
         df = sel_yq_historical_data(data_all_tickers, ticker)
@@ -614,7 +734,7 @@ def should_analyze_stock(df, volatility_15, volatility):
 
 def update_output_dataframe(ticker, industry, sector, final_result, is_volume_greater_avg_volume_55,
                             volume_compare_wi_avg_volume_55, volatility_15, new_high_volume, volume_level,
-                            price_near_high, url, df_in):
+                            price_near_high, should_analyze_stock, highchart_html_path, url,  df_in):
 
     new_row = {
     'Ticker': ticker,
@@ -627,6 +747,8 @@ def update_output_dataframe(ticker, industry, sector, final_result, is_volume_gr
     'newHighVolume': new_high_volume,
     'volume_level': volume_level,
     'price_near_high': price_near_high,
+    'should_analyze_stock': should_analyze_stock,
+    'highchart_html_path': highchart_html_path,
     'url': url
     }
     # 將 new_row 轉換為 DataFrame
@@ -641,7 +763,9 @@ def update_output_dataframe(ticker, industry, sector, final_result, is_volume_gr
         na_columns = na_columns[na_columns].index.tolist()  # 獲取包含 NA 值的列名列表
         print(f"NA values found in columns: {na_columns}")
         print(new_row_df[na_columns])  # 打印出包含 NA 值的列
-
+    # 填充 NA 值，例如用 0 填充
+    df_in = df_in.dropna(axis=1, how='all')
+    new_row_df = new_row_df.dropna(axis=1, how='all')
     # df_out = pd.concat([df_in, pd.DataFrame([new_row])], ignore_index=True)
     df_out = pd.concat([df_in, new_row_df], ignore_index=True)
     # df_out = df_in.append(new_row, ignore_index=True)
@@ -697,8 +821,143 @@ def calculate_volatility_duration(df, end_day, start_day='0'):
     return volatility
 
 
+def vwap_strategy_screener_in_range(tickers_in, tickers_dict_in, scenario=144, days=233, percentage=2, ticker_type="US",
+                                    run_number=0, update_historical_data=1):
+    df_out = pd.DataFrame(columns=['Ticker', 'Industry', 'Sector', 'isMatchVWAP', 'isVolumeGreaterAvgVolume55',
+                                   'volumeGrowthWithAvgVolume55', 'volatility15', 'newHighVolume', 'volume_level',
+                                   'price_near_high', 'url'])
+
+    data_all_tickers = get_yq_historical_data(tickers_in)
+
+    for ticker in tickers_in:
+        sector = tickers_dict_in[ticker]["Sector"]
+        industry = tickers_dict_in[ticker]["Industry"]
+        # print(ticker_type, ticker, run_number)
+        run_number += 1
+        df = get_historical_data_for_ticker(ticker, update_historical_data, data_all_tickers)
+        if df.empty:
+            continue
+        data_length = len(df['volume'])
+        if data_length >= scenario:
+            # Add by Rojer Chien
+            # Part1
+            last_volume = df['volume'].iloc[-1]
+            last_volume_wi_factor = last_volume * vol_factor
+            last_avg_volume_55 = round(df['AvgVol'].iloc[-1], 2)
+            # print(f"last_volume_wi_factor:{last_volume_wi_factor}")
+            # print(f"last_avg_volume_55:{last_avg_volume_55}")
+            is_volume_greater_avg_volume_55 = last_volume_wi_factor > last_avg_volume_55
+
+            # Part2
+            # 最後成交量大於55天平均成交量的比例，正數為較高；負數為較低
+            if np.isnan(last_volume_wi_factor) or np.isnan(last_avg_volume_55):
+                print("Warning: NaN values encountered")
+                volume_compare_wi_avg_volume_55 = np.nan  # Assign NaN or some default value
+            elif last_avg_volume_55 == 0:
+                print("Warning: Division by zero encountered")
+                volume_compare_wi_avg_volume_55 = np.nan  # Assign NaN or some default value
+            else:
+                volume_compare_wi_avg_volume_55 = round((last_volume_wi_factor / last_avg_volume_55) - 1, 2)
+            # volume_compare_wi_avg_volume_55 = round((last_volume_wi_factor / last_avg_volume_55) - 1, 2)
+
+            # Part3
+            max_volume_144 = df['volume'].rolling(window=144).max().iloc[-1]
+            volume_level = round((last_volume_wi_factor / max_volume_144) - 1, 2)
+            new_high_volume = "False"  # Give new_high_volume a default value
+            if volume_level > 0:
+                new_high_volume = "True"
+                print(f"New High Level{new_high_volume}")
+
+            # Part4
+            max_price_144 = df['high'].rolling(window=144).max().iloc[-1]
+            last_close = df['close'].iloc[-1]
+            last_close_pect_max_144 = (last_close / max_price_144) - 1
+            if last_close_pect_max_144 < 0.05:
+                price_near_high = "True"
+            else:
+                price_near_high = "False"
+
+            # Part5
+            url = get_tradingview_url(ticker, ticker_type)
+
+            # df = prepare_dataframe_with_calculations(df)
+            volatility_15 = calculate_volatility(df, 15)
+            volatility = calculate_volatility(df, len(df.index))
+
+            vwap_levels = [5, 21, 55, 89, 144, 233]
+            vwap_increment = {level: get_vwap_result(df, vwap_levels[:i+1]) for i, level in enumerate(vwap_levels)}
+            df['VWAP_Result'] = calculate_vwap_result(df, scenario)
+            final_result = check_vwap_scenario(scenario, df['VWAP_Result'].iloc[-1], vwap_increment)
+            # Assuming 'avg_money_traded' is calculated as the product of average volume and last VWAP value
+            df['average_volume'] = df['volume'].rolling(55).mean()  # 55為平均的天數
+            last_average_volume = round(df['average_volume'].iloc[-1], 2)
+            last_VWAP = round(df['vwap55'].iloc[-1], 2)
+
+            # print(f"Last Average Volume: {last_average_volume}")
+            # print(f"Last VWAP Result: {last_VWAP}")
+            # print(f"Final Result: {final_result}")
+            df['avg_money_traded'] = df['average_volume'].iloc[-1] * df['vwap55'].iloc[-1]
+            should_analyze = should_analyze_stock(df, volatility_15, volatility)
+            # print (f"Should Analyze:{should_analyze }")
+            if final_result == 'TRUE' and should_analyze :
+                highchart_html_path = plot_highchart_chart(df, ticker, url, ticker_type)
+            else:
+                final_result = "SKIP"
+                highchart_html_path = "NA"
+            print(f"{ticker_type}-{run_number} {ticker} {final_result}")
+
+            df_out = update_output_dataframe(ticker, industry, sector, final_result, is_volume_greater_avg_volume_55,
+                                    volume_compare_wi_avg_volume_55, volatility_15, new_high_volume, volume_level,
+                                    price_near_high, should_analyze , highchart_html_path, url, df_out)
+                # df_out = update_output_dataframe(df_out, run_number, ticker, industry, sector, final_result, df)
+            """  
+            else:
+                print("Volume or volatility not meet, skip analysis!")
+            """
+        else:
+            print(f"{ticker_type}-{run_number} {ticker} Data too less!")
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    # Print the DataFrame
+    open_html_files(df_out)
+    # print(df_out)
+    pd.reset_option('display.max_rows')
+    pd.reset_option('display.max_columns')
+    save_results_to_excel(df_out)
+
+    df_out['url'] = df_out['url'].apply(lambda x: f'<a href="{x}">Link</a>')
+    # 將DataFrame轉換為HTML表格，並移除Pandas的索引列，escape=False防止HTML標籤被轉義
+    html_table = df_out.to_html(index=False, escape=False)
+
+    # HTML和JavaScript的模板
+    html_template = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>VWAP Strategy Screener Results</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+    </head>
+    <body>
+    {html_table}
+    <script>
+    $(document).ready( function () {{
+        $('table').DataTable();
+    }});
+    </script>
+    </body>
+    </html>
+    """
+
+    # 將HTML保存到文件
+    with open('vwap_strategy_screener_results.html', 'w', encoding='utf-8') as f:
+        f.write(html_template)
+
+
 # VWAP Scenario
-scenario = 55  # 21, 55, 89, 144, 233共5種
+scenario = 144  # 21, 55, 89, 144, 233共5種
 
 # RSI的日期範圍
 rsi_period = 14
@@ -734,16 +993,19 @@ fin_start = 0
 run_vwap_strategy_screener_in_range = 1  # VWAP均線的策略，均線呈多頭排序時買入，且限價在最高價正負2%的股票
 
 # 要執行的ticker種類
-TEST = 1
-US = 0
+TEST = 0
+if TEST == 1:
+    US = 0
+else:
+    US = 1
 
 # 將讀取到的資料轉換為 list，並存入 tickers  變數中
 if US == 1:
     us_tickers_dict, us_tickers = get_us_tickers("US")
 if TEST == 1:
-    print(f"Mode:{TEST}")
+    print(f"Mode:TEST")
     us_tickers_dict, us_tickers = get_us_tickers("US")
-    us_tickers = us_tickers[:10]
+    us_tickers = us_tickers[:100]
     us_tickers_dict = {ticker: us_tickers_dict[ticker] for ticker in us_tickers}
 
 """if TEST == 1:
@@ -778,4 +1040,3 @@ if lets_party == 1:
 end_time = time.time()  # 記錄結束時間
 elapsed_time = round(end_time - start_time, 2)  # 計算運行時間
 print(f"Elapsed time: {elapsed_time} seconds")
-

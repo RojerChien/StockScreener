@@ -1,5 +1,4 @@
 import pandas_market_calendars as mcal
-import pandas_market_calendars as mcal
 import datetime
 import pandas as pd
 import pytz
@@ -38,11 +37,13 @@ def check_market_status():
 
 is_market_open, is_within_market_hours, time_since_open, time_until_close, time_until_open = check_market_status()
 #total_time = time_until_close + time_until_open
-print(is_market_open)
-print(is_within_market_hours)
-print(time_since_open)
-print(time_until_close)
-print(time_until_open)
+"""
+print(f"Is market open: {is_market_open}")
+print(f"Is with market hours: {is_within_market_hours}")
+print(f"Time since open: {time_since_open}")
+print(f"Time until close: {time_until_close}")
+print(f"Time until open: {time_until_open}")
+"""
 #print(total_time)
 
 if not is_market_open:
