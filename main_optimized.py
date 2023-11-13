@@ -763,9 +763,7 @@ def update_output_dataframe(ticker, industry, sector, final_result, is_volume_gr
         na_columns = na_columns[na_columns].index.tolist()  # 獲取包含 NA 值的列名列表
         print(f"NA values found in columns: {na_columns}")
         print(new_row_df[na_columns])  # 打印出包含 NA 值的列
-    # 填充 NA 值，例如用 0 填充
-    df_in = df_in.dropna(axis=1, how='all')
-    new_row_df = new_row_df.dropna(axis=1, how='all')
+
     # df_out = pd.concat([df_in, pd.DataFrame([new_row])], ignore_index=True)
     df_out = pd.concat([df_in, new_row_df], ignore_index=True)
     # df_out = df_in.append(new_row, ignore_index=True)
