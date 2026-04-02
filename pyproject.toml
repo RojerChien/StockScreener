@@ -30,7 +30,8 @@ dependencies = [
     "backtrader",
     "pytz",
     "scipy",
-    "dateutil",
+    "python-dateutil",
+    "pyyaml",
 ]
 
 [project.optional-dependencies]
