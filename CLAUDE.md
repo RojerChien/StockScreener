@@ -8,7 +8,7 @@ Guidance for AI assistants working on this codebase.
 
 A Python-based stock screening and analysis tool for identifying stocks matching technical patterns — primarily the **VCP (Volume Contraction Pattern)** and **SMA crossover strategies**. It integrates multiple financial data sources, produces interactive charts, and includes backtesting capabilities.
 
-This is a **personal/research-grade** project: flat file structure, exploratory coding style, comments in Traditional Chinese (繁體中文), and multiple experimental variants.
+This is a **personal/research-grade** project. Comments are in Traditional Chinese (繁體中文). The codebase has been refactored from a flat 56-file structure into a proper Python package (`stockscreener/`).
 
 ---
 
@@ -16,61 +16,91 @@ This is a **personal/research-grade** project: flat file structure, exploratory 
 
 ```
 StockScreener/
-├── main.py                          # Entry point: PTP filtering, VWAP charting, Highstock output
-├── main_screener.py                 # Most complete screener: FinViz + VCP strategy (1478 lines)
-├── main_yfinance.py                 # Alternative using yfinance + zigzag support/resistance
-├── main_yahooquery.py               # Alternative using yahooquery + income statement data
-├── main_backup.py                   # Backup snapshots (do not use as canonical)
-├── main_bak20231010.py              # Dated backup
-├── main_optimized.py                # Experimental optimized version
 │
-├── Backtest.py                      # SMA 21/55/155 crossover strategy backtest
-├── Backtest_pyramid.py              # Pyramid position sizing strategy
-├── Backtest_pyramid_record.py       # Pyramid strategy with full trade recording
-├── Backtest_wistoploss.py           # Strategy with stop-loss + trailing stop
-├── backtrader_2.py                  # Backtrader-based strategy
-├── backtrader回測.py                # Backtrader strategy (Chinese-named file)
+├── stockscreener/               ← 主套件（重構後的新架構）
+│   ├── __init__.py              # 套件入口，load_config() 工具函式
+│   ├── cli.py                   # CLI 入口（取代多個 main_*.py）
+│   │
+│   ├── data/                    # 資料取得層
+│   │   ├── yahoo.py             # yfinance / yahooquery 封裝
+│   │   ├── finviz.py            # FinViz screener 封裝
+│   │   ├── ptp.py               # PTP 名單爬取（兩個網站合併）
+│   │   ├── cache.py             # 本地 Parquet 快取
+│   │   └── edgar.py             # SEC EDGAR / XBRL 封裝
+│   │
+│   ├── indicators/              # 技術指標計算層
+│   │   ├── vwap.py              # VWAP（多視窗）
+│   │   ├── sma.py               # SMA + check_continuous_increase
+│   │   ├── rsi.py               # RSI
+│   │   ├── zigzag.py            # Zigzag 高低點偵測
+│   │   └── atr.py               # ATR
+│   │
+│   ├── strategies/              # 策略訊號層
+│   │   ├── vcp.py               # VCP (Volume Contraction Pattern)
+│   │   ├── sma_crossover.py     # SMA 21/55/155 交叉策略
+│   │   └── market_status.py     # NYSE 開市狀態
+│   │
+│   ├── backtest/                # 回測層
+│   │   ├── engine.py            # 回測核心（Strategy Pattern）
+│   │   ├── position_sizing.py   # 單倉 / Pyramid 倉位管理
+│   │   └── report.py            # HTML 回測報表輸出
+│   │
+│   ├── charts/                  # 圖表輸出層
+│   │   ├── highstock.py         # Highstock OHLC + VWAP + RSI + Volume
+│   │   ├── plotly_charts.py     # Plotly 互動圖表
+│   │   └── heatmap.py           # Seaborn 板塊熱力圖
+│   │
+│   └── export/                  # 匯出層
+│       └── excel.py             # Excel 輸出（openpyxl）
 │
-├── is_market_open.py                # NYSE market status checker
-├── zigzag_plot.py                   # Zigzag pattern detection (peaks/valleys)
-├── zigzag_my.py / zigzag_my_2.py   # Custom zigzag implementations
-├── HH_LL_LH_HL.py                  # Higher High/Lower Low pattern detection
+├── tests/                       # pytest 測試套件（53 個測試）
+│   ├── conftest.py              # 共用 fixtures（模擬 OHLCV 資料）
+│   ├── test_backtest_engine.py
+│   ├── test_data_ptp.py
+│   ├── test_data_yahoo.py
+│   ├── test_indicators_vwap.py
+│   ├── test_indicators_zigzag.py
+│   └── test_strategies_vcp.py
 │
-├── OK_sector_industry_volume_weight_heatmap_seaborn.py  # Sector/industry heatmaps
-├── sector_industry_volume_weight_heatmap.py
-├── industry_volume_weight_heatmap_seaborn.py
-├── sector_volume_weight.py
-├── sp500_sector.py / sp500_sector_heatmap.py
+├── config.yaml                  # 所有策略參數（取代 hardcoded 值）
+├── pyproject.toml               # 依賴套件清單與 CLI 入口點設定
+├── todo.md                      # 重寫計畫與進度追蹤
 │
-├── get_finantial.py                 # Financial statement + XBRL data fetching
-├── wirte_list_to_xlsx.py            # Write ticker data to Excel (872 lines)
-├── py-xbrl.py / py-xbrl_2.py / py-xbrl_3.py  # XBRL/SEC EDGAR parsing
-├── sec_edgar_py_test.py             # SEC EDGAR wrapper testing
+├── main.py                      # 原始 entry point（保留）
+├── main_screener.py             # 原始最完整 screener（保留）
+├── main_yfinance.py             # 原始 yfinance 版本（保留）
+├── main_yahooquery.py           # 原始 yahooquery 版本（保留）
 │
-├── chrome_driver.py                 # Selenium WebDriver setup
-├── tradingview_login.py             # TradingView authentication
-├── highchart_to_png.py              # Highstock chart export to PNG
-├── combine_jpg.py                   # Image manipulation utility
-├── read_xlsx_to_list.py             # Excel reading utility
-├── remove_file.py                   # File cleanup utility
-├── python_gui.py                    # Minimal PyQt5 GUI stub
+├── Backtest.py                  # 原始 SMA 回測（保留）
+├── Backtest_pyramid.py          # 原始 Pyramid 回測（保留）
+├── Backtest_pyramid_record.py   # 原始 Pyramid + 記錄（保留）
+├── Backtest_wistoploss.py       # 原始止損回測（保留）
+├── backtrader_2.py              # Backtrader 策略（保留）
+├── backtrader回測.py            # Backtrader 策略中文檔名（保留）
 │
-├── test.py / test2.py / test3.py / test4.py   # Ad-hoc test scripts
-├── yahoo_query_test.py              # yahooquery data fetch tests
-├── yfinance_test.py / yahooquery_test.py / finvizfinance_test.py
-├── update_income_statement_test.py
+├── is_market_open.py            # 原始開市狀態查詢（保留）
+├── zigzag_plot.py               # 原始 Zigzag 圖（保留）
+├── HH_LL_LH_HL.py               # Higher High/Lower Low 偵測（保留）
 │
-├── income_statement.csv             # Cached financial data (13.2 MB)
-├── data_all_financial.csv           # Aggregated financial metrics
-├── filter_ticker.csv                # Filtered ticker list
-├── tsla_data.csv                    # Tesla historical sample
-├── yq_historical.csv                # yahooquery historical data
-├── Tickers.xlsx                     # Large ticker database (664 KB)
-├── Result.xlsx                      # Backtest output
-├── industry_sector.xlsx             # Industry/sector mapping
+├── OK_sector_industry_volume_weight_heatmap_seaborn.py  # 保留
+├── sector_industry_volume_weight_heatmap.py             # 保留
+├── industry_volume_weight_heatmap_seaborn.py            # 保留
+├── sector_volume_weight.py                              # 保留
+├── sp500_sector.py / sp500_sector_heatmap.py            # 保留
 │
-├── main.spec                        # PyInstaller build config
-└── build/                           # PyInstaller compiled output
+├── get_finantial.py             # 財務資料擷取（保留）
+├── wirte_list_to_xlsx.py        # Excel 寫入（保留）
+├── py-xbrl_3.py                 # XBRL 解析（保留）
+├── sec_edgar_py_test.py         # SEC EDGAR 測試（保留）
+│
+├── income_statement.csv         # 快取財務資料（13.2 MB）
+├── data_all_financial.csv       # 聚合財務指標
+├── filter_ticker.csv            # 過濾後 ticker 清單
+├── Tickers.xlsx                 # 大型 ticker 資料庫（664 KB）
+├── Result.xlsx                  # 回測輸出
+├── industry_sector.xlsx         # 產業/板塊對應
+│
+└── build/                       # PyInstaller 編譯輸出
 ```
 
 ---
@@ -88,71 +118,75 @@ StockScreener/
 | GUI | `PyQt5` (minimal usage) |
 | Build | `PyInstaller` |
 
-**No `requirements.txt` exists.** Dependencies must be inferred from imports.
+Dependencies are defined in `pyproject.toml`. Install with:
+```bash
+pip install -e ".[dev]"   # 含 pytest / pytest-mock
+pip install -e .          # 僅生產依賴
+```
 
 ---
 
 ## Key Concepts & Strategies
 
 ### VCP (Volume Contraction Pattern)
-The primary screening strategy. Looks for stocks with:
-- Price above SMA20 > SMA50 > SMA200
-- Decreasing volume over successive bases (contraction)
-- EPS growth criteria
-- Price > $3, daily volume > 100K shares
-- Daily change > 2%
+Implemented in `stockscreener/strategies/vcp.py`. Looks for stocks with:
+- Volatility contraction: `volatility_8 < volatility_21 < volatility_55`
+- Contraction ratio > 1.5× at each stage
+- Inner volatility < 0.1
+- Volume contraction: `avg_vol_8 / avg_vol_55 < 0.7`
+- SMA alignment: `SMA55 > SMA144 > SMA233`
+- SMA233 continuously rising for 21 days
 
 ### VWAP (Volume Weighted Average Price)
-Used as a key indicator in `main.py` and `main_screener.py`. VWAP lines are computed from intraday data and overlaid on Highstock interactive charts.
+Implemented in `stockscreener/indicators/vwap.py`.
+`VWAP_n = rolling_sum(close × volume, n) / rolling_sum(volume, n)`
 
 ### SMA Crossover Backtest
-`Backtest.py` tests SMA 21/55/155 crossovers on the S&P 500. Pyramid variants apply risk-scaled position sizing with stop-loss rules.
+Implemented in `stockscreener/strategies/sma_crossover.py` + `stockscreener/backtest/`.
+Buy: SMA21 crosses above SMA55, close > SMA21 > SMA55 > SMA155, all rising.
+Sell: close < SMA21.
 
-### PTP (Passive Foreign Investment Company / "PTP" stocks)
-`main.py` scrapes PTP stock lists from external websites and filters them out of screening results to avoid tax complications.
-
----
-
-## Data Flow
-
-```
-External APIs (Yahoo Finance, FinViz, SEC EDGAR)
-        ↓
-  Data Fetching (yfinance / yahooquery / finvizfinance)
-        ↓
-  Filtering & Technical Indicators (pandas / ta / custom)
-        ↓
-  Strategy Signal Generation (VCP / SMA crossover / Zigzag)
-        ↓
-  Visualization (Highstock HTML / Plotly / Matplotlib / Seaborn)
-        ↓
-  Export (Excel / CSV / PNG / HTML charts)
-```
+### PTP (Publicly Traded Partnership)
+`stockscreener/data/ptp.py` scrapes two external sites and merges the lists.
 
 ---
 
 ## Running the Project
 
-There is no build system or package manager. Run scripts directly:
-
+### 新架構 CLI（推薦）
 ```bash
-# Primary screener
+# VCP 篩選，輸出 Highstock HTML
+python -m stockscreener screen --strategy vcp
+
+# 金字塔加碼回測
+python -m stockscreener backtest --mode pyramid --balance 200000
+
+# NYSE 開市狀態
+python -m stockscreener market-status
+
+# 板塊熱力圖
+python -m stockscreener heatmap --type sector --frequency D --period 31
+
+# 查看說明
+python -m stockscreener --help
+```
+
+### 原始腳本（仍可使用）
+```bash
 python main_screener.py
-
-# VWAP + Highstock charts
 python main.py
-
-# Alternative screener (yfinance)
-python main_yfinance.py
-
-# Market open check
-python is_market_open.py
-
-# Backtesting
 python Backtest.py
-python Backtest_pyramid_record.py
+python is_market_open.py
+```
 
-# Build standalone executable
+### 測試
+```bash
+python -m pytest tests/ -v       # 執行全部 53 個測試
+python -m pytest tests/ -v -k vcp  # 只跑 VCP 相關測試
+```
+
+### Build
+```bash
 pyinstaller main.spec
 ```
 
@@ -161,41 +195,44 @@ pyinstaller main.spec
 ## Code Conventions
 
 ### Language
-- Code comments and some variable names are in **Traditional Chinese (繁體中文)**. This is intentional — do not translate them.
-- Function and variable names use **snake_case** in Python.
+- Code comments are in **Traditional Chinese (繁體中文)** — do not translate.
+- Function and variable names use **snake_case**.
 
-### Style Patterns
-- Warnings suppressed at script top: `pd.options.mode.chained_assignment = None`
-- Today's date stored as: `today = str(datetime.datetime.now().date())`
-- `import` blocks sometimes include commented `pip install` instructions
-- Procedural style dominates; classes are rarely used
-- Long functions (100+ lines) are common — do not refactor for style alone
+### DataFrame Column Naming
+- All internal DataFrames use **lowercase** column names: `open`, `high`, `low`, `close`, `volume`.
+- `stockscreener/data/yahoo.py::normalize_columns()` converts yfinance's capitalized names on input.
 
-### Column Naming
-- Yahoo Finance columns use capitalized names: `Close`, `Volume`, `Open`, `High`, `Low`
-- yahooquery may return lowercase: `close`, `volume`
-- Be careful when merging DataFrames from different sources
+### Logging
+- Package code uses `logger = logging.getLogger(__name__)` — no bare `print()`.
+- CLI (`cli.py`) may use `print()` for user-facing output.
 
-### File Organization
-- All `.py` files live in the root directory — **no package/module structure**
-- `main_*.py` files are parallel implementations; `main_screener.py` is the most complete
-- Files prefixed with `test` or `*_test.py` are ad-hoc validation scripts, not a test suite
-- Backup files with dates (`main_bak20231010.py`) are archived — do not modify them
+### Style
+- `pd.options.mode.chained_assignment = None` at script top (original scripts)
+- `today = str(datetime.datetime.now().date())`
+- Procedural style; classes used only in backtest layer
+- Long functions are common in original scripts — do not refactor unless asked
+
+### Configuration
+- All hardcoded thresholds/URLs/parameters live in `config.yaml`.
+- Load via `stockscreener.load_config()` which returns a dict.
 
 ---
 
 ## Testing
 
-There is **no formal test framework**. Testing is done by running individual scripts and inspecting output.
-
-To validate a data source:
 ```bash
-python yfinance_test.py
-python yahooquery_test.py
-python finvizfinance_test.py
+python -m pytest tests/ -v
 ```
 
-When adding new features, follow the pattern: create a `_test.py` variant script and run it manually.
+53 tests covering:
+- `test_backtest_engine.py` — BacktestEngine, FixedSizing, PyramidSizing
+- `test_data_ptp.py` — PTP HTML parsing, deduplication, remove logic
+- `test_data_yahoo.py` — column normalization, MultiIndex selection
+- `test_indicators_vwap.py` — VWAP calculation correctness
+- `test_indicators_zigzag.py` — zigzag alternation, empty data handling
+- `test_strategies_vcp.py` — VCP conditions, edge cases
+
+All tests use mocks — no real network calls.
 
 ---
 
@@ -203,56 +240,52 @@ When adding new features, follow the pattern: create a `_test.py` variant script
 
 | Source | Library | Notes |
 |--------|---------|-------|
-| Yahoo Finance | `yfinance` | May rate-limit on bulk requests; add `time.sleep()` between batches |
+| Yahoo Finance | `yfinance` | May rate-limit; add `time.sleep()` between batches |
 | Yahoo Query | `yahooquery` | Async-capable; handles multiple tickers in one call |
 | FinViz | `finvizfinance` | Scraping-based; use sparingly |
-| SEC EDGAR | `sec_edgar_py` | Public API; no auth required but rate limits apply |
-| TradingView | `selenium` | Requires Chrome + ChromeDriver; login credentials needed |
+| SEC EDGAR | `sec_edgar_py` | Public API; rate limits apply |
+| TradingView | `selenium` | Requires Chrome + ChromeDriver |
 | Wikipedia | `requests` + `bs4` | S&P 500 list scraping |
-| PTP Lists | `requests` + `bs4` | Two external sites scraped for PTP ticker exclusion |
+| PTP Lists | `requests` + `bs4` | Two external sites |
 
 ---
 
 ## Output Files
 
 Scripts generate output in the working directory:
-- **HTML files** — Interactive Highstock or Plotly charts (open in browser)
+- **HTML files** — Interactive Highstock or Plotly charts
 - **PNG/JPG files** — Static matplotlib/seaborn charts
 - **Excel files** — `Result.xlsx`, updated `Tickers.xlsx`
 - **CSV files** — Incremental data snapshots
-
-There is no output directory convention — files land in the project root.
 
 ---
 
 ## Known Limitations & Gotchas
 
-1. **No `requirements.txt`** — If dependencies are missing, check imports at the top of each file for `pip install` hints in comments.
-2. **Flat file structure** — All 56+ Python files are in the root. Search by filename prefix to find related files.
-3. **Multiple `main_*.py` variants** — They are NOT interchangeable. Each uses a different data source and has different feature sets.
-4. **Large CSV files** — `income_statement.csv` (13.2 MB) and `Tickers.xlsx` (664 KB) are committed to the repo. Avoid rewriting these unless specifically asked.
-5. **PyInstaller build** — The `build/` directory contains compiled artifacts. Do not commit changes there.
-6. **Chinese filenames** — `backtrader回測.py` contains Chinese characters. Ensure your shell/editor handles UTF-8 filenames.
-7. **No environment variables** — API keys or credentials (TradingView) are hardcoded in scripts. Do not commit new credentials.
-8. **Rate limiting** — Yahoo Finance and FinViz can ban IPs on excessive requests. The code lacks robust retry/backoff logic.
+1. **pyproject.toml** defines dependencies but no lockfile exists — versions may drift.
+2. **Large CSV files** — `income_statement.csv` (13.2 MB), `Tickers.xlsx` (664 KB) committed to repo.
+3. **PyInstaller build** — `build/` directory contains compiled artifacts. Do not commit changes there.
+4. **Chinese filenames** — `backtrader回測.py` contains Chinese characters.
+5. **No credentials management** — TradingView credentials hardcoded in `tradingview_login.py`.
+6. **Rate limiting** — Yahoo Finance and FinViz can ban IPs. Code lacks retry/backoff.
+7. **numpy bool** — `vcp_screener_strategy()` explicitly returns `bool()` to handle NumPy 2.0 breaking change where `np.bool_` is no longer a subclass of Python `bool`.
 
 ---
 
 ## Git Workflow
 
 - Default development branch: `main`
-- Feature branches follow pattern: `claude/<description>-<id>`
-- No CI/CD pipeline; commits and pushes are manual
-- No pre-commit hooks or linting enforced
+- Feature branches: `claude/<description>-<id>`
+- No CI/CD pipeline
 
 ---
 
 ## What NOT To Do
 
-- Do not reorganize files into subdirectories without explicit request — the flat structure is intentional for this scripting project
-- Do not add type annotations or docstrings to existing code that doesn't have them
+- Do not reorganize files into subdirectories without explicit request
+- Do not add type annotations or docstrings to original scripts that don't have them
 - Do not translate Chinese comments to English
-- Do not create a `requirements.txt` unless asked — the current state is deliberate
 - Do not modify dated backup files (`main_bak*.py`, `*_20231028.xlsx`)
-- Do not add logging frameworks or abstract error handling to ad-hoc scripts
-- Do not refactor long functions unless the task explicitly requires it
+- Do not add logging frameworks or abstract error handling to original ad-hoc scripts
+- Do not refactor original long functions unless the task explicitly requires it
+- Do not commit large data files (`.csv`, `.xlsx`) unless they already exist in the repo

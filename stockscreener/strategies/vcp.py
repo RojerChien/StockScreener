@@ -146,7 +146,7 @@ def vcp_screener_strategy(ticker: str, data: pd.DataFrame) -> bool:
 
         if result:
             logger.info("%s 符合 VCP 條件", ticker)
-        return result
+        return bool(result)
 
     except Exception as exc:
         logger.error("計算 %s VCP 時發生錯誤: %s", ticker, exc)

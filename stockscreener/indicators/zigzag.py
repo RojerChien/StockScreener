@@ -73,8 +73,14 @@ def calculate_zigzag(
     pd.DataFrame
         含有 ``price`` 欄位的 DataFrame，索引為日期（ZigZag 轉折點）。
     """
+    if data.empty or len(data) < atr_period + 1:
+        return pd.DataFrame(columns=["price"])
+
     atr = calculate_atr(data, period=atr_period)
-    window_size = int(np.ceil(atr.mean() * atr_multiplier))
+    atr_mean = atr.mean()
+    if np.isnan(atr_mean) or atr_mean == 0:
+        return pd.DataFrame(columns=["price"])
+    window_size = int(np.ceil(atr_mean * atr_multiplier))
     if window_size < 2:
         window_size = 2
     logger.debug("ZigZag window_size: %d", window_size)
