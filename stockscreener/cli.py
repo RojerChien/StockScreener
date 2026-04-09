@@ -34,10 +34,20 @@ def cmd_screen(args: argparse.Namespace) -> None:
     from stockscreener.indicators.vwap import add_all_vwaps
     from stockscreener.indicators.rsi import calculate_rsi
 
-    print(f"[screen] 策略: {args.strategy}, 輸出: {args.output}")
+    print(f"[screen] 策略: {args.strategy}, 範圍: {args.universe}, 輸出: {args.output}")
 
-    print("取得 FinViz Screener tickers...")
-    tickers = get_finviz_screener_tickers()
+    # ── 取得股票範圍 ──────────────────────────────────────────────────────────
+    if args.universe == "russell1000":
+        from stockscreener.data.russell import get_russell1000_tickers
+        print("取得 Russell 1000 成分股（iShares IWB）...")
+        try:
+            tickers = get_russell1000_tickers()
+        except (ConnectionError, ValueError) as exc:
+            print(f"[錯誤] {exc}")
+            return
+    else:
+        print("取得 FinViz Screener tickers...")
+        tickers = get_finviz_screener_tickers()
 
     if not args.skip_ptp:
         print("取得 PTP 名單並過濾...")
@@ -159,6 +169,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_screen = sub.add_parser("screen", help="股票篩選")
     p_screen.add_argument("--strategy", choices=["vcp", "vwap"], default="vcp")
     p_screen.add_argument("--output", choices=["html", "csv", "both"], default="html")
+    p_screen.add_argument(
+        "--universe",
+        choices=["finviz", "russell1000"],
+        default="finviz",
+        help="篩選範圍：finviz（FinViz Screener）或 russell1000（Russell 1000 成分股）",
+    )
     p_screen.add_argument("--skip-ptp", action="store_true")
     p_screen.set_defaults(func=cmd_screen)
 
