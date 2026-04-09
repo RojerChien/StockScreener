@@ -54,8 +54,14 @@ def get_yq_historical_data(ticker_list: List[str]) -> pd.DataFrame:
     logger.info("開始下載 %d 檔股票歷史資料", len(ticker_list))
     start = time.time()
 
-    ticker = Ticker(ticker_list, asynchronous=True)
-    data_all = ticker.history(period="3y", interval="1d")
+    try:
+        ticker = Ticker(ticker_list, asynchronous=True)
+        data_all = ticker.history(period="3y", interval="1d")
+    except Exception as exc:
+        raise ConnectionError(
+            f"無法連線至 Yahoo Finance（{exc}）\n"
+            "請確認網路連線正常，或稍後再試。"
+        ) from exc
 
     elapsed = round(time.time() - start, 2)
     logger.info("資料下載完成，耗時 %s 秒", elapsed)

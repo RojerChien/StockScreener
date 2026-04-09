@@ -73,16 +73,26 @@ def cmd_backtest(args: argparse.Namespace) -> None:
     from stockscreener.backtest.position_sizing import pyramid_sizing, fixed_sizing
     from stockscreener.backtest.report import generate_html_report as render_backtest_html
 
-    print("取得 S&P 500 列表...")
-    sp500_url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
-    tables = pd.read_html(sp500_url)
-    symbols = [s.replace(".", "-") for s in tables[0]["Symbol"].tolist()]
-
     if args.tickers:
-        symbols = args.tickers.split(",")
+        symbols = [t.strip() for t in args.tickers.split(",")]
+    else:
+        print("取得 S&P 500 列表...")
+        sp500_url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+        try:
+            tables = pd.read_html(sp500_url)
+            symbols = [s.replace(".", "-") for s in tables[0]["Symbol"].tolist()]
+        except Exception as exc:
+            print(f"[錯誤] 無法取得 S&P 500 列表: {exc}")
+            print("請改用 --tickers 指定股票，例如：")
+            print("  python -m stockscreener backtest --mode pyramid --tickers AAPL,TSLA,NVDA")
+            return
 
     print(f"下載 {len(symbols)} 支股票資料...")
-    data_all = get_yq_historical_data(symbols)
+    try:
+        data_all = get_yq_historical_data(symbols)
+    except ConnectionError as exc:
+        print(f"[錯誤] {exc}")
+        return
 
     sizing_fn = pyramid_sizing if args.mode == "pyramid" else fixed_sizing
     engine = BacktestEngine(
@@ -103,7 +113,7 @@ def cmd_backtest(args: argparse.Namespace) -> None:
             logger.warning("回測 %s 失敗: %s", symbol, exc)
 
     print(f"回測完成，共 {len(results)} 支股票")
-    output_file = render_backtest_html(results, filename=f"backtest_{args.mode}.html")
+    output_file = render_backtest_html(results, output_path=f"backtest_{args.mode}.html")
     print(f"報表已儲存: {output_file}")
 
 
