@@ -71,7 +71,7 @@ def cmd_backtest(args: argparse.Namespace) -> None:
     from stockscreener.strategies.sma_crossover import sma_crossover_signals
     from stockscreener.backtest.engine import BacktestEngine
     from stockscreener.backtest.position_sizing import pyramid_sizing, fixed_sizing
-    from stockscreener.backtest.report import render_backtest_html
+    from stockscreener.backtest.report import generate_html_report as render_backtest_html
 
     print("取得 S&P 500 列表...")
     sp500_url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
