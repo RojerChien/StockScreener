@@ -86,5 +86,5 @@ def sel_yq_historical_data(data_all: pd.DataFrame, ticker: str) -> pd.DataFrame:
     if isinstance(data_all.index, pd.MultiIndex):
         if ticker in data_all.index.get_level_values(0):
             return data_all.loc[ticker].copy()
-    logger.warning("找不到 %s 的資料", ticker)
+    logger.debug("找不到 %s 的資料（Yahoo Finance 無此代號的歷史資料）", ticker)
     return pd.DataFrame()
