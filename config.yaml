@@ -49,11 +49,17 @@ strategies:
     sma_mid: 144
     sma_long: 233
     sma_long_increase_days: 21
+    sma_long_min_slope_pct: 0.005  # SMA233 在 21 天內至少需上升 0.5%
     # Volatility contraction thresholds
     vol_ratio_min: 1.5          # volatility_55/volatility_21 and 21/8 must exceed this
     max_volatility_8: 0.1       # inner-most window volatility must be below this
     # Volume contraction threshold
     max_volume_ratio: 0.7       # avg_volume_8 / avg_volume_55 must be below this
+    # Minervini 趨勢模板過濾條件（設為 0 可停用）
+    min_price: 10.0             # 最低股價門檻
+    min_avg_volume: 300000      # 最低 50 日均量門檻
+    min_dist_52w_low: 1.30      # 收盤須至少比 52 週低點高 30%
+    max_dist_52w_high: 0.75     # 收盤須在 52 週高點的 75% 以上
 
   sma_crossover:
     fast: 21

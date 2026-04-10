@@ -29,7 +29,9 @@ def calculate_sma(data: pd.DataFrame, window: int) -> pd.Series:
     return data["close"].rolling(window=window).mean()
 
 
-def check_continuous_increase(series: pd.Series, days: int) -> bool:
+def check_continuous_increase(
+    series: pd.Series, days: int, min_slope_pct: float = 0.0
+) -> bool:
     """判斷序列在最後 *days* 天是否持續上升。
 
     Parameters
@@ -38,13 +40,24 @@ def check_continuous_increase(series: pd.Series, days: int) -> bool:
         已去除 NaN 的 SMA 序列。
     days:
         要檢查的天數。
+    min_slope_pct:
+        最小斜率要求：最後一值需比第一值高出此比例（例如 0.005 = 0.5%）。
+        預設 0.0 表示只要求單調遞增（允許持平）。
 
     Returns
     -------
     bool
-        若最後 *days* 天單調遞增則回傳 ``True``，否則回傳 ``False``。
+        若最後 *days* 天單調遞增（且符合最小斜率要求）則回傳 ``True``。
     """
     if len(series) < days:
         return False
     last_n = series.tail(days)
-    return bool(last_n.is_monotonic_increasing)
+    if not last_n.is_monotonic_increasing:
+        return False
+    if min_slope_pct > 0:
+        first_val = float(last_n.iloc[0])
+        last_val = float(last_n.iloc[-1])
+        if first_val == 0:
+            return False
+        return last_val > first_val * (1 + min_slope_pct)
+    return True

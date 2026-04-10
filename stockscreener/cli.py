@@ -104,9 +104,16 @@ def cmd_backtest(args: argparse.Namespace) -> None:
         print(f"[錯誤] {exc}")
         return
 
-    sizing_fn = pyramid_sizing if args.mode == "pyramid" else fixed_sizing
+    if args.mode == "vcp":
+        from stockscreener.strategies.vcp_signal import vcp_breakout_signals
+        signal_fn = vcp_breakout_signals
+        sizing_fn = fixed_sizing
+    else:
+        signal_fn = sma_crossover_signals
+        sizing_fn = pyramid_sizing if args.mode == "pyramid" else fixed_sizing
+
     engine = BacktestEngine(
-        signal_fn=sma_crossover_signals,
+        signal_fn=signal_fn,
         sizing_fn=sizing_fn,
         initial_balance=args.balance,
     )
@@ -180,7 +187,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # backtest
     p_bt = sub.add_parser("backtest", help="策略回測")
-    p_bt.add_argument("--mode", choices=["single", "pyramid"], default="pyramid")
+    p_bt.add_argument("--mode", choices=["single", "pyramid", "vcp"], default="pyramid")
     p_bt.add_argument("--start", default="2007-01-01")
     p_bt.add_argument("--end", default=None)
     p_bt.add_argument("--balance", type=float, default=200_000.0)
