@@ -49,16 +49,23 @@ def _parse_iwb_csv(text: str) -> List[str]:
 
     lines = text.splitlines()
 
-    # 找到含欄位標題的起始行（以 "Name" 開頭）
+    # 找到含欄位標題的起始行：
+    # "ticker" 必須是逗號分隔後的獨立欄位名稱（不分大小寫，去除引號）
+    # 只掃前 25 行以避免比對到資料列
     start_idx: int | None = None
-    for i, line in enumerate(lines):
-        cleaned = line.strip().strip("\ufeff").strip('"')
-        if cleaned.startswith("Name"):
+    for i, line in enumerate(lines[:25]):
+        fields = [f.strip().strip('"').lower() for f in line.split(",")]
+        if "ticker" in fields:
             start_idx = i
             break
 
     if start_idx is None:
-        raise ValueError("無法識別 iShares IWB CSV 格式（找不到 Name 欄位標題）")
+        # 印出前 20 行以利診斷
+        preview = "\n".join(f"  {i:2d}: {repr(l[:120])}" for i, l in enumerate(lines[:20]))
+        raise ValueError(
+            "無法識別 iShares IWB CSV 格式（前 25 行找不到含 Ticker 欄位的標題行）\n"
+            f"CSV 前 20 行：\n{preview}"
+        )
 
     # 找到資料結束行：遇到空行或無效行時停止
     end_idx = len(lines)
