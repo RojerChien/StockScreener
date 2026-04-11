@@ -37,6 +37,21 @@ def _make_df(
     )
 
 
+def _all_false_mask(df: pd.DataFrame) -> pd.Series:
+    return pd.Series(False, index=df.index)
+
+
+def _all_true_mask(df: pd.DataFrame) -> pd.Series:
+    return pd.Series(True, index=df.index)
+
+
+def _mask_true_at(df: pd.DataFrame, idx: int) -> pd.Series:
+    """只在指定 integer 位置為 True 的遮罩。"""
+    mask = pd.Series(False, index=df.index)
+    mask.iloc[idx] = True
+    return mask
+
+
 # ── 測試類別 ────────────────────────────────────────────────────────────────
 
 
@@ -45,10 +60,9 @@ class TestVcpBreakoutSignals:
         """buy / sell 訊號應等長，且都是列表型別。"""
         df = _make_df()
 
-        # 模擬 vcp_screener_strategy 永遠回傳 False（無 VCP 訊號）
         with patch(
-            "stockscreener.strategies.vcp_signal.vcp_screener_strategy",
-            return_value=False,
+            "stockscreener.strategies.vcp_signal._precompute_vcp_mask",
+            return_value=_all_false_mask(df),
         ):
             buy, sell = vcp_breakout_signals(df)
 
@@ -57,12 +71,12 @@ class TestVcpBreakoutSignals:
         assert len(buy) == len(sell)
 
     def test_no_trade_without_vcp(self):
-        """VCP 篩選永遠不通過時，不應產生任何訊號。"""
+        """VCP 遮罩全為 False 時，不應產生任何訊號。"""
         df = _make_df()
 
         with patch(
-            "stockscreener.strategies.vcp_signal.vcp_screener_strategy",
-            return_value=False,
+            "stockscreener.strategies.vcp_signal._precompute_vcp_mask",
+            return_value=_all_false_mask(df),
         ):
             buy, sell = vcp_breakout_signals(df)
 
@@ -70,107 +84,98 @@ class TestVcpBreakoutSignals:
         assert len(sell) == 0
 
     def test_no_trade_without_breakout(self):
-        """VCP 通過但收盤未突破前高時，不應產生進場訊號。"""
-        # 平坦收盤（無突破）
+        """VCP 通過但收盤未突破前高（平盤）時，不應產生進場訊號。"""
         close = np.full(400, 100.0)
         df = _make_df(close=close)
 
         with patch(
-            "stockscreener.strategies.vcp_signal.vcp_screener_strategy",
-            return_value=True,
+            "stockscreener.strategies.vcp_signal._precompute_vcp_mask",
+            return_value=_all_true_mask(df),
         ):
             buy, sell = vcp_breakout_signals(df)
 
+        # 平盤：close_cur == prev_high，不滿足嚴格突破條件
         assert len(buy) == 0
 
     def test_stop_loss_triggers(self):
         """進場後下跌超過停損比例，應在當日產生賣出訊號。"""
         n = 400
-        # 前 300 天上漲，第 301 天為進場日（VCP 通過 + 突破），之後急跌
+        entry_idx = 300
+        entry_price = 121.0
+
         close = np.concatenate([
-            np.linspace(50.0, 120.0, 300),
-            [121.0],                          # 突破高點（進場）
-            np.full(n - 301, 100.0),          # 急跌 > 7%
+            np.linspace(50.0, 119.5, entry_idx),  # 前段上升（最高 ~119.5）
+            [entry_price],                          # 突破進場（高於前高）
+            np.full(n - entry_idx - 1, 100.0),     # 急跌 > 7% → 觸發停損
         ])
         volume = np.full(n, 1_000_000.0)
-        volume[300] = 2_000_000.0            # 突破量能
+        volume[entry_idx] = 2_000_000.0
         df = _make_df(n=n, close=close, volume=volume)
 
-        entry_price = 121.0
-        stop_price = entry_price * (1 - 0.07)  # 112.53
-
-        # 模擬 VCP 僅在第 300 個交易日（index 300）通過
-        call_count = [0]
-
-        def mock_vcp(ticker, data):
-            call_count[0] += 1
-            # 只有當資料長度 == 301 時回傳 True（對應 i=300 的 slice）
-            return len(data) == 301
+        # VCP 在 entry_idx-1 觸發 → vcp_prev 在 entry_idx 為 True
+        mask = _mask_true_at(df, entry_idx - 1)
 
         with patch(
-            "stockscreener.strategies.vcp_signal.vcp_screener_strategy",
-            side_effect=mock_vcp,
+            "stockscreener.strategies.vcp_signal._precompute_vcp_mask",
+            return_value=mask,
         ):
             buy, sell = vcp_breakout_signals(
                 df,
                 stop_loss_pct=0.07,
-                profit_target_pct=0.99,  # 停用獲利了結，只測停損
+                profit_target_pct=0.99,   # 停用獲利了結
                 volume_multiplier=1.0,
             )
 
-        # 若有進場，應有相應出場
         assert len(buy) == len(sell)
-        if len(buy) > 0:
-            # 出場價格應 <= 停損價
-            sell_date = sell[0]
-            sell_price = float(df.loc[sell_date, "close"])
-            assert sell_price <= entry_price * (1 - 0.05)  # 寬鬆驗證：至少跌了 5%
+        assert len(buy) > 0, "應有進場訊號"
+        sell_price = float(df.loc[sell[0], "close"])
+        # 100.0 < 121.0 * 0.93 = 112.53，停損應觸發
+        assert sell_price <= entry_price * (1 - 0.05)
 
     def test_profit_target_triggers(self):
         """進場後上漲超過獲利目標比例，應在當日產生賣出訊號。"""
         n = 400
-        # 前 300 天上漲，第 301 天進場，之後大幅上漲
+        entry_idx = 300
+        entry_price = 121.0
+        target_price = entry_price * 1.25  # 151.25
+
         close = np.concatenate([
-            np.linspace(50.0, 120.0, 300),
-            [121.0],                          # 進場
-            np.full(n - 301, 160.0),          # 大漲 > 25%
+            np.linspace(50.0, 119.5, entry_idx),
+            [entry_price],                         # 進場
+            np.full(n - entry_idx - 1, 160.0),    # 大漲 > 25%
         ])
         volume = np.full(n, 1_000_000.0)
-        volume[300] = 2_000_000.0
+        volume[entry_idx] = 2_000_000.0
         df = _make_df(n=n, close=close, volume=volume)
 
-        entry_price = 121.0
-        target_price = entry_price * (1 + 0.25)  # 151.25
-
-        def mock_vcp(ticker, data):
-            return len(data) == 301
+        mask = _mask_true_at(df, entry_idx - 1)
 
         with patch(
-            "stockscreener.strategies.vcp_signal.vcp_screener_strategy",
-            side_effect=mock_vcp,
+            "stockscreener.strategies.vcp_signal._precompute_vcp_mask",
+            return_value=mask,
         ):
             buy, sell = vcp_breakout_signals(
                 df,
-                stop_loss_pct=0.99,  # 停用停損，只測獲利目標
+                stop_loss_pct=0.99,       # 停用停損
                 profit_target_pct=0.25,
                 volume_multiplier=1.0,
             )
 
         assert len(buy) == len(sell)
-        if len(buy) > 0:
-            sell_date = sell[0]
-            sell_price = float(df.loc[sell_date, "close"])
-            assert sell_price >= target_price
+        assert len(buy) > 0, "應有進場訊號"
+        sell_price = float(df.loc[sell[0], "close"])
+        assert sell_price >= target_price
 
     def test_empty_data_returns_empty(self):
         """空 DataFrame 應回傳兩個空列表，且不崩潰。"""
         empty = pd.DataFrame(columns=["open", "high", "low", "close", "volume"])
+        buy, sell = vcp_breakout_signals(empty)
+        assert buy == []
+        assert sell == []
 
-        with patch(
-            "stockscreener.strategies.vcp_signal.vcp_screener_strategy",
-            return_value=False,
-        ):
-            buy, sell = vcp_breakout_signals(empty)
-
+    def test_short_data_returns_empty(self):
+        """資料長度不足 233 天應直接回傳空列表。"""
+        df = _make_df(n=200)
+        buy, sell = vcp_breakout_signals(df)
         assert buy == []
         assert sell == []
