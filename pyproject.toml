@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "stockscreener"
+version = "1.0.0"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas",
+    "numpy",
+    "yfinance",
+    "yahooquery",
+    "finvizfinance",
+    "finviz",
+    "ta",
+    "mplfinance",
+    "plotly",
+    "matplotlib",
+    "seaborn",
+    "python-highcharts",
+    "pandas-market-calendars",
+    "openpyxl",
+    "beautifulsoup4",
+    "requests",
+    "sec-edgar-py",
+    "xbrl",
+    "selenium",
+    "PyQt5",
+    "backtrader",
+    "pytz",
+    "scipy",
+    "python-dateutil",
+    "pyyaml",
+    "lxml",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-mock"]
+
+[project.scripts]
+stockscreener = "stockscreener.cli:main"

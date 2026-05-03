@@ -1,0 +1,109 @@
+# StockScreener configuration file
+# All hardcoded values from the original scripts are centralised here.
+
+data:
+  # yahooquery history settings
+  history_period: "3y"
+  history_interval: "1d"
+  # yfinance column normalisation (original uses capitalised names)
+  column_map:
+    Open: open
+    High: high
+    Low: low
+    Close: close
+    Volume: volume
+    Adj Close: adj_close
+
+  # PTP (Publicly Traded Partnership) scraper URLs
+  ptp_url1: "https://help.zh-tw.firstrade.com/article/841-new-1446-f-regulations"
+  ptp_url2: "https://www.itigerup.com/bulletin/ptp"
+
+  # S&P 500 Wikipedia URL
+  sp500_url: "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+
+  # Cache directory
+  cache_dir: ".cache"
+
+finviz:
+  filters:
+    "20-Day Simple Moving Average": "SMA20 above SMA50"
+    "50-Day Simple Moving Average": "SMA50 above SMA200"
+    "Average Volume": "Over 100K"
+    "Price": "Over $3"
+    "EPS growthpast 5 years": "Positive (>0%)"
+    "Change": "Up 2%"
+
+indicators:
+  vwap_windows: [5, 21, 55, 144]
+  sma_windows: [21, 55, 144, 155, 233]
+  rsi_period: 14
+  atr_period: 14
+  zigzag:
+    atr_multiplier: 2.5
+    min_percentage: 0.08
+
+strategies:
+  vcp:
+    # SMA windows used for trend alignment
+    sma_short: 55
+    sma_mid: 144
+    sma_long: 233
+    sma_long_increase_days: 21
+    sma_long_min_slope_pct: 0.005  # SMA233 在 21 天內至少需上升 0.5%
+    # Volatility contraction thresholds
+    vol_ratio_min: 1.5          # volatility_55/volatility_21 and 21/8 must exceed this
+    max_volatility_8: 0.1       # inner-most window volatility must be below this
+    # Volume contraction threshold
+    max_volume_ratio: 0.7       # avg_volume_8 / avg_volume_55 must be below this
+    # Minervini 趨勢模板過濾條件（設為 0 可停用）
+    min_price: 10.0             # 最低股價門檻
+    min_avg_volume: 300000      # 最低 50 日均量門檻
+    min_dist_52w_low: 1.30      # 收盤須至少比 52 週低點高 30%
+    max_dist_52w_high: 0.75     # 收盤須在 52 週高點的 75% 以上
+
+  sma_crossover:
+    fast: 21
+    slow: 55
+    trend: 155
+    # Pyramid position sizing
+    investment_ratios: [0.1, 0.50, 1.0]
+    investment_thresholds: [0.0, 0.03, 0.06]
+
+backtest:
+  initial_balance: 200000
+  start_date: "2007-01-01"
+  end_date: "2024-04-10"
+
+charts:
+  highstock:
+    width: null
+    height: 930
+    range_selector_selected: 4
+    vwap_colors:
+      5: "blue"
+      21: "orange"
+      55: "red"
+      144: "purple"
+    vwap_line_width: 3
+    candlestick_down_color: "red"
+    candlestick_up_color: "green"
+    ohlc_height_pct: "70%"
+    volume_top_pct: "72%"
+    volume_height_pct: "13%"
+    rsi_top_pct: "87%"
+    rsi_height_pct: "13%"
+    rsi_ob_level: 70
+    rsi_os_level: 30
+
+heatmap:
+  frequency: "D"          # D=daily, W=weekly, M=monthly
+  time_value: 31          # number of periods to look back
+  colormap: "plasma"
+  figsize: [20, 10]
+
+market:
+  timezone: "America/New_York"
+  calendar: "NYSE"
+
+export:
+  default_output_dir: "."
